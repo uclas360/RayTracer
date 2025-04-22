@@ -1,0 +1,88 @@
+name: check_file_before_push
+
+on:
+  push:
+    branches-ignore:
+      - "ga-ignore-*"
+  pull_request:
+    branches-ignore:
+      - "ga-ignore-*"
+
+env:
+  EXECUTABLES: "raytracer"
+
+jobs:
+  detect_o_files:
+    runs-on: ubuntu-latest
+    name: detect .o files push
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 
+        with:
+          fetch-depth: 0
+      - name: check .o files push
+        run: |
+          FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.after }} | grep '\.o$' || true)
+          if [ -n "$FILES" ]; then
+            echo "You push .o file"
+            echo "$FILES"
+            exit 1
+          else
+            echo "It's ok"
+          fi
+
+  detect_executables:
+    needs: detect_o_files
+    runs-on: ubuntu-latest
+    name: Executables detected
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if executables were pushed
+        run: |
+          files=$(git diff --name-only ${{ github.event.before }} ${{ github.after }})
+          failed=0
+          for exe in $EXECUTABLES; do
+            if echo "$files" | grep -qx "$exe"; then
+              echo "Executable $exe was pushed!"
+              failed=1
+            fi
+          done
+          if [ $failed -eq 1 ]; then
+            exit 1
+          else
+            echo "No executables pushed."
+          fi
+
+  check_program_compilation:
+    needs: detect_executables
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Compilation Check
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build with make
+        run: make
+
+      - name: Clean .o files
+        run: make clean
+
+      - name: Check executables exist and are executable
+        run: |
+          for file in $EXECUTABLES; do
+            if [ ! -f "$file" ]; then
+              echo "$file does not exist"
+              exit 1
+            fi
+            if [ ! -x "$file" ]; then
+              echo "$file is not executable"
+              exit 1
+            fi
+          done
