@@ -46,7 +46,7 @@ jobs:
           files=$(git diff --name-only ${{ github.event.before }} ${{ github.after }})
           failed=0
           for exe in $EXECUTABLES; do
-            if echo "$files" | grep -qx "$exe"; then
+            if echo "$files" | grep "$exe"; then
               echo "Executable $exe was pushed!"
               failed=1
             fi
