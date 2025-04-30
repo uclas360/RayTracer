@@ -10,8 +10,10 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
+#include <libconfig.h++>
 #include <memory>
 #include <string>
+
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/IPlugin.hpp"
 
@@ -37,13 +39,17 @@ class DlLoader : public LibLoader<Module> {
         if (this->_lib_) (void)dlclose(this->_lib_);
     }
 
-    std::unique_ptr<Module> getInstance(const std::string entryPoint) override {
-        IPlugin *(*function)() =
-            (IPlugin * (*)())(dlsym(this->_lib_, entryPoint.c_str()));
+    std::unique_ptr<Module> getInstance(
+        const std::string entryPoint,
+        const libconfig::Setting &settings) override {
+        IPlugin *(*function)(const libconfig::Setting &) =
+            (IPlugin * (*)(const libconfig::Setting &))(
+                dlsym(this->_lib_, entryPoint.c_str()));
+
         if (!function) {
             throw LoaderException("not a raytracerPlugin lib");
         }
-        Module *instance = dynamic_cast<Module *>(function());
+        Module *instance = dynamic_cast<Module *>(function(settings));
         if (!instance) {
             throw LoaderException("wrong plugin type");
         }
