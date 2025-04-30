@@ -1,0 +1,54 @@
+cmake_minimum_required(VERSION 3.10)
+
+set(PROJECT_NAME raytracer)
+
+project(${PROJECT_NAME})
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
+set(CMAKE_SHARED_LIBRARY_PREFIX "")
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/ArgsManager.cpp
+    src/raytracer/Camera.cpp
+    src/raytracer/math/Color.cpp
+    src/raytracer/math/Vector.cpp
+    src/core/Constructor.cpp
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE
+    config++
+)
+
+add_custom_target(re
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target clean
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
+    COMMENT "Rebuilding the project"
+)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3")
+
+add_custom_target(debug
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target clean
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config Debug
+    COMMENT "Rebuilding the project in Debug mode"
+)
+
+add_custom_target(doc
+    COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/doc
+    COMMAND doxygen ${CMAKE_SOURCE_DIR}/doxygen_config.txt
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Generating documentation with Doxygen in doc folder"
+)
