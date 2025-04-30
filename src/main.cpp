@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <iostream>
+#include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "ArgsManager.hpp"
 
@@ -17,7 +18,7 @@ int main(int argc, char **argv) {
     }
     try {
         ArgManager argManager(argv);
-        //RaytracerCore core(argManager.getArguments());
+        RaytracerCore core(argManager.getArguments());
 
         //core.compute();
     } catch (const std::exception &exp) {
