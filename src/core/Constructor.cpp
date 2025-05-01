@@ -18,7 +18,6 @@
 void RaytracerCore::initCamera(const std::string &file,
                                const libconfig::Config &config,
                                std::optional<RayTracer::Camera> &camera) {
-    std::cout << "???" << std::endl;
     try {
         libconfig::Setting &cameraSettings = config.lookup("camera");
         if (camera.has_value()) {
