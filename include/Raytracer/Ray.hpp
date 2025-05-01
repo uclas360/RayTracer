@@ -5,11 +5,12 @@
 ** Ray
 */
 
-#pragma once
+#ifndef RAY_HPP
+#define RAY_HPP
 
 #include <iostream>
 
-#include "raytracer/math/Vector.hpp"
+#include "Raytracer/math/Vector.hpp"
 
 namespace RayTracer {
 
@@ -26,3 +27,5 @@ class Ray {
 std::ostream &operator<<(std::ostream &out, const Ray &ray);
 
 }  // namespace RayTracer
+
+#endif

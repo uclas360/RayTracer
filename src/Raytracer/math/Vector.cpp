@@ -5,8 +5,9 @@
 ** Vector
 */
 
+#include "Raytracer/math/Vector.hpp"
+
 #include <cmath>
-#include "raytracer/math/Vector.hpp"
 
 namespace Math {
 

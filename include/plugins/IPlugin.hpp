@@ -5,9 +5,12 @@
 ** lib loaders
 */
 
-#pragma once
+#ifndef IPLUGIN_HPP
+#define IPLUGIN_HPP
 
 class IPlugin {
-    public:
+   public:
     virtual ~IPlugin() = default;
 };
+
+#endif

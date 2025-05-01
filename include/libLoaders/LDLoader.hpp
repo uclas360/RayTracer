@@ -5,7 +5,8 @@
 ** lib loaders
 */
 
-#pragma once
+#ifndef DL_LOADER_HPP
+#define DL_LOADER_HPP
 
 #include <dlfcn.h>
 #include <unistd.h>
@@ -24,19 +25,19 @@ template <lib Module>
 class DlLoader : public LibLoader<Module> {
    public:
     DlLoader(std::string fileName)
-        : _lib_(dlopen((fileName + ".so").c_str(), RTLD_LAZY)) {
-        if (this->_lib_ == nullptr) {
+        : lib_(dlopen((fileName + ".so").c_str(), RTLD_LAZY)) {
+        if (this->lib_ == nullptr) {
             throw NotExistingLib(dlerror());
         }
     }
 
-    DlLoader(DlLoader<Module> &&other) : _lib_(other._lib_) {
-        other._lib_ = nullptr;
+    DlLoader(DlLoader<Module> &&other) : lib_(other.lib_) {
+        other.lib_ = nullptr;
     }
 
     DlLoader(DlLoader<Module> &other) = delete;
     ~DlLoader() override {
-        if (this->_lib_) (void)dlclose(this->_lib_);
+        if (this->lib_) (void)dlclose(this->lib_);
     }
 
     std::unique_ptr<Module> getInstance(
@@ -44,7 +45,7 @@ class DlLoader : public LibLoader<Module> {
         const libconfig::Setting &settings) override {
         IPlugin *(*function)(const libconfig::Setting &) =
             (IPlugin * (*)(const libconfig::Setting &))(
-                dlsym(this->_lib_, entryPoint.c_str()));
+                dlsym(this->lib_, entryPoint.c_str()));
 
         if (!function) {
             throw LoaderException("not a raytracerPlugin lib");
@@ -58,5 +59,7 @@ class DlLoader : public LibLoader<Module> {
     }
 
    private:
-    void *_lib_ = nullptr;
+    void *lib_ = nullptr;
 };
+
+#endif

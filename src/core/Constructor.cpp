@@ -10,10 +10,10 @@
 #include <memory>
 #include <optional>
 
+#include "Raytracer/Camera.hpp"
 #include "RaytracerCore.hpp"
 #include "libLoaders/LDLoader.hpp"
 #include "plugins/ILight.hpp"
-#include "raytracer/Camera.hpp"
 
 void RaytracerCore::initCamera(const std::string &file,
                                const libconfig::Config &config,
@@ -39,6 +39,7 @@ static void initInMap(
     if (map.contains(name)) {
         return;
     }
+// LINUX
 #if defined __linux__
     try {
         map.insert({name, std::make_unique<DlLoader<Plugin>>(name)});
@@ -47,6 +48,7 @@ static void initInMap(
                   << "\", error loading pluggin :" << ex.what() << std::endl;
     }
 #endif
+    //
 }
 
 void RaytracerCore::initPlugins(const std::string &file,
@@ -70,15 +72,15 @@ void RaytracerCore::initPlugins(const std::string &file,
             }
             name = "plugin/" + name;
             if (type == "shape") {
-                initInMap<IShape>(this->_shapesPlugins_, name, file);
-                if (this->_shapesPlugins_.find(name) !=
-                    this->_shapesPlugins_.end()) {
-                    this->_shapes_.emplace_back(
-                        this->_shapesPlugins_.at(name)->getInstance(
+                initInMap<IShape>(this->shapesPlugins_, name, file);
+                if (this->shapesPlugins_.find(name) !=
+                    this->shapesPlugins_.end()) {
+                    this->shapes_.emplace_back(
+                        this->shapesPlugins_.at(name)->getInstance(
                             "entry_point", it->lookup("data")));
                 }
             } else if (type == "light") {
-                initInMap<ILight>(this->_lightsPlugins_, name, file);
+                initInMap<ILight>(this->lightsPlugins_, name, file);
             } else {
                 std::cerr << "error parsing object in file \"" << file
                           << "\", object type \"" << type << "\" does not exist"
@@ -90,7 +92,7 @@ void RaytracerCore::initPlugins(const std::string &file,
 }
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
-    : _graphic_(args.graphicMode) {
+    : graphic_(args.graphicMode) {
     std::optional<RayTracer::Camera> camera = std::nullopt;
     libconfig::Config config;
 

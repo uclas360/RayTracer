@@ -6,6 +6,7 @@
 */
 
 #include "ArgsManager.hpp"
+
 #include <stdexcept>
 
 ArgManager::ArgManager(char **argv) {
@@ -13,14 +14,14 @@ ArgManager::ArgManager(char **argv) {
         try {
             this->flagMap.at(argv[i])(*this);
         } catch (const std::out_of_range &) {
-            this->_arguments_.configFile.push_back(argv[i]);
+            this->arguments_.configFile.push_back(argv[i]);
         }
     }
-    if (this->_arguments_.configFile.empty()) {
+    if (this->arguments_.configFile.empty()) {
         throw ArgumentException("at least one config file is mendatory");
     }
 }
 
 const ArgManager::ArgumentStruct &ArgManager::getArguments() const noexcept {
-    return this->_arguments_;
+    return this->arguments_;
 }

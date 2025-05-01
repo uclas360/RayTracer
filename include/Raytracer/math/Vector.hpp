@@ -5,7 +5,8 @@
 ** Vector
 */
 
-#pragma once
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
 
 #include <iostream>
 
@@ -51,3 +52,5 @@ class Vector3D {
 std::ostream &operator<<(std::ostream &out, const Vector3D &vec);
 
 }  // namespace Math
+
+#endif

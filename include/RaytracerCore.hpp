@@ -5,7 +5,8 @@
 ** customException base class
 */
 
-#pragma once
+#ifndef RAYTRACER_CORE_HPP
+#define RAYTRACER_CORE_HPP
 
 #include <map>
 #include <memory>
@@ -14,10 +15,10 @@
 
 #include "ArgsManager.hpp"
 #include "CustomException.hpp"
+#include "Raytracer/Camera.hpp"
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
-#include "raytracer/Camera.hpp"
 
 class ParsingException : public CustomException {
    public:
@@ -34,18 +35,20 @@ class RaytracerCore {
     void computeGraphic(void);
     void computeOutput(void);
 
-    RayTracer::Camera _camera_;
+    RayTracer::Camera camera_;
 
-    std::map<std::string, std::unique_ptr<LibLoader<IShape>>> _shapesPlugins_;
-    std::map<std::string, std::unique_ptr<LibLoader<ILight>>> _lightsPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<IShape>>> shapesPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<ILight>>> lightsPlugins_;
 
-    std::vector<std::unique_ptr<IShape>> _shapes_;
-    std::vector<std::unique_ptr<ILight>> _lights_;
+    std::vector<std::unique_ptr<IShape>> shapes_;
+    std::vector<std::unique_ptr<ILight>> lights_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
 
     void initCamera(const std::string &file, const libconfig::Config &config,
                     std::optional<RayTracer::Camera> &camera);
 
-    bool _graphic_;
+    bool graphic_;
 };
+
+#endif

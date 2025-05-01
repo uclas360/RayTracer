@@ -5,13 +5,16 @@
 ** ILight
 */
 
-#pragma once
+#ifndef ILIGHT_HPP
+#define ILIGHT_HPP
 
+#include "Raytracer/math/Color.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "plugins/IObject.hpp"
-#include "raytracer/math/Color.hpp"
-#include "raytracer/math/Vector.hpp"
 
-class ILight: public IObject {
-    public:
-        virtual Math::Color getColorFrom(const Math::Vector3D &point) const = 0;
+class ILight : public IObject {
+   public:
+    virtual Math::Color getColorFrom(const Math::Vector3D &point) const = 0;
 };
+
+#endif

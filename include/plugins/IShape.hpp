@@ -5,16 +5,19 @@
 ** IShape
 */
 
-#pragma once
+#ifndef ISHAPE_HPP
+#define ISHAPE_HPP
 
+#include "Raytracer/Ray.hpp"
 #include "plugins/IObject.hpp"
-#include "raytracer/Ray.hpp"
 
 struct HitRecord {
     //
 };
 
 class IShape : public IObject {
-    public:
+   public:
     virtual HitRecord hits(const RayTracer::Ray &ray) const = 0;
 };
+
+#endif

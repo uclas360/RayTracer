@@ -5,7 +5,8 @@
 ** interface for plugin loader
 */
 
-#pragma once
+#ifndef LIB_LOADER_HPP
+#define LIB_LOADER_HPP
 
 #include <libconfig.h++>
 #include <memory>
@@ -24,15 +25,9 @@ class LoaderNotExistingFunction : public CustomException {
     }
 };
 
-class LoaderException : public std::exception {
+class LoaderException : public CustomException {
    public:
-    LoaderException(std::string message) : _message_(message) {};
-    const char *what() const noexcept override {
-        return this->_message_.c_str();
-    }
-
-   private:
-    std::string _message_;
+    LoaderException(std::string message) : CustomException(message) {};
 };
 
 template <typename Module>
@@ -42,3 +37,5 @@ class LibLoader {
     virtual std::unique_ptr<Module> getInstance(const std::string entryPoint,
                                                 const libconfig::Setting &) = 0;
 };
+
+#endif

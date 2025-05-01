@@ -5,7 +5,8 @@
 ** Color
 */
 
-#pragma once
+#ifndef COLOR_HPP
+#define COLOR_HPP
 
 #include <iostream>
 
@@ -26,11 +27,13 @@ class Color {
 
     Color operator+(const Color &other) const;
     Color operator-(const Color &other) const;
-    private:
-    unsigned char getInRangeValue(int) const;
 
+   private:
+    unsigned char getInRangeValue(int) const;
 };
 
 std::ostream &operator<<(std::ostream &out, const Color &vec);
 
 }  // namespace Math
+
+#endif
