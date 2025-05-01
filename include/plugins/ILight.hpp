@@ -13,5 +13,5 @@
 
 class ILight: public IObject {
     public:
-        Math::Color getColorFrom(const Math::Vector3D &point) const;
+        virtual Math::Color getColorFrom(const Math::Vector3D &point) const = 0;
 };

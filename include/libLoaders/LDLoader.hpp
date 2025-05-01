@@ -24,7 +24,7 @@ template <lib Module>
 class DlLoader : public LibLoader<Module> {
    public:
     DlLoader(std::string fileName)
-        : _lib_(dlopen((fileName).c_str(), RTLD_LAZY)) {
+        : _lib_(dlopen((fileName + ".so").c_str(), RTLD_LAZY)) {
         if (this->_lib_ == nullptr) {
             throw NotExistingLib(dlerror());
         }

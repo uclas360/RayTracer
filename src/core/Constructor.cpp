@@ -69,6 +69,7 @@ void RaytracerCore::initPlugins(const std::string &file,
                           << std::endl;
                 return;
             }
+            name = "plugin/" + name;
             if (type == "shape") {
                 initInMap<IShape>(this->_shapesPlugins_, name, file);
                 if (this->_shapesPlugins_.find(name) !=

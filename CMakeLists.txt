@@ -6,9 +6,9 @@ project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugin)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
-
+set(INCLUDES_DIRECTORY ${CMAKE_SOURCE_DIR}/include)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
@@ -23,7 +23,7 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/include
+        ${INCLUDES_DIRECTORY}
 )
 
 target_link_libraries(
@@ -52,3 +52,5 @@ add_custom_target(doc
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating documentation with Doxygen in doc folder"
 )
+
+add_subdirectory(pluginsSrc)

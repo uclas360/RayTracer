@@ -16,5 +16,5 @@ struct HitRecord {
 
 class IShape : public IObject {
     public:
-    HitRecord hits(const RayTracer::Ray &ray) const;
+    virtual HitRecord hits(const RayTracer::Ray &ray) const = 0;
 };
