@@ -15,6 +15,10 @@ double Vector3D::length() const {
     return std::sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
+double Vector3D::lengthSquared() const {
+    return this->x * this->x + this->y * this->y + this->z * this->z;
+}
+
 double Vector3D::dot(const Vector3D &other) const {
     return this->x * other.x + this->y * other.y + this->z * other.z;
 }
@@ -149,7 +153,7 @@ Vector3D &Vector3D::operator/=(const double &other) {
     return *this;
 }
 
-std::ostream &operator<<(std::ostream &out, const Vector3D &vec) {
+std::ostream &operator<<(std::ostream &out, const Math::Vector3D &vec) {
     out << "Vector3D(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
     return out;
 }

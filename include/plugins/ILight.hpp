@@ -12,9 +12,13 @@
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/IObject.hpp"
 
+namespace RayTracer {
+
 class ILight : public IObject {
    public:
     virtual Math::Color getColorFrom(const Math::Vector3D &point) const = 0;
+};
+
 };
 
 #endif

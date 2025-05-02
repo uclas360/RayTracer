@@ -10,15 +10,18 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugin)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(INCLUDES_DIRECTORY ${CMAKE_SOURCE_DIR}/include)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC")
+
+add_subdirectory(lib/RayMath)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/ArgsManager.cpp
     src/Raytracer/Camera.cpp
-    src/Raytracer/math/Color.cpp
-    src/Raytracer/math/Vector.cpp
+    src/Raytracer/Rectangle.cpp
+    src/Raytracer/Scene.cpp
     src/core/Constructor.cpp
+    src/core/Compute.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -29,7 +32,11 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
+    rayMath
     config++
+    sfml-graphics
+    sfml-window
+    sfml-system
 )
 
 add_custom_target(re

@@ -72,15 +72,27 @@ void RaytracerCore::initPlugins(const std::string &file,
             }
             name = "plugin/" + name;
             if (type == "shape") {
-                initInMap<IShape>(this->shapesPlugins_, name, file);
+                initInMap<RayTracer::IShape>(this->shapesPlugins_, name, file);
                 if (this->shapesPlugins_.find(name) !=
                     this->shapesPlugins_.end()) {
-                    this->shapes_.emplace_back(
-                        this->shapesPlugins_.at(name)->getInstance(
-                            "entry_point", it->lookup("data")));
+                    try {
+                    this->mainScene_.addShape(this->shapesPlugins_.at(name)->getInstance(
+                        "entry_point", it->lookup("data")));
+                    } catch (const ParsingException &exp) {
+                        std::cerr << exp.what() << std::endl;
+                    }
                 }
             } else if (type == "light") {
-                initInMap<ILight>(this->lightsPlugins_, name, file);
+                initInMap<RayTracer::ILight>(this->lightsPlugins_, name, file);
+                if (this->shapesPlugins_.find(name) !=
+                    this->shapesPlugins_.end()) {
+                    try {
+                        this->mainScene_.addLight(this->lightsPlugins_.at(name)->getInstance(
+                            "entry_point", it->lookup("data")));
+                    } catch (const ParsingException &exp) {
+                        std::cerr << exp.what() << std::endl;
+                    }
+                }
             } else {
                 std::cerr << "error parsing object in file \"" << file
                           << "\", object type \"" << type << "\" does not exist"

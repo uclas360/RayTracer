@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
         ArgManager argManager(argv);
         RaytracerCore core(argManager.getArguments());
 
-        // core.compute();
+        core.compute();
     } catch (const std::exception &exp) {
         std::cerr << exp.what() << std::endl << HELP_MESSAGE << std::endl;
         return 84;

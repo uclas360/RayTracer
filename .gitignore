@@ -12,6 +12,7 @@ docs
 compile_commands.json
 compile_commands.txt
 *.so
+*.a
 raytracer
 compile_flags.txt
 build
