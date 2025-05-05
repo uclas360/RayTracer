@@ -45,7 +45,6 @@ void RayTracer::Camera::move(const Math::Vector3D &offset) {
 }
 
 void RayTracer::Camera::rotate(const Math::Vector3D &angles) {
-  std::cout << angles << std::endl;
   if (angles.x) this->rotateX(angles.x);
   if (angles.y) this->rotateY(angles.y);
   if (angles.z) this->rotateZ(angles.z);
