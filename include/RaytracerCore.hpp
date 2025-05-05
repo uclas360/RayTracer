@@ -16,6 +16,7 @@
 #include "ArgsManager.hpp"
 #include "CustomException.hpp"
 #include "Raytracer/Camera.hpp"
+#include "Raytracer/Scene.hpp"
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
@@ -35,13 +36,14 @@ class RaytracerCore {
     void computeGraphic(void);
     void computeOutput(void);
 
+    uint8_t *generateImage(int width, int height);
+
     RayTracer::Camera camera_;
 
-    std::map<std::string, std::unique_ptr<LibLoader<IShape>>> shapesPlugins_;
-    std::map<std::string, std::unique_ptr<LibLoader<ILight>>> lightsPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>> shapesPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
 
-    std::vector<std::unique_ptr<IShape>> shapes_;
-    std::vector<std::unique_ptr<ILight>> lights_;
+    RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
 
