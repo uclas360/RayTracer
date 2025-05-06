@@ -22,6 +22,8 @@ add_executable(${PROJECT_NAME}
     src/Raytracer/Scene.cpp
     src/core/Constructor.cpp
     src/core/Compute.cpp
+    src/core/ComputeGraphic.cpp
+    src/core/ComputePPM.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -113,14 +113,14 @@ void RaytracerCore::startThreads(size_t nbThreads, size_t width,
     size_t nbPixelPerThread = (width * height) / nbThreads;
     size_t end = nbPixelPerThread;
     for (size_t i = 0; i < nbThreads; i++) {
+        if (i + 1 == nbThreads) {
+            end = width * height;
+        }
         this->threads_.push_back(
             std::thread(&RaytracerCore::computeImage, this, start, end)
         );
         start += nbPixelPerThread;
         end += nbPixelPerThread;
-        if (end > (width * height)) {
-            end = width * height;
-        }
     }
 }
 

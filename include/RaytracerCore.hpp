@@ -8,6 +8,9 @@
 #ifndef RAYTRACER_CORE_HPP
 #define RAYTRACER_CORE_HPP
 
+#define CAM_SPEED 0.03
+#define LIGHT_REFLEXION 0.6
+
 #include <cstdint>
 #include <map>
 #include <memory>

@@ -17,3 +17,5 @@ raytracer
 compile_flags.txt
 build
 test*
+vgcore*
+output.ppm
