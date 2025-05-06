@@ -7,7 +7,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <cstdint>
 #include <vector>
 
 #include "Raytracer/math/Vector.hpp"

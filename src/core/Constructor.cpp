@@ -6,7 +6,6 @@
 */
 
 #include <cstddef>
-#include <functional>
 #include <iostream>
 #include <libconfig.h++>
 #include <memory>
