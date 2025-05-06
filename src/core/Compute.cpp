@@ -45,8 +45,8 @@ Math::Vector3D ray_color(const RayTracer::Ray &r, int depth,
 }
 
 void RaytracerCore::computePixel(size_t pixel) {
-    size_t x = pixel / this->xResolution_;
-    size_t y = pixel % this->xResolution_;
+    size_t y = pixel / this->xResolution_;
+    size_t x = pixel % this->xResolution_;
     double u = (double)x / this->xResolution_;
     double v = (double)y / this->yResolution_;
     RayTracer::Ray r = this->camera_.ray(u, v);
@@ -115,31 +115,31 @@ void RaytracerCore::compute() {
     while (window.pollEvent(event))
       if (event.type == sf::Event::Closed) window.close();
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-      this->camera_.move({-CAM_SPEED, 0, 0});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-      this->camera_.move({CAM_SPEED, 0, 0});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-      this->camera_.move({0, -CAM_SPEED, 0});
+      this->camera_.move({-CAM_SPEED, 0, 0});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+      this->camera_.move({CAM_SPEED, 0, 0});
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+      this->camera_.move({0, -CAM_SPEED, 0});
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
       this->camera_.move({0, CAM_SPEED, 0});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
       this->camera_.move({0, 0, -CAM_SPEED});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
       this->camera_.move({0, 0, CAM_SPEED});
     Math::Vector3D camera_Rotation(0, 0, 0);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
       camera_Rotation.y += 0.1;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
       camera_Rotation.y -= 0.1;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-      camera_Rotation.x += 0.1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      camera_Rotation.x -= 0.1;
-    }
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    //   camera_Rotation.x += 0.1;
+    // }
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    //   camera_Rotation.x -= 0.1;
+    // }
     this->camera_.rotate(camera_Rotation);
 
     window.clear();
