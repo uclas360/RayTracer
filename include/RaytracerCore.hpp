@@ -8,10 +8,16 @@
 #ifndef RAYTRACER_CORE_HPP
 #define RAYTRACER_CORE_HPP
 
+#define CAM_SPEED 0.03
+#define LIGHT_REFLEXION 0.6
+
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
+#include <thread>
 
 #include "ArgsManager.hpp"
 #include "CustomException.hpp"
@@ -36,7 +42,8 @@ class RaytracerCore {
     void computeGraphic(void);
     void computeOutput(void);
 
-    uint8_t *generateImage(int width, int height);
+    void computeImage(size_t start, size_t end);
+    void computePixel(size_t pixel);
 
     RayTracer::Camera camera_;
 
@@ -51,6 +58,15 @@ class RaytracerCore {
                     std::optional<RayTracer::Camera> &camera);
 
     bool graphic_;
+
+    std::vector<std::thread> threads_;
+    void startThreads(size_t nbThreads, size_t width, size_t height);
+
+    std::vector<std::uint8_t> image_;
+    size_t width_;
+    size_t height_;
+    size_t xResolution_;
+    size_t yResolution_;
 };
 
 #endif

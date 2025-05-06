@@ -5,10 +5,12 @@
 ** core constructor
 */
 
+#include <cstddef>
 #include <iostream>
 #include <libconfig.h++>
 #include <memory>
 #include <optional>
+#include <thread>
 
 #include "Raytracer/Camera.hpp"
 #include "RaytracerCore.hpp"
@@ -76,8 +78,9 @@ void RaytracerCore::initPlugins(const std::string &file,
                 if (this->shapesPlugins_.find(name) !=
                     this->shapesPlugins_.end()) {
                     try {
-                    this->mainScene_.addShape(this->shapesPlugins_.at(name)->getInstance(
-                        "entry_point", it->lookup("data")));
+                        this->mainScene_.addShape(
+                            this->shapesPlugins_.at(name)->getInstance(
+                                "entry_point", it->lookup("data")));
                     } catch (const ParsingException &exp) {
                         std::cerr << exp.what() << std::endl;
                     }
@@ -87,8 +90,9 @@ void RaytracerCore::initPlugins(const std::string &file,
                 if (this->shapesPlugins_.find(name) !=
                     this->shapesPlugins_.end()) {
                     try {
-                        this->mainScene_.addLight(this->lightsPlugins_.at(name)->getInstance(
-                            "entry_point", it->lookup("data")));
+                        this->mainScene_.addLight(
+                            this->lightsPlugins_.at(name)->getInstance(
+                                "entry_point", it->lookup("data")));
                     } catch (const ParsingException &exp) {
                         std::cerr << exp.what() << std::endl;
                     }
@@ -103,8 +107,30 @@ void RaytracerCore::initPlugins(const std::string &file,
     }
 }
 
+void RaytracerCore::startThreads(size_t nbThreads, size_t width,
+                                 size_t height) {
+    size_t start = 0;
+    size_t nbPixelPerThread = (width * height) / nbThreads;
+    size_t end = nbPixelPerThread;
+    for (size_t i = 0; i < nbThreads; i++) {
+        if (i + 1 == nbThreads) {
+            end = width * height;
+        }
+        this->threads_.push_back(
+            std::thread(&RaytracerCore::computeImage, this, start, end)
+        );
+        start += nbPixelPerThread;
+        end += nbPixelPerThread;
+    }
+}
+
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
-    : graphic_(args.graphicMode) {
+    : graphic_(args.graphicMode),
+      image_(args.xResolution * args.yResolution * 4, 0),
+      width_(args.width),
+      height_(args.height),
+      xResolution_(args.xResolution),
+      yResolution_(args.yResolution) {
     std::optional<RayTracer::Camera> camera = std::nullopt;
     libconfig::Config config;
 
@@ -123,4 +149,5 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
                       << std::endl;
         }
     }
+    this->startThreads(args.nb_thread, args.xResolution, args.yResolution);
 }
