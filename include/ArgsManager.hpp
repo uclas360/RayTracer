@@ -97,7 +97,7 @@ class ArgManager {
             if (ss.fail() || !ss.eof()) {
                 throw ArgumentException("-H flag must take a positive integer");
             }
-            _this.arguments_.width = height;
+            _this.arguments_.height = height;
             return true;
          }},
         {"-xr", [](ArgManager &_this, char *number) {

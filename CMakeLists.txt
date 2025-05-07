@@ -10,7 +10,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugin)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(INCLUDES_DIRECTORY ${CMAKE_SOURCE_DIR}/include)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC -O3")
 
 add_subdirectory(lib/RayMath)
 
