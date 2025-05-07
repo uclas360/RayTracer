@@ -20,25 +20,25 @@ Triangle::Triangle(const libconfig::Setting &settings) {
     libconfig::Setting &a = settings.lookup("a");
     libconfig::Setting &b = settings.lookup("b");
     libconfig::Setting &c = settings.lookup("c");
-    a.lookupValue("x", temp);
+    a.lookupValue("posX", temp);
     this->a.x = temp;
-    a.lookupValue("y", temp);
+    a.lookupValue("posY", temp);
     this->a.y = temp;
-    a.lookupValue("z", temp);
+    a.lookupValue("posZ", temp);
     this->a.z = temp;
 
-    b.lookupValue("x", temp);
+    b.lookupValue("posX", temp);
     this->b.x = temp;
-    b.lookupValue("y", temp);
+    b.lookupValue("posY", temp);
     this->b.y = temp;
-    b.lookupValue("z", temp);
+    b.lookupValue("posZ", temp);
     this->b.z = temp;
 
-    c.lookupValue("x", temp);
+    c.lookupValue("posX", temp);
     this->c.x = temp;
-    c.lookupValue("y", temp);
+    c.lookupValue("posY", temp);
     this->c.y = temp;
-    c.lookupValue("z", temp);
+    c.lookupValue("posZ", temp);
     this->c.z = temp;
   } catch (const libconfig::SettingException) {
     std::cout << "error" << std::endl;
@@ -82,4 +82,9 @@ extern "C" {
 void *entry_point(const libconfig::Setting &config) {
   return new RayTracer::Triangle(config);
 }
+
+void *value_entry_point(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c) {
+  return new RayTracer::Triangle(a, b, c);
+}
+
 }

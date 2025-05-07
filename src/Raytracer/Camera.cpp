@@ -29,10 +29,11 @@ RayTracer::Camera::Camera(libconfig::Setting &settings)
     throw ParsingException("error creating camera, posZ field missing");
   }
   this->pos_ = {posX, posY, posZ};
+  screen_.pos = {posX - 0.5, posY - 0.5, posZ - 1};
 };
 
-RayTracer::Camera::Camera(RayTracer::Camera &&other)
-    : pos_(std::move(other.pos_)) {}
+// RayTracer::Camera::Camera(RayTracer::Camera &&other)
+//     : pos_(std::move(other.pos_)), screen_(std::move(other.screen_), ) {}
 
 RayTracer::Ray RayTracer::Camera::ray(double u, double v) {
   return Ray(this->pos_, this->screen_.pointAt(u, v) - this->pos_);

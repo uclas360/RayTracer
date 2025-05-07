@@ -140,6 +140,7 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
         try {
             config.readFile(file);
             this->initCamera(file, config, camera);
+
             this->initPlugins(file, config);
         } catch (const libconfig::FileIOException &exc) {
             std::cerr << "error parsing file \"" << file
@@ -148,6 +149,9 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
             std::cerr << "error parsing file \"" << file << "\", invalid format"
                       << std::endl;
         }
+    }
+    if (camera.has_value()) {
+        this->camera_ = std::move(camera.value());
     }
     this->startThreads(args.nb_thread, args.xResolution, args.yResolution);
 }
