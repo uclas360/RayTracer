@@ -14,7 +14,14 @@
 
 #include "Raytracer/Camera.hpp"
 #include "RaytracerCore.hpp"
+
+#if defined __linux__
 #include "libLoaders/LDLoader.hpp"
+#endif
+#if defined _WIN32
+#include "libLoaders/WindowsLoader.hpp"
+#endif
+
 #include "plugins/ILight.hpp"
 
 void RaytracerCore::initCamera(const std::string &file,
@@ -41,16 +48,21 @@ static void initInMap(
     if (map.contains(name)) {
         return;
     }
+    try {
 // LINUX
 #if defined __linux__
-    try {
         map.insert({name, std::make_unique<DlLoader<Plugin>>(name)});
+#endif
+//
+// WINDOWS
+#if defined _WIN32
+        map.insert({name, std::make_unique<WindowsLoader<Plugin>>(name)});
+#endif
+//
     } catch (const NotExistingLib &ex) {
         std::cerr << "error parsing object in file \"" << file
                   << "\", error loading pluggin :" << ex.what() << std::endl;
     }
-#endif
-    //
 }
 
 void RaytracerCore::initPlugins(const std::string &file,
