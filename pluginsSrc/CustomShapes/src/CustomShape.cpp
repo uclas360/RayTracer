@@ -32,8 +32,6 @@ void CustomShape::parseNormals(std::vector<std::string> args) {
                                     std::stof(args[2])));
 }
 
-static bool comp(Math::Vector3D a, Math::Vector3D b) { return a.x < b.x; }
-
 void CustomShape::parseFace(std::vector<std::string> args) {
   std::vector<std::string> vectors;
   std::string tmp;
@@ -97,7 +95,7 @@ HitRecord CustomShape::hits(const Ray &ray) const {
 
   for (size_t i = 0; i < _faces.size(); ++i) {
     temp = _faces[i]->hits(ray);
-    if (temp.t != 0 && temp.t <= record.t || record.t == 0) {
+    if ((temp.t != 0 && temp.t <= record.t) || record.t == 0) {
       record = temp;
     }
   }

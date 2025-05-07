@@ -27,11 +27,11 @@ class Triangle : public IShape {
   Triangle(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c)
       : a(a), b(b), c(c) {};
   Triangle(const libconfig::Setting &settings);
-  HitRecord hits(const Ray &ray) const override;
-  void move(const Math::Vector3D &offset) {};
-  void rotate(const Math::Vector3D &angles) {};
-  void scale(size_t scale) {};
-  void setPosition(const Math::Vector3D &newPos) {};
+  HitRecord hits(const Ray &) const override;
+  void move(const Math::Vector3D &) {};
+  void rotate(const Math::Vector3D &) {};
+  void scale(size_t) {};
+  void setPosition(const Math::Vector3D &) {};
 
  protected:
  private:

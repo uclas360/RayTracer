@@ -24,11 +24,11 @@ class CustomShape : public IShape {
  public:
   CustomShape(const libconfig::Setting &settings);
   ~CustomShape();
-  HitRecord hits(const Ray &ray) const override;
-  void move(const Math::Vector3D &offset) override {};
-  void rotate(const Math::Vector3D &angles) override {};
-  void scale(size_t scale) override {};
-  void setPosition(const Math::Vector3D &newPos) override {};
+  HitRecord hits(const Ray &) const override;
+  void move(const Math::Vector3D &) override {};
+  void rotate(const Math::Vector3D &) override {};
+  void scale(size_t) override {};
+  void setPosition(const Math::Vector3D &) override {};
 
  private:
   void parseLine(std::string &line);

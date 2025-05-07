@@ -40,7 +40,7 @@ Triangle::Triangle(const libconfig::Setting &settings) {
     this->c.y = temp;
     c.lookupValue("posZ", temp);
     this->c.z = temp;
-  } catch (const libconfig::SettingException) {
+  } catch (libconfig::SettingNotFoundException const &) {
     std::cout << "error" << std::endl;
     return;
   }
