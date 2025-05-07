@@ -58,6 +58,16 @@ void Triangle::move(const Math::Vector3D &pos) {
   c += pos;
 }
 
+
+
+void Triangle::rotate(const Math::Vector3D &angles) {
+  if (angles.y) {
+    a.rotateY(angles.y);
+    b.rotateY(angles.y);
+    c.rotateY(angles.y);
+  }
+}
+
 HitRecord Triangle::hits(const Ray &ray) const {
   Math::Vector3D ab = b - a;
   Math::Vector3D ac = c - a;

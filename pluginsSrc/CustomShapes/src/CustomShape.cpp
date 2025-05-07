@@ -76,9 +76,14 @@ static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
 #endif
 }
 
+void CustomShape::rotate(const Math::Vector3D &angles) {
+  for (size_t i = 0; i < _faces.size(); ++i) {
+    _faces[i]->rotate(angles);
+  }
+}
+
 void CustomShape::setPosition(const Math::Vector3D &pos)
 {
-  std::cout << "Moving to pos: " << pos << std::endl;
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->move(pos);
   }
@@ -104,6 +109,26 @@ void CustomShape::getPos(const libconfig::Setting &settings)
   setPosition(pos_);
 }
 
+void CustomShape::getRotation(const libconfig::Setting &settings)
+{
+  double rotationX, rotationY, rotationZ = 0;
+
+  if (!settings.lookupValue("rotationX", rotationX)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"rotationX\" field");
+  }
+  if (!settings.lookupValue("rotationY", rotationY)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"rotationY\" field");
+  }
+  if (!settings.lookupValue("rotationZ", rotationZ)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"rotationZ\" field");
+  }
+  rotation_ = {rotationX, rotationY, rotationZ};
+  rotate(rotation_);
+}
+
 CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::string path;
 
@@ -116,6 +141,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     parseLine(line);
   }
   getPos(settings);
+  getRotation(settings);
 }
 
 HitRecord CustomShape::hits(const Ray &ray) const {

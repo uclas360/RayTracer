@@ -29,7 +29,7 @@ class Triangle : public IShape {
   Triangle(const libconfig::Setting &settings);
   HitRecord hits(const Ray &) const override;
   void move(const Math::Vector3D &pos);
-  void rotate(const Math::Vector3D &) {};
+  void rotate(const Math::Vector3D &);
   void scale(size_t) {};
   void setPosition(const Math::Vector3D &pos);
 
