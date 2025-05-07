@@ -46,6 +46,18 @@ Triangle::Triangle(const libconfig::Setting &settings) {
   }
 }
 
+void Triangle::setPosition(const Math::Vector3D &pos) {
+  a = pos;
+  b = pos;
+  c = pos;
+}
+
+void Triangle::move(const Math::Vector3D &pos) {
+  a += pos;
+  b += pos;
+  c += pos;
+}
+
 HitRecord Triangle::hits(const Ray &ray) const {
   Math::Vector3D ab = b - a;
   Math::Vector3D ac = c - a;
@@ -86,5 +98,4 @@ void *entry_point(const libconfig::Setting &config) {
 void *value_entry_point(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c) {
   return new RayTracer::Triangle(a, b, c);
 }
-
 }

@@ -28,10 +28,10 @@ class Triangle : public IShape {
       : a(a), b(b), c(c) {};
   Triangle(const libconfig::Setting &settings);
   HitRecord hits(const Ray &) const override;
-  void move(const Math::Vector3D &) {};
+  void move(const Math::Vector3D &pos);
   void rotate(const Math::Vector3D &) {};
   void scale(size_t) {};
-  void setPosition(const Math::Vector3D &) {};
+  void setPosition(const Math::Vector3D &pos);
 
  protected:
  private:

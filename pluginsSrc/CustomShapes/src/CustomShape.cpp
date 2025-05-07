@@ -76,6 +76,34 @@ static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
 #endif
 }
 
+void CustomShape::setPosition(const Math::Vector3D &pos)
+{
+  std::cout << "Moving to pos: " << pos << std::endl;
+  for (size_t i = 0; i < _faces.size(); ++i) {
+    _faces[i]->move(pos);
+  }
+}
+
+void CustomShape::getPos(const libconfig::Setting &settings)
+{
+  double posX, posY, posZ = 0;
+
+  if (!settings.lookupValue("posX", posX)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"posX\" field");
+  }
+  if (!settings.lookupValue("posY", posY)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"posY\" field");
+  }
+  if (!settings.lookupValue("posZ", posZ)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"posZ\" field");
+  }
+  pos_ = {posX, posY, posZ};
+  setPosition(pos_);
+}
+
 CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::string path;
 
@@ -87,6 +115,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
   while (getline(file, line)) {
     parseLine(line);
   }
+  getPos(settings);
 }
 
 HitRecord CustomShape::hits(const Ray &ray) const {
