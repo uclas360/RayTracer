@@ -8,6 +8,10 @@
 #ifndef RAYTRACER_CORE_HPP
 #define RAYTRACER_CORE_HPP
 
+#define CAM_SPEED 0.03
+#define LIGHT_REFLEXION 0.6
+
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -58,7 +62,7 @@ class RaytracerCore {
     std::vector<std::thread> threads_;
     void startThreads(size_t nbThreads, size_t width, size_t height);
 
-    std::vector<uint8_t> image_;
+    std::vector<std::uint8_t> image_;
     size_t width_;
     size_t height_;
     size_t xResolution_;
