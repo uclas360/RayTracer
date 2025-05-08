@@ -21,13 +21,6 @@
 
 namespace RayTracer {
 
-typedef struct face_s {
-  std::unique_ptr<IShape> shape;
-  std::vector<Math::Vector3D> _vertices;
-  std::vector<Math::Vector3D> _textureVertices;
-  std::vector<Math::Vector3D> _normals;
-} face_t;
-
 class CustomShape : public IShape {
  public:
   CustomShape(const libconfig::Setting &settings);
