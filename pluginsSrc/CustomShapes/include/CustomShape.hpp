@@ -20,6 +20,14 @@
 #include "libLoaders/LDLoader.hpp"
 
 namespace RayTracer {
+
+typedef struct face_s {
+  std::unique_ptr<IShape> shape;
+  std::vector<Math::Vector3D> _vertices;
+  std::vector<Math::Vector3D> _textureVertices;
+  std::vector<Math::Vector3D> _normals;
+} face_t;
+
 class CustomShape : public IShape {
  public:
   CustomShape(const libconfig::Setting &settings);
@@ -27,7 +35,7 @@ class CustomShape : public IShape {
   HitRecord hits(const Ray &) const override;
   void move(const Math::Vector3D &) override {};
   void rotate(const Math::Vector3D &angles) override;
-  void scale(size_t) override {};
+  void scale(size_t) override;
   void setPosition(const Math::Vector3D &) override;
 
  private:
@@ -38,6 +46,7 @@ class CustomShape : public IShape {
   void parseFace(std::vector<std::string> args);
   void getPos(const libconfig::Setting &settings);
   void getRotation(const libconfig::Setting &settings);
+  void getScale(const libconfig::Setting &settings);
   std::vector<Math::Vector3D> _vertices;
   std::vector<Math::Vector3D> _textureVertices;
   std::vector<Math::Vector3D> _normals;

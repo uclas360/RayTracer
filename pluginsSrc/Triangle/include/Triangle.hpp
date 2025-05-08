@@ -30,7 +30,7 @@ class Triangle : public IShape {
   HitRecord hits(const Ray &) const override;
   void move(const Math::Vector3D &pos);
   void rotate(const Math::Vector3D &);
-  void scale(size_t) {};
+  void scale(size_t scale);
   void setPosition(const Math::Vector3D &pos);
 
  protected:

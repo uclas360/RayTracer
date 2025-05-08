@@ -37,6 +37,7 @@ void CustomShape::parseFace(std::vector<std::string> args) {
   std::string tmp;
   std::stringstream stream;
   std::vector<Math::Vector3D> points;
+  std::vector<Math::Vector3D> normals;
 
   for (std::string vertex : args) {
     stream = std::stringstream(vertex);
@@ -45,6 +46,8 @@ void CustomShape::parseFace(std::vector<std::string> args) {
       vectors.push_back(tmp);
     }
     points.push_back((_vertices[std::stoi(vectors[0]) - 1]));
+    if (vectors.size() == 3)
+      normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
   }
   _faces.push_back(
       _triangleLoader
@@ -77,20 +80,26 @@ static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
 }
 
 void CustomShape::rotate(const Math::Vector3D &angles) {
+  Math::Vector3D toOrigin = -pos_;
+
+  for (size_t i = 0; i < _faces.size(); ++i) {
+    _faces[i]->move(toOrigin);
+  }
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->rotate(angles);
   }
+  for (size_t i = 0; i < _faces.size(); ++i) {
+    _faces[i]->move((toOrigin * -1));
+  }
 }
 
-void CustomShape::setPosition(const Math::Vector3D &pos)
-{
+void CustomShape::setPosition(const Math::Vector3D &pos) {
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->move(pos);
   }
 }
 
-void CustomShape::getPos(const libconfig::Setting &settings)
-{
+void CustomShape::getPos(const libconfig::Setting &settings) {
   double posX, posY, posZ = 0;
 
   if (!settings.lookupValue("posX", posX)) {
@@ -109,8 +118,7 @@ void CustomShape::getPos(const libconfig::Setting &settings)
   setPosition(pos_);
 }
 
-void CustomShape::getRotation(const libconfig::Setting &settings)
-{
+void CustomShape::getRotation(const libconfig::Setting &settings) {
   double rotationX, rotationY, rotationZ = 0;
 
   if (!settings.lookupValue("rotationX", rotationX)) {
@@ -129,6 +137,20 @@ void CustomShape::getRotation(const libconfig::Setting &settings)
   rotate(rotation_);
 }
 
+void CustomShape::scale(size_t) {
+}
+
+void CustomShape::getScale(const libconfig::Setting &settings) {
+  double newscale = 0;
+
+  if (!settings.lookupValue("scale", newscale)) {
+    throw std::out_of_range(
+        "error parsing custom shape, missing \"scale\" field");
+  }
+  scale_ = newscale;
+  scale(scale_);
+}
+
 CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::string path;
 
@@ -141,6 +163,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     parseLine(line);
   }
   getPos(settings);
+  getScale(settings);
   getRotation(settings);
 }
 

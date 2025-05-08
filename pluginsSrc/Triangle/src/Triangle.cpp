@@ -46,19 +46,21 @@ Triangle::Triangle(const libconfig::Setting &settings) {
   }
 }
 
-void Triangle::setPosition(const Math::Vector3D &pos) {
-  a = pos;
-  b = pos;
-  c = pos;
+void Triangle::scale(size_t scale) {
+  Math::Vector3D center = (a + b + c) / 3.0;
+
+  a = center + (a - center) * (double)scale / 100.;
+  b = center + (b - center) * (double)scale / 100.;
+  c = center + (c - center) * (double)scale / 100.;
 }
+
+void Triangle::setPosition(const Math::Vector3D &pos) {}
 
 void Triangle::move(const Math::Vector3D &pos) {
   a += pos;
   b += pos;
   c += pos;
 }
-
-
 
 void Triangle::rotate(const Math::Vector3D &angles) {
   if (angles.y) {
