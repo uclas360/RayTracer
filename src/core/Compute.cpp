@@ -5,6 +5,7 @@
 ** core compute
 */
 
+#include <cstdint>
 #include <vector>
 
 #include "Raytracer/math/Vector.hpp"
@@ -38,24 +39,25 @@ Math::Vector3D ray_color(const RayTracer::Ray &r, int depth,
          Math::Vector3D(0.3, 0.5, 1.0) * a;
 }
 
-void RaytracerCore::computePixel(size_t pixel) {
-    size_t y = pixel / this->xResolution_;
-    size_t x = pixel % this->xResolution_;
-    double u = (double)x / this->xResolution_;
-    double v = (double)y / this->yResolution_;
+void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel, size_t xResolution, size_t yResolution) {
+    size_t y = pixel / xResolution;
+    size_t x = pixel % xResolution;
+    double u = (double)x / xResolution;
+    double v = (double)y / yResolution;
     RayTracer::Ray r = this->camera_.ray(u, v);
     RayTracer::HitRecord hitRecord;
     Math::Vector3D vec;
     Math::Vector3D lightPos = {0, -2, -1};
 
+
     hitRecord = this->mainScene_.hits(r);
     if (!hitRecord.missed) {
     }
     vec = ray_color(r, 2, this->mainScene_);
-    this->image_[pixel * 4] = static_cast<unsigned char>(vec.x * 255);
-    this->image_[pixel * 4 + 1] = static_cast<unsigned char>(vec.y * 255);
-    this->image_[pixel * 4 + 2] = static_cast<unsigned char>(vec.z * 255);
-    this->image_[pixel * 4 + 3] = 255;
+    image[pixel * 4] = static_cast<unsigned char>(vec.x * 255);
+    image[pixel * 4 + 1] = static_cast<unsigned char>(vec.y * 255);
+    image[pixel * 4 + 2] = static_cast<unsigned char>(vec.z * 255);
+    image[pixel * 4 + 3] = 255;
 
     // Math::Vector3D toLight = lightPos - hitRecord.p;
 
@@ -79,14 +81,6 @@ void RaytracerCore::computePixel(size_t pixel) {
       //     setPixelColor(array, y * width + x, {0, 0, 0});
       // }
     }
-}
-
-void RaytracerCore::computeImage(size_t start, size_t end) {
-    do {
-        for (size_t i = start; i < end; i++) {
-            this->computePixel(i);
-        }
-    } while (this->graphic_);
 }
 
 void RaytracerCore::compute(void) {

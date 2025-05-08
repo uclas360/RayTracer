@@ -5,66 +5,75 @@
 ** core compute
 */
 
+#include <sys/types.h>
+
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <vector>
 
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 
+void RaytracerCore::handleKeys() {
+    Math::Vector3D camRotation;
+    bool moving = false;
+
+    for (const auto &it : this->keyboardEvent) {
+        if (sf::Keyboard::isKeyPressed(it.first)) {
+            it.second(*this, camRotation);
+            moving = true;
+        }
+    }
+    this->moving_ = moving;
+    this->camera_.rotate(camRotation);
+}
+
 void RaytracerCore::computeGraphic() {
-  sf::Clock clock;
-  sf::RenderWindow window(sf::VideoMode(this->width_, this->height_),
-                          "Raytracer");
+    sf::Clock clock;
+    sf::RenderWindow window(sf::VideoMode(this->width_, this->height_),
+                            "Raytracer");
 
-  sf::Texture texture;
-  texture.create(this->xResolution_, this->yResolution_);
-  sf::Sprite sprite(texture);
-  sprite.setScale((double)this->width_ / this->xResolution_, (double)this->height_ / this->yResolution_);
+    sf::Texture texture;
+    texture.create(this->xResolution_, this->yResolution_);
+    sf::Sprite sprite(texture);
+    sprite.setScale((double)this->width_ / this->xResolution_,
+                    (double)this->height_ / this->yResolution_);
 
-  while (window.isOpen()) {
-    if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
-    clock.restart();
+    sf::Texture compressedTexture;
+    compressedTexture.create(this->compressedXResolution_,
+                             this->compressedYResolution_);
+    sf::Sprite compressedSprite(compressedTexture);
+    compressedSprite.setScale((double)this->width_ / this->compressedXResolution_,
+                    (double)this->height_ / this->compressedYResolution_);
 
-    texture.update(this->image_.data());
+    while (window.isOpen()) {
+        if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
+        clock.restart();
 
-    sf::Event event;
-    while (window.pollEvent(event))
-      if (event.type == sf::Event::Closed) window.close();
+        sf::Event event;
+        while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed) window.close();
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-      this->camera_.move({-CAM_SPEED, 0, 0});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-      this->camera_.move({CAM_SPEED, 0, 0});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-      this->camera_.move({0, -CAM_SPEED, 0});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-      this->camera_.move({0, CAM_SPEED, 0});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-      this->camera_.move({0, 0, -CAM_SPEED});
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-      this->camera_.move({0, 0, CAM_SPEED});
-    Math::Vector3D camera_Rotation(0, 0, 0);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      camera_Rotation.y += 0.1;
+        this->handleKeys();
+
+        window.clear();
+        if (!this->moving_) {
+            texture.update(this->imageMean_.data());
+            window.draw(sprite);
+        } else {
+            compressedTexture.update(this->compressedImage_.data());
+            window.draw(compressedSprite);
+        }
+
+        window.display();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-      camera_Rotation.y -= 0.1;
+    this->graphic_ = false;
+    this->nbImage_ = 200;
+    for (auto &it : this->threads_) {
+        it.join();
     }
-    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-    //   camera_Rotation.x += 0.1;
-    // }
-    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-    //   camera_Rotation.x -= 0.1;
-    // }
-    this->camera_.rotate(camera_Rotation);
-
-    window.clear();
-    window.draw(sprite);
-    window.display();
-  }
-  this->graphic_ = false;
-  for (auto &it : this->threads_) {
-      it.join();
-  }
 }

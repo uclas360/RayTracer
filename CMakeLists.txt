@@ -10,7 +10,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugin)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(INCLUDES_DIRECTORY ${CMAKE_SOURCE_DIR}/include)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC -O3")
 
 add_subdirectory(lib/RayMath)
 
@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
     src/Raytracer/Scene.cpp
     src/core/Constructor.cpp
     src/core/Compute.cpp
+    src/core/Threads.cpp
     src/core/ComputeGraphic.cpp
     src/core/ComputePPM.cpp
 )

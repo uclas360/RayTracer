@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "Raytracer/Ray.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 
 RayTracer::Camera::Camera(libconfig::Setting &settings)
@@ -86,4 +87,8 @@ void RayTracer::Camera::setPosition(const Math::Vector3D &newPos) {
   Math::Vector3D offset = newPos - this->pos_;
   this->pos_ += offset;
   this->screen_.pos += offset;
+}
+
+Math::Vector3D RayTracer::Camera::getPosition(void) const {
+    return this->pos_;
 }

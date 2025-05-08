@@ -5,6 +5,7 @@
 ** core constructor
 */
 
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <libconfig.h++>
@@ -119,14 +120,13 @@ void RaytracerCore::initPlugins(const std::string &file,
     }
 }
 
-void RaytracerCore::startThreads(size_t nbThreads, size_t width,
-                                 size_t height) {
+void RaytracerCore::startThreads(size_t nbThreads) {
     size_t start = 0;
-    size_t nbPixelPerThread = (width * height) / nbThreads;
+    size_t nbPixelPerThread = (this->compressedXResolution_ * this->compressedYResolution_) / nbThreads;
     size_t end = nbPixelPerThread;
     for (size_t i = 0; i < nbThreads; i++) {
         if (i + 1 == nbThreads) {
-            end = width * height;
+            end = this->compressedXResolution_ * this->compressedYResolution_;
         }
         this->threads_.push_back(
             std::thread(&RaytracerCore::computeImage, this, start, end)
@@ -138,11 +138,14 @@ void RaytracerCore::startThreads(size_t nbThreads, size_t width,
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
     : graphic_(args.graphicMode),
-      image_(args.xResolution * args.yResolution * 4, 0),
+      imageMean_(args.xResolution * args.yResolution * 4, 0),
       width_(args.width),
       height_(args.height),
       xResolution_(args.xResolution),
-      yResolution_(args.yResolution) {
+      yResolution_(args.yResolution),
+      compressedXResolution_(std::max((int)(args.xResolution / 10), 20)),
+      compressedYResolution_(std::max((int)args.yResolution / 10, 20)),
+      compressedImage_(this->compressedXResolution_ * this->compressedYResolution_ * 4, 0){
     std::optional<RayTracer::Camera> camera = std::nullopt;
     libconfig::Config config;
 
@@ -161,5 +164,5 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
                       << std::endl;
         }
     }
-    this->startThreads(args.nb_thread, args.xResolution, args.yResolution);
+    this->startThreads(args.nb_thread);
 }

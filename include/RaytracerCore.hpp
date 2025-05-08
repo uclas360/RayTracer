@@ -8,6 +8,9 @@
 #ifndef RAYTRACER_CORE_HPP
 #define RAYTRACER_CORE_HPP
 
+#include <SFML/Window/Keyboard.hpp>
+#include <mutex>
+#include "Raytracer/math/Vector.hpp"
 #define CAM_SPEED 0.03
 #define LIGHT_REFLEXION 0.6
 
@@ -43,7 +46,7 @@ class RaytracerCore {
     void computeOutput(void);
 
     void computeImage(size_t start, size_t end);
-    void computePixel(size_t pixel);
+    void computePixel(std::vector<std::uint8_t> &image, size_t pixel, size_t xResolution, size_t yResolution);
 
     RayTracer::Camera camera_;
 
@@ -60,13 +63,35 @@ class RaytracerCore {
     bool graphic_;
 
     std::vector<std::thread> threads_;
-    void startThreads(size_t nbThreads, size_t width, size_t height);
+    void startThreads(size_t nbThreads);
+    void computeMoving(size_t start, size_t end);
+    void computePrecision(void);
 
-    std::vector<std::uint8_t> image_;
+    std::mutex imageMutex_;
+    size_t nbImage_ = 0;
+    std::vector<std::uint8_t> imageMean_;
     size_t width_;
     size_t height_;
     size_t xResolution_;
     size_t yResolution_;
+
+    size_t compressedXResolution_;
+    size_t compressedYResolution_;
+    std::vector<std::uint8_t> compressedImage_;
+
+    bool moving_ = false;
+
+    void handleKeys(void);
+    const std::map<sf::Keyboard::Key, std::function<void(RaytracerCore &, Math::Vector3D &)>> keyboardEvent = {
+        {sf::Keyboard::Q, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({-CAM_SPEED, 0, 0});}},
+        {sf::Keyboard::D, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({CAM_SPEED, 0, 0});}},
+        {sf::Keyboard::Z, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, -CAM_SPEED, 0});}},
+        {sf::Keyboard::S, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, CAM_SPEED, 0});}},
+        {sf::Keyboard::E, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, 0, -CAM_SPEED});}},
+        {sf::Keyboard::A, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, 0, CAM_SPEED});}},
+        {sf::Keyboard::Left, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y += 0.1;}},
+        {sf::Keyboard::Right, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y -= 0.1;}},
+    };
 };
 
 #endif
