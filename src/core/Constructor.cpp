@@ -168,5 +168,5 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
     if (camera.has_value()) {
         this->camera_ = std::move(camera.value());
     }
-    this->startThreads(args.nb_thread, args.xResolution, args.yResolution);
+    this->startThreads(args.nb_thread);
 }
