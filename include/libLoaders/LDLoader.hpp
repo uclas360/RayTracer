@@ -18,9 +18,6 @@
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/IPlugin.hpp"
 
-template <typename Module>
-concept lib = std::is_base_of<IPlugin, Module>::value;
-
 template <lib Module>
 class DlLoader : public LibLoader<Module> {
  public:

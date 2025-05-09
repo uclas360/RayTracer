@@ -51,6 +51,7 @@ class Vector3D {
     Vector3D &operator-=(const double &other);
     Vector3D &operator*=(const double &other);
     Vector3D &operator/=(const double &other);
+    bool operator==(const Vector3D other);
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());

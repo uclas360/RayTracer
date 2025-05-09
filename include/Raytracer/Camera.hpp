@@ -23,7 +23,6 @@ class Camera : public IObject {
       : screen_(Math::Vector3D(-0.5, -0.5, -1), Math::Vector3D(1, 0, 0),
                 Math::Vector3D(0, 1, 0)) {};
   Camera(libconfig::Setting &);
-  //Camera(Camera &&);
 
   void move(const Math::Vector3D &offset) override;
   void rotate(const Math::Vector3D &angles) override;

@@ -159,6 +159,10 @@ Vector3D &Vector3D::operator/=(const double &other) {
     return *this;
 }
 
+bool Vector3D::operator==(const Vector3D other) {
+    return this->x == other.x && this->y == other.y && this->z == other.z;
+}
+
 std::ostream &operator<<(std::ostream &out, const Math::Vector3D &vec) {
     out << "Vector3D(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
     return out;
