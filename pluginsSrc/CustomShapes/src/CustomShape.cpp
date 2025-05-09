@@ -12,27 +12,44 @@
 #include <sstream>
 #include <string>
 
+#include "RaytracerCore.hpp"
+
 namespace RayTracer {
 
-void CustomShape::parseVertex(std::vector<std::string> args) {
-  if (args.size() != 3) throw std::out_of_range("v: NOT ENOUGH COORDS");
-  _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
-                                     std::stof(args[2])));
+void CustomShape::parseVertex(const std::vector<std::string> &args) {
+  if (args.size() != 3) throw ParsingException("v: NOT ENOUGH COORDS");
+  try {
+    _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
+                                       std::stof(args[2])));
+  } catch (const std::invalid_argument &e) {
+    throw ParsingException(
+        "Error parsing custom shape vertex, wrong double");
+  }
 }
 
-void CustomShape::parseTexture(std::vector<std::string> args) {
-  if (args.size() != 2) throw std::out_of_range("vt: NOT ENOUGH COORDS");
-  _textureVertices.push_back(
-      Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
+void CustomShape::parseTexture(const std::vector<std::string> &args) {
+  if (args.size() != 2) throw ParsingException("vt: NOT ENOUGH COORDS");
+  try {
+    _textureVertices.push_back(
+        Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
+  } catch (const std::invalid_argument &e) {
+    throw ParsingException(
+        "Error parsing custom shape texture vertex, wrong double");
+  }
 }
 
-void CustomShape::parseNormals(std::vector<std::string> args) {
-  if (args.size() != 3) throw std::out_of_range("vn: NOT ENOUGH COORDS");
-  _normals.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
-                                    std::stof(args[2])));
+void CustomShape::parseNormals(const std::vector<std::string> &args) {
+  if (args.size() != 3) throw ParsingException("vn: NOT ENOUGH COORDS");
+  try {
+    _normals.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
+                                      std::stof(args[2])));
+  } catch (const std::invalid_argument &e) {
+    throw ParsingException(
+        "Error parsing custom shape normal vector, wrong double");
+  }
 }
 
-void CustomShape::parseFace(std::vector<std::string> args) {
+void CustomShape::parseFace(const std::vector<std::string> &args) {
   std::vector<std::string> vectors;
   std::string tmp;
   std::stringstream stream;
@@ -61,7 +78,7 @@ void CustomShape::parseFace(std::vector<std::string> args) {
   }
 }
 
-void CustomShape::parseLine(std::string &line) {
+void CustomShape::parseLine(const std::string &line) {
   std::stringstream stream(line.substr(0, line.find("#")));
   std::vector<std::string> args;
   std::string type;
@@ -103,15 +120,15 @@ void CustomShape::getPos(const libconfig::Setting &settings) {
   double posX, posY, posZ = 0;
 
   if (!settings.lookupValue("posX", posX)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"posX\" field");
   }
   if (!settings.lookupValue("posY", posY)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"posY\" field");
   }
   if (!settings.lookupValue("posZ", posZ)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"posZ\" field");
   }
   pos_ = {posX, posY, posZ};
@@ -122,29 +139,28 @@ void CustomShape::getRotation(const libconfig::Setting &settings) {
   double rotationX, rotationY, rotationZ = 0;
 
   if (!settings.lookupValue("rotationX", rotationX)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"rotationX\" field");
   }
   if (!settings.lookupValue("rotationY", rotationY)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"rotationY\" field");
   }
   if (!settings.lookupValue("rotationZ", rotationZ)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"rotationZ\" field");
   }
   rotation_ = {rotationX, rotationY, rotationZ};
   rotate(rotation_);
 }
 
-void CustomShape::scale(size_t) {
-}
+void CustomShape::scale(size_t) {}
 
 void CustomShape::getScale(const libconfig::Setting &settings) {
   double newscale = 0;
 
   if (!settings.lookupValue("scale", newscale)) {
-    throw std::out_of_range(
+    throw ParsingException(
         "error parsing custom shape, missing \"scale\" field");
   }
   scale_ = newscale;
@@ -155,7 +171,9 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::string path;
 
   _triangleLoader = getLoader();
-  settings.lookupValue("file", path);
+  if (!settings.lookupValue("file", path))
+    throw ParsingException(
+        "Error parsing custom shape, missing \"file\" field");
   std::ifstream file(path);
   std::string line;
 

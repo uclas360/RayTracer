@@ -32,6 +32,10 @@ void RaytracerCore::computeGraphic() {
     while (window.pollEvent(event))
       if (event.type == sf::Event::Closed) window.close();
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+      this->mainScene_.shapes_[4]->rotate({0, -CAM_SPEED, 0});
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+    this->mainScene_.shapes_[4]->rotate({0, CAM_SPEED, 0});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
       this->camera_.move({-CAM_SPEED, 0, 0});
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))

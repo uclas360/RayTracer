@@ -32,11 +32,11 @@ class CustomShape : public IShape {
   void setPosition(const Math::Vector3D &) override;
 
  private:
-  void parseLine(std::string &line);
-  void parseVertex(std::vector<std::string> args);
-  void parseTexture(std::vector<std::string> args);
-  void parseNormals(std::vector<std::string> args);
-  void parseFace(std::vector<std::string> args);
+  void parseLine(const std::string &line);
+  void parseVertex(const std::vector<std::string> &args);
+  void parseTexture(const std::vector<std::string> &args);
+  void parseNormals(const std::vector<std::string> &args);
+  void parseFace(const std::vector<std::string> &args);
   void getPos(const libconfig::Setting &settings);
   void getRotation(const libconfig::Setting &settings);
   void getScale(const libconfig::Setting &settings);
@@ -62,6 +62,5 @@ class CustomShape : public IShape {
 };
 }  // namespace RayTracer
 
-// static const std::map<std::string, std::function<
 
 #endif /* !CUSTOMSHAPE_HPP_ */

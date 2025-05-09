@@ -13,36 +13,30 @@
 
 namespace RayTracer {
 
-Triangle::Triangle(const libconfig::Setting &settings) {
-  double temp;
+bool loopUpVector(const libconfig::Setting &setting, Math::Vector3D &vector) {
+  bool res = true;
 
+  res &= setting.lookupValue("posX", vector.x);
+  res &= setting.lookupValue("posY", vector.y);
+  res &= setting.lookupValue("posZ", vector.z);
+  return res;
+}
+
+Triangle::Triangle(const libconfig::Setting &settings) {
   try {
     libconfig::Setting &a = settings.lookup("a");
     libconfig::Setting &b = settings.lookup("b");
     libconfig::Setting &c = settings.lookup("c");
-    a.lookupValue("posX", temp);
-    this->a.x = temp;
-    a.lookupValue("posY", temp);
-    this->a.y = temp;
-    a.lookupValue("posZ", temp);
-    this->a.z = temp;
-
-    b.lookupValue("posX", temp);
-    this->b.x = temp;
-    b.lookupValue("posY", temp);
-    this->b.y = temp;
-    b.lookupValue("posZ", temp);
-    this->b.z = temp;
-
-    c.lookupValue("posX", temp);
-    this->c.x = temp;
-    c.lookupValue("posY", temp);
-    this->c.y = temp;
-    c.lookupValue("posZ", temp);
-    this->c.z = temp;
-  } catch (libconfig::SettingNotFoundException const &) {
-    std::cout << "error" << std::endl;
-    return;
+    if (!loopUpVector(a, this->a))
+      throw ParsingException("error parsing sphere object, wrong \"a\" field");
+    if (!loopUpVector(b, this->b))
+      throw ParsingException("error parsing sphere object, wrong \"b\" field");
+    if (!loopUpVector(c, this->c))
+      throw ParsingException("error parsing sphere object, wrong \"c\" field");
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
+  } catch (const ParsingException &e) {
+    throw ParsingException(e.what());
   }
 }
 
@@ -63,11 +57,19 @@ void Triangle::move(const Math::Vector3D &pos) {
 }
 
 void Triangle::rotate(const Math::Vector3D &angles) {
+  // Math::Vector3D center = (a + b + c) / 3;
+  // Math::Vector3D toOrigin = -center;
+  // a += toOrigin;
+  // b += toOrigin;
+  // c += toOrigin;
   if (angles.y) {
     a.rotateY(angles.y);
     b.rotateY(angles.y);
     c.rotateY(angles.y);
   }
+  // a -= toOrigin;
+  // b -= toOrigin;
+  // c -= toOrigin;
 }
 
 HitRecord Triangle::hits(const Ray &ray) const {
