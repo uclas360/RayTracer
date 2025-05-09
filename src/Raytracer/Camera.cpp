@@ -86,7 +86,3 @@ void RayTracer::Camera::setPosition(const Math::Vector3D &newPos) {
   this->pos_ += offset;
   this->screen_.pos += offset;
 }
-
-Math::Vector3D RayTracer::Camera::getPosition(void) const {
-    return this->pos_;
-}
