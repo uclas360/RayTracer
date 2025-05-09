@@ -71,8 +71,7 @@ void RaytracerCore::computeGraphic() {
 
         window.display();
     }
-    this->graphic_ = false;
-    this->nbImage_ = 200;
+    this->killThreads_ = true;
     for (auto &it : this->threads_) {
         it.join();
     }

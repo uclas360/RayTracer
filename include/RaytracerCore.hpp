@@ -63,7 +63,9 @@ class RaytracerCore {
     bool graphic_;
 
     std::vector<std::thread> threads_;
+    bool killThreads_ = false;
     void startThreads(size_t nbThreads);
+
     void computeMoving(size_t start, size_t end);
     void computePrecision(void);
 

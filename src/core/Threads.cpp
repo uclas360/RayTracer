@@ -42,5 +42,5 @@ void RaytracerCore::computeImage(size_t start, size_t end) {
         } else {
             computePrecision();
         }
-    } while (this->graphic_ || this->nbImage_ < 200);
+    } while (!this->killThreads_ && (this->graphic_ || this->nbImage_ < 200));
 }
