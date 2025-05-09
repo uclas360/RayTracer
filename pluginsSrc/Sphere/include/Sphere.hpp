@@ -11,13 +11,14 @@
 #include <iostream>
 #include <libconfig.h++>
 
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 
 namespace RayTracer {
 
-class Sphere : public IShape {
+class Sphere : public AShape {
     public:
     Sphere();
     Sphere(Math::Vector3D pos, double radius);

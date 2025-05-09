@@ -17,6 +17,7 @@ class HitRecord;
 
 class IShape : public IObject {
  public:
+  virtual void setMaterial(Material &) = 0;
   virtual HitRecord hits(const Ray &ray) const = 0;
 };
 

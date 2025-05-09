@@ -9,8 +9,10 @@
 #define RAYTRACER_CORE_HPP
 
 #include <SFML/Window/Keyboard.hpp>
+#include <libconfig.h++>
 #include <mutex>
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/Material.hpp"
 #define CAM_SPEED 0.03
 #define LIGHT_REFLEXION 0.6
 
@@ -52,13 +54,19 @@ class RaytracerCore {
 
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>> shapesPlugins_;
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
+    std::map<std::string, RayTracer::Material> materials_;
 
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
+    void initMaterials(const std::string &file, const libconfig::Config &config);
 
     void initCamera(const std::string &file, const libconfig::Config &config,
                     std::optional<RayTracer::Camera> &camera);
+
+    void initShape(const std::string &name, const std::string &file, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+    void initLight(const std::string &name, const std::string &file, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+
 
     bool graphic_;
 

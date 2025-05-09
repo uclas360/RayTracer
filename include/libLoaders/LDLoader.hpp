@@ -54,6 +54,7 @@ class DlLoader : public LibLoader<Module> {
     std::unique_ptr<Module> tmp(instance);
     return std::move(tmp);
   }
+
   template <class... A>
   std::unique_ptr<Module> getInstance(const std::string entryPoint, A... args) {
     IPlugin *(*function)(A...) =

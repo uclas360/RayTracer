@@ -7,6 +7,7 @@ add_library(${LIB_NAME} STATIC
     src/Color.cpp
     src/Ray.cpp
     src/HitRecord.cpp
+    src/AShape.cpp
 )
 
 target_include_directories(${LIB_NAME}

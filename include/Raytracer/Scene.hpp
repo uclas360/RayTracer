@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "plugins/AShape.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
 
@@ -18,7 +19,7 @@
 
 namespace RayTracer {
 
-class Scene : public IShape {
+class Scene : public AShape {
  public:
   HitRecord hits(const Ray &ray) const override;
   void move(const Math::Vector3D &offset) override;

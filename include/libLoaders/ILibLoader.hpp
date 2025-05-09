@@ -39,7 +39,7 @@ class LibLoader {
    public:
     virtual ~LibLoader() = default;
     virtual std::unique_ptr<Module> getInstance(const std::string entryPoint,
-                                                const libconfig::Setting &) = 0;
+                   const libconfig::Setting &) = 0;
 };
 
 #endif

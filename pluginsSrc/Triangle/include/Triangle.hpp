@@ -12,11 +12,12 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
-class Triangle : public IShape {
+class Triangle : public AShape {
  public:
   Math::Vector3D a;
   Math::Vector3D b;

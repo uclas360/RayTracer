@@ -16,12 +16,13 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 #include "libLoaders/LDLoader.hpp"
 
 namespace RayTracer {
 
-class CustomShape : public IShape {
+class CustomShape : public AShape {
  public:
   CustomShape(const libconfig::Setting &settings);
   ~CustomShape();
