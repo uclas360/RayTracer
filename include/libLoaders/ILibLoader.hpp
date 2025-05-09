@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "CustomException.hpp"
+#include "plugins/IPlugin.hpp"
 
 class NotExistingLib : public CustomException {
    public:
@@ -31,6 +32,9 @@ class LoaderException : public CustomException {
 };
 
 template <typename Module>
+concept lib = std::is_base_of<IPlugin, Module>::value;
+
+template <lib Module>
 class LibLoader {
    public:
     virtual ~LibLoader() = default;

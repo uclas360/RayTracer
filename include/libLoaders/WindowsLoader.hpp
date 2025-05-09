@@ -5,11 +5,11 @@
 ** lib loaders
 */
 
-#ifndef DL_LOADER_HPP
-#define DL_LOADER_HPP
+#ifndef WINDOWS_LOADER_HPP
+#define WINDOWS_LOADER_HPP
 
-#include <dlfcn.h>
 #include <unistd.h>
+#include <windows.h>
 
 #include <libconfig.h++>
 #include <memory>
@@ -19,22 +19,20 @@
 #include "plugins/IPlugin.hpp"
 
 template <lib Module>
-class DlLoader : public LibLoader<Module> {
+class WindowsLoader : public LibLoader<Module> {
    public:
-    DlLoader(std::string fileName)
-        : lib_(dlopen((fileName + ".so").c_str(), RTLD_LAZY)) {
-        if (this->lib_ == nullptr) {
-            throw NotExistingLib(dlerror());
+    WindowsLoader(std::string fileName) : lib_(LoadLibrary(fileName)) {
+        if (!this->lib_) {
+            throw NotExistingLib("error loading library" + fileName);
         }
     }
 
-    DlLoader(DlLoader<Module> &&other) : lib_(other.lib_) {
+    WindowsLoader(WindowsLoader<Module> &&other) : lib_(other.lib_) {
         other.lib_ = nullptr;
     }
 
-    DlLoader(DlLoader<Module> &other) = delete;
-    ~DlLoader() override {
-        if (this->lib_) (void)dlclose(this->lib_);
+    WindowsLoader(WindowsLoader<Module> &other) = delete;
+    ~WindowsLoader() override {
     }
 
     std::unique_ptr<Module> getInstance(
@@ -42,7 +40,7 @@ class DlLoader : public LibLoader<Module> {
         const libconfig::Setting &settings) override {
         IPlugin *(*function)(const libconfig::Setting &) =
             (IPlugin * (*)(const libconfig::Setting &))(
-                dlsym(this->lib_, entryPoint.c_str()));
+                GetProcAddress(this->lib_, entryPoint));
 
         if (!function) {
             throw LoaderException("not a raytracerPlugin lib");
@@ -56,7 +54,7 @@ class DlLoader : public LibLoader<Module> {
     }
 
    private:
-    void *lib_ = nullptr;
+    HINSTANCE lib_ = nullptr;
 };
 
 #endif
