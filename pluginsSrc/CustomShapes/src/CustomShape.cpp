@@ -181,7 +181,6 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     parseLine(line);
   }
   getPos(settings);
-  getScale(settings);
   getRotation(settings);
 }
 
