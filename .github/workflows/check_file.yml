@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
       - name: check .o files push
         run: |
-          files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '\.o$' || true)
+          files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.sha }} | grep '\.o$' || true)
           if [ -n "$files" ]; then
             echo "You push .o file"
             echo "$files"
@@ -43,7 +43,7 @@ jobs:
 
       - name: Check if executables were pushed
         run: |
-          files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+          files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.sha }})
           failed=0
           for exe in $EXECUTABLES; do
             if echo "$files" | grep "$exe"; then
@@ -58,7 +58,6 @@ jobs:
           fi
 
   check_program_compilation:
-    needs: detect_executables
     runs-on: ubuntu-latest
     timeout-minutes: 10
     name: Compilation Check
@@ -68,17 +67,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build with make
+      - name: create folder build
         run: mkdir build
 
-      - name: go in folder
-        run: cd build
-
-      - name: create cmake
-        run: cmake -S ../ -B .
-
-      - name: go to root
-        run: cd ..
+      - name: compile
+        run: cmake -S . -B build/
 
       - name: cmake executable
         run: cmake --build build/
