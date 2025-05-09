@@ -19,3 +19,5 @@ build
 test*
 vgcore*
 output.ppm
+*.obj
+*.conf

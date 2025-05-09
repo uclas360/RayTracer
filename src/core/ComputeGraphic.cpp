@@ -59,7 +59,6 @@ void RaytracerCore::computeGraphic() {
             if (event.type == sf::Event::Closed) window.close();
 
         this->handleKeys();
-
         window.clear();
         if (!this->moving_) {
             texture.update(this->imageMean_.data());

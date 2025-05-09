@@ -16,23 +16,23 @@ namespace RayTracer {
 class HitRecord;
 
 class IShape : public IObject {
-   public:
-    virtual HitRecord hits(const Ray &ray) const = 0;
+ public:
+  virtual HitRecord hits(const Ray &ray) const = 0;
 };
 
 class HitRecord {
-   public:
-    Math::Vector3D p;
-    Math::Vector3D normal;
-    double t = 0;
-    bool frontFace = false;
-    bool missed = true;
+ public:
+  Math::Vector3D p;
+  Math::Vector3D normal;
+  double t = 0;
+  bool frontFace = false;
+  bool missed = true;
 
-    HitRecord() = default;
-    HitRecord(const double t, const Ray &ray, const IShape &shape,
-              const Math::Vector3D &normal);
+  HitRecord() = default;
+  HitRecord(const double t, const Ray &ray, const IShape &shape,
+            const Math::Vector3D &normal);
 };
 
-};
+};  // namespace RayTracer
 
 #endif
