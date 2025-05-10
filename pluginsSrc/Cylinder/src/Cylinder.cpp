@@ -23,7 +23,7 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
       !settings.lookupValue("posZ", this->pos_.z) ||
       !settings.lookupValue("radius", this->radius_) ||
       !settings.lookupValue("height", this->height_)) {
-    throw std::runtime_error("Invalid configuration for Cylinder");
+    throw ParsingException("Invalid configuration for Cylinder");
   }
 }
 
