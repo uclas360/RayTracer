@@ -62,7 +62,7 @@ jobs:
     timeout-minutes: 10
     name: Compilation Check
     container:
-      image: epitechcontent/epitest-docker:latest
+      image: boboris/raytracer_outils
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
