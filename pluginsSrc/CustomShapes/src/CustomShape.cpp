@@ -181,17 +181,17 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     parseLine(line);
   }
   getPos(settings);
-  getScale(settings);
   getRotation(settings);
 }
 
 HitRecord CustomShape::hits(const Ray &ray) const {
-  HitRecord record, temp;
-  std::vector<IShape> faces;
+  HitRecord record;
+  double closest_t = INFINITY;
 
-  for (size_t i = 0; i < _faces.size(); ++i) {
-    temp = _faces[i]->hits(ray);
-    if ((temp.t != 0 && temp.t <= record.t) || record.t == 0) {
+  for (const auto& face : _faces) {
+    HitRecord temp = face->hits(ray);
+    if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
+      closest_t = temp.t;
       record = temp;
     }
   }
