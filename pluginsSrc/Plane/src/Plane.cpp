@@ -21,29 +21,21 @@ Plane::Plane() : radius(0) {};
 Plane::Plane(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {};
 
 Plane::Plane(const libconfig::Setting &settings) {
-  if (!settings.lookupValue("posX", this->pos.x)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"posX\" field");
-  }
-  if (!settings.lookupValue("posY", this->pos.y)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"posY\" field");
-  }
-  if (!settings.lookupValue("posZ", this->pos.z)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"posZ\" field");
-  }
-  if (!settings.lookupValue("orientationX", this->orientation.x)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"orientationX\" field");
-  }
-  if (!settings.lookupValue("orientationY", this->orientation.y)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"orientationY\" field");
-  }
-  if (!settings.lookupValue("orientationZ", this->orientation.z)) {
-    throw ParsingException(
-        "error parsing plane object, missing \"orientationZ\" field");
+  try {
+    libconfig::Setting &pos = settings.lookup("pos");
+    libconfig::Setting &normal = settings.lookup("orientation");
+    if (!Math::lookUpVector(pos, this->pos)) {
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"pos\" field");
+    }
+    if (!Math::lookUpVector(normal, this->orientation)) {
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"orientation\" field");
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
 }
 
