@@ -29,6 +29,11 @@ void RaytracerCore::handleKeys() {
         }
     }
     this->moving_ = moving;
+    if (this->moving_) {
+        this->imageMutex_.lock();
+        this->nbImage_ = 0;
+        this->imageMutex_.unlock();
+    }
     this->camera_.rotate(camRotation);
 }
 
