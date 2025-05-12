@@ -48,7 +48,7 @@ void Triangle::scale(size_t scale) {
   c = center + (c - center) * (double)scale / 100.;
 }
 
-void Triangle::setPosition(const Math::Vector3D &pos) {}
+void Triangle::setPosition(const Math::Vector3D &) {}
 
 void Triangle::move(const Math::Vector3D &pos) {
   a += pos;

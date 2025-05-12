@@ -60,7 +60,7 @@ void RaytracerCore::computeGraphic() {
 
         this->handleKeys();
         window.clear();
-        if (!this->moving_) {
+        if (!this->moving_ && this->nbImage_ != 0) {
             texture.update(this->imageMean_.data());
             window.draw(sprite);
         } else {
