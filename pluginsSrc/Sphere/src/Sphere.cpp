@@ -21,29 +21,20 @@ Sphere::Sphere() : radius(0) {};
 Sphere::Sphere(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {};
 
 Sphere::Sphere(const libconfig::Setting &settings) {
-  double posX;
-  double posY;
-  double posZ;
-  double radius;
-
-  if (!settings.lookupValue("posX", posX)) {
-    throw ParsingException(
-        "error parsing sphere object, missing \"posX\" field");
+  try {
+    libconfig::Setting &pos = settings.lookup("pos");
+    if (!Math::lookUpVector(pos, this->pos)) {
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"pos\" field");
+    }
+    if (!settings.lookupValue("radius", this->radius)) {
+      throw ParsingException("error parsing triangle object, wrong \"radius\" field");
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
-  if (!settings.lookupValue("posY", posY)) {
-    throw ParsingException(
-        "error parsing sphere object, missing \"posY\" field");
-  }
-  if (!settings.lookupValue("posZ", posZ)) {
-    throw ParsingException(
-        "error parsing sphere object, missing \"posZ\" field");
-  }
-  if (!settings.lookupValue("radius", radius)) {
-    throw ParsingException(
-        "error parsing sphere object, missing \"radius\" field");
-  }
-  this->radius = radius;
-  this->pos = {posX, posY, posZ};
 }
 
 // bool solveQuadratic(const double a, const double b, const double c, double
