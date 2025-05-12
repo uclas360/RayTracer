@@ -21,3 +21,6 @@ vgcore*
 output.ppm
 *.obj
 *.conf
+windows*
+data.img
+*.iso

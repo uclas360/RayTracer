@@ -17,9 +17,9 @@ namespace RayTracer {
 
 class AShape : public IShape {
     public:
-    void setMaterial(Material &) override;
+    void setMaterial(std::unique_ptr<Material> &) override;
     protected:
-    Material material_;
+    std::unique_ptr<Material> material_;
 };
 
 };  // namespace RayTracer

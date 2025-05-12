@@ -5,7 +5,6 @@
 ** core compute
 */
 
-#include <iostream>
 #include "RaytracerCore.hpp"
 
 void RaytracerCore::computeMoving(size_t start, size_t end) {

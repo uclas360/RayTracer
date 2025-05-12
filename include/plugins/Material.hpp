@@ -8,12 +8,20 @@
 #ifndef MATERIAL_HPP
 #define MATERIAL_HPP
 
-#include <string>
+#include "Raytracer/Ray.hpp"
+#include "Raytracer/math/Vector.hpp"
+#include "plugins/IPlugin.hpp"
 
 namespace RayTracer  {
 
-struct Material {
-    std::string test;
+class HitRecord;  // this fix cross include, trust the process
+
+class Material: public IPlugin {
+   public:
+    virtual ~Material() = default;
+
+    virtual bool scatter(const Ray &r_in, const HitRecord &rec,
+                         Math::Vector3D &attenuation, Ray &scattered) const = 0;
 };
 
 };

@@ -54,18 +54,18 @@ class RaytracerCore {
 
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>> shapesPlugins_;
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
-    std::map<std::string, RayTracer::Material> materials_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>> materials_;
 
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
-    void initMaterials(const std::string &file, const libconfig::Config &config);
+    void initMaterials(std::unique_ptr<RayTracer::IShape> &shape, const libconfig::SettingIterator &shapeSetting);
 
     void initCamera(const std::string &file, const libconfig::Config &config,
                     std::optional<RayTracer::Camera> &camera);
 
-    void initShape(const std::string &name, const std::string &file, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
-    void initLight(const std::string &name, const std::string &file, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+    void initShape(const std::string &name, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+    void initLight(const std::string &name, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
 
 
     bool graphic_;

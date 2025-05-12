@@ -9,8 +9,8 @@
 
 namespace RayTracer {
 
-void AShape::setMaterial(Material &newMaterial) {
-    this->material_ = newMaterial;
+void AShape::setMaterial(std::unique_ptr<Material> &newMaterial) {
+    this->material_.swap(newMaterial);
 };
 
 }
