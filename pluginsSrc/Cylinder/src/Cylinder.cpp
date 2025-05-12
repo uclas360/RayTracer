@@ -26,7 +26,7 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
     }
     if (!settings.lookupValue("radius", this->radius_) ||
         !settings.lookupValue("height", this->height_)) {
-      throw ParsingException("error parsing triangle object, wrong \"radius / height\" field");
+      throw ParsingException("error parsing cylinder object, wrong \"radius / height\" field");
     }
   } catch (const ParsingException &e) {
     throw e;

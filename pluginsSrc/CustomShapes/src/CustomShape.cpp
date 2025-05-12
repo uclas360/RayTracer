@@ -117,40 +117,32 @@ void CustomShape::setPosition(const Math::Vector3D &pos) {
 }
 
 void CustomShape::getPos(const libconfig::Setting &settings) {
-  double posX, posY, posZ = 0;
-
-  if (!settings.lookupValue("posX", posX)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"posX\" field");
+  try {
+    libconfig::Setting &pos = settings.lookup("pos");
+    if (!Math::lookUpVector(pos, this->pos_)) {
+      throw ParsingException(
+          "error parsing custom shape object, wrong \"pos\" field");
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
-  if (!settings.lookupValue("posY", posY)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"posY\" field");
-  }
-  if (!settings.lookupValue("posZ", posZ)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"posZ\" field");
-  }
-  pos_ = {posX, posY, posZ};
   setPosition(pos_);
 }
 
 void CustomShape::getRotation(const libconfig::Setting &settings) {
-  double rotationX, rotationY, rotationZ = 0;
-
-  if (!settings.lookupValue("rotationX", rotationX)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"rotationX\" field");
+  try {
+    libconfig::Setting &pos = settings.lookup("rotation");
+    if (!Math::lookUpVector(pos, this->pos_)) {
+      throw ParsingException(
+          "error parsing custom shape object, wrong \"rotation\" field");
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
-  if (!settings.lookupValue("rotationY", rotationY)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"rotationY\" field");
-  }
-  if (!settings.lookupValue("rotationZ", rotationZ)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"rotationZ\" field");
-  }
-  rotation_ = {rotationX, rotationY, rotationZ};
   rotate(rotation_);
 }
 
@@ -177,6 +169,9 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::ifstream file(path);
   std::string line;
 
+  if (!file.is_open()) {
+    throw ParsingException("error parsing custom shape, file not openned");
+  }
   while (getline(file, line)) {
     parseLine(line);
   }

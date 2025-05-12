@@ -26,11 +26,11 @@ Plane::Plane(const libconfig::Setting &settings) {
     libconfig::Setting &normal = settings.lookup("orientation");
     if (!Math::lookUpVector(pos, this->pos)) {
       throw ParsingException(
-          "error parsing cylinder object, wrong \"pos\" field");
+          "error parsing plane object, wrong \"pos\" field");
     }
     if (!Math::lookUpVector(normal, this->orientation)) {
       throw ParsingException(
-          "error parsing cylinder object, wrong \"orientation\" field");
+          "error parsing plane object, wrong \"orientation\" field");
     }
   } catch (const ParsingException &e) {
     throw e;

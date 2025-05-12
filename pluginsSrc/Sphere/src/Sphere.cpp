@@ -25,10 +25,10 @@ Sphere::Sphere(const libconfig::Setting &settings) {
     libconfig::Setting &pos = settings.lookup("pos");
     if (!Math::lookUpVector(pos, this->pos)) {
       throw ParsingException(
-          "error parsing cylinder object, wrong \"pos\" field");
+          "error parsing sphere object, wrong \"pos\" field");
     }
     if (!settings.lookupValue("radius", this->radius)) {
-      throw ParsingException("error parsing triangle object, wrong \"radius\" field");
+      throw ParsingException("error parsing sphere object, wrong \"radius\" field");
     }
   } catch (const ParsingException &e) {
     throw e;
@@ -36,41 +36,6 @@ Sphere::Sphere(const libconfig::Setting &settings) {
     throw ParsingException(e.what());
   }
 }
-
-// bool solveQuadratic(const double a, const double b, const double c, double
-// &x0,
-//                     double &x1) {
-//     double discr = b * b - 4.0 * a * c;
-//     if (discr < 0.0) return false;
-
-//     if (discr == 0.0) {
-//         x0 = x1 = -0.5 * b / a;
-//     } else {
-//         double sqrtDiscr = std::sqrt(discr);
-//         double q = (b > 0.0) ? -0.5 * (b + sqrtDiscr) : -0.5 * (b -
-//         sqrtDiscr); x0 = q / a; x1 = c / q; if (x0 > x1) std::swap(x0, x1);
-//     }
-//     return true;
-// }
-
-// HitRecord Sphere::hit(const Ray &ray) const {
-//     Math::Vector3D L = ray.pos - this->pos;
-//     double a = ray.dir.dot(ray.dir);
-//     double b = 2.0 * ray.dir.dot(L);
-//     double c = L.dot(L) - radius * radius;
-//     double t0;
-//     double t1;
-
-//     if (!solveQuadratic(a, b, c, t0, t1)) return HitRecord();
-
-//     if (t0 < 0.0) {
-//         t0 = t1;
-//         if (t0 < 0.0) return HitRecord();
-//     }
-
-//     return HitRecord(t0, ray, *this, (ray.at(t0) - this->pos) /
-//     this->radius);
-// }
 
 HitRecord Sphere::hits(const Ray &ray) const {
   Math::Vector3D L = ray.pos - this->pos;
