@@ -12,9 +12,6 @@ void RaytracerCore::computeMoving(size_t start, size_t end) {
     for (size_t i = start; i < end; i++) {
         this->computePixel(this->compressedImage_, i, this->compressedXResolution_, this->compressedYResolution_);
     }
-    this->imageMutex_.lock();
-    this->nbImage_ = 0;
-    this->imageMutex_.unlock();
 }
 
 void RaytracerCore::computePrecision() {
@@ -27,11 +24,11 @@ void RaytracerCore::computePrecision() {
     if (this->nbImage_ == 0) {
         this->imageMean_ = image;
     } else {
-        for (size_t i = 0; i < this->imageMean_.size(); i++) {
+        for (size_t i = 0; (i < this->imageMean_.size()) && !this->moving_; i++) {
             this->imageMean_[i] = (this->imageMean_[i] * this->nbImage_ + image[i]) / (this->nbImage_ + 1);
         }
+        this->nbImage_ += 1;
     }
-    this->nbImage_ += 1;
     this->imageMutex_.unlock();
 }
 

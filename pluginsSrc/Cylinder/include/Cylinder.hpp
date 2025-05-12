@@ -11,13 +11,13 @@
 #include <iostream>
 #include <libconfig.h++>
 
-#include "plugins/IShape.hpp"
+#include "plugins/AShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 
 namespace RayTracer {
 
-class Cylinder : public IShape {
+class Cylinder : public AShape {
     public:
     Cylinder(const libconfig::Setting &);
     HitRecord hits(const Ray &ray) const override;
