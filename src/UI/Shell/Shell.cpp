@@ -97,7 +97,18 @@ void Shell::select(const std::vector<std::string> &args) {
   RayTracer::HitRecord record;
   double closest = INFINITY;
 
-  for (int i = 0; i < scene.get().shapes_.size(); ++i) {
+  if (args.size()) {
+    try {
+      selectedId_ = std::stoi(args[0]);
+      if (selectedId_ >= (int) scene.get().shapes_.size()) {
+        selectedId_ = 0;
+      }
+      return;
+    } catch (const std::invalid_argument &) {
+      return;
+    }
+  }
+  for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
     RayTracer::HitRecord temp = scene.get().shapes_[i]->hits(ray);
     if (!temp.missed && temp.t > 0 && temp.t < closest) {
       closest = temp.t;

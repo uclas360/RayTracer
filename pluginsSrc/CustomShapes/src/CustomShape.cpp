@@ -22,8 +22,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
     _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
                                        std::stof(args[2])));
   } catch (const std::invalid_argument &e) {
-    throw ParsingException(
-        "Error parsing custom shape vertex, wrong double");
+    throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
 }
 
@@ -108,19 +107,20 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->move((toOrigin * -1));
   }
+  this->rotation_ += angles;
 }
 
 void CustomShape::setPosition(const Math::Vector3D &pos) {
   Math::Vector3D toPos = pos - this->pos_;
-  for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->move(toPos);
-  }
+  this->move(toPos);
+  this->pos_ = pos;
 }
 
 void CustomShape::move(const Math::Vector3D &offset) {
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->move(offset);
   }
+  this->pos_ += offset;
 }
 
 void CustomShape::getPos(const libconfig::Setting &settings) {
@@ -139,9 +139,10 @@ void CustomShape::getPos(const libconfig::Setting &settings) {
 }
 
 void CustomShape::getRotation(const libconfig::Setting &settings) {
+  Math::Vector3D rotation;
   try {
     libconfig::Setting &pos = settings.lookup("rotation");
-    if (!Math::lookUpVector(pos, this->pos_)) {
+    if (!Math::lookUpVector(pos, rotation)) {
       throw ParsingException(
           "error parsing custom shape object, wrong \"rotation\" field");
     }
@@ -150,7 +151,7 @@ void CustomShape::getRotation(const libconfig::Setting &settings) {
   } catch (const libconfig::SettingNotFoundException &e) {
     throw ParsingException(e.what());
   }
-  rotate(rotation_);
+  rotate(rotation);
 }
 
 void CustomShape::scale(size_t) {}
@@ -171,27 +172,42 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
 
   _triangleLoader = getLoader();
   if (!settings.lookupValue("file", path))
-  throw ParsingException(
-    "Error parsing custom shape, missing \"file\" field");
-    std::ifstream file(path);
-    std::string line;
-    
-    if (!file.is_open()) {
-      throw ParsingException("error parsing custom shape, file not openned");
-    }
-    while (getline(file, line)) {
-      parseLine(line);
-    }
-    getPos(settings);
-    getRotation(settings);
+    throw ParsingException(
+        "Error parsing custom shape, missing \"file\" field");
+  std::ifstream file(path);
+  std::string line;
+
+  if (!file.is_open()) {
+    throw ParsingException("error parsing custom shape, file not openned");
+  }
+  while (getline(file, line)) {
+    parseLine(line);
+  }
+  file.close();
+  _path = path;
+  getPos(settings);
+  getRotation(settings);
 }
 
+void CustomShape::save(libconfig::Setting &parent) const {
+  libconfig::Setting &shapeSettings = parent.add(libconfig::Setting::TypeGroup);
+  shapeSettings.add("type", libconfig::Setting::TypeString) = "shape";
+  shapeSettings.add("name", libconfig::Setting::TypeString) = "customShape";
+  libconfig::Setting &data =
+      shapeSettings.add("data", libconfig::Setting::TypeGroup);
+  data.add("file", libconfig::Setting::TypeString) = _path;
+  libconfig::Setting &pos = data.add("pos", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(pos, this->pos_);
+  libconfig::Setting &rotation =
+      data.add("rotation", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(rotation, this->rotation_);
+}
 
 HitRecord CustomShape::hits(const Ray &ray) const {
   HitRecord record;
   double closest_t = INFINITY;
 
-  for (const auto& face : _faces) {
+  for (const auto &face : _faces) {
     HitRecord temp = face->hits(ray);
     if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
       closest_t = temp.t;

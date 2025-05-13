@@ -25,7 +25,7 @@ class Scene : public IShape {
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t scale) override;
   void setPosition(const Math::Vector3D &newPos) override;
-  void save(libconfig::Setting &parent) const override {};
+  void save(libconfig::Setting &) const override {};
 
   void addShape(std::unique_ptr<IShape> shape);
   void addLight(std::unique_ptr<ILight> light);

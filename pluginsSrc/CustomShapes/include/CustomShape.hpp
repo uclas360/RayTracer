@@ -30,7 +30,7 @@ class CustomShape : public IShape {
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t) override;
   void setPosition(const Math::Vector3D &) override;
-  void save(libconfig::Setting &parent) const override {};
+  void save(libconfig::Setting &parent) const override;
 
  private:
   void parseLine(const std::string &line);
@@ -45,6 +45,8 @@ class CustomShape : public IShape {
   std::vector<Math::Vector3D> _vertices;
   std::vector<Math::Vector3D> _textureVertices;
   std::vector<Math::Vector3D> _normals;
+
+  std::string _path;
 
     double scale_ = 100;
     Math::Vector3D pos_;

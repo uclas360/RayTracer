@@ -101,13 +101,12 @@ void RayTracer::Camera::setPosition(const Math::Vector3D &newPos) {
   this->screen_.pos += offset;
 }
 
-void RayTracer::Camera::lookAt(const Math::Vector3D &target) {}
+void RayTracer::Camera::lookAt(const Math::Vector3D &) {}
 
 void RayTracer::Camera::save(libconfig::Setting &parent) const {
   libconfig::Setting &pos = parent.add("pos", libconfig::Setting::TypeGroup);
   Math::writeUpVector(pos, this->pos_);
   libconfig::Setting &rotation =
       parent.add("rotation", libconfig::Setting::TypeGroup);
-      std::cout << "rotation: " << this->rotation_ << std::endl;
   Math::writeUpVector(rotation, this->rotation_);
 }

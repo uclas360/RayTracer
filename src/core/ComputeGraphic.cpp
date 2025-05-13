@@ -13,8 +13,8 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
-#include <vector>
 #include <functional>
+#include <vector>
 
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
@@ -66,7 +66,8 @@ void RaytracerCore::computeGraphic() {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::KeyPressed) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) &&
+            sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
           shell.setState(!shell.getState());
         } else if (shell.getState()) {
           shell.update(event);
@@ -75,7 +76,8 @@ void RaytracerCore::computeGraphic() {
       if (event.type == sf::Event::Closed) window.close();
       if (event.type == sf::Event::Resized) {
         sf::Vector2u size = window.getSize();
-        sf::View view({size.x / 2, size.y / 2} , {size.x, size.y});
+        sf::View view({(float)size.x / 2, (float)size.y / 2},
+                      {(float)size.x, (float)size.y});
         window.setView(view);
       }
     }

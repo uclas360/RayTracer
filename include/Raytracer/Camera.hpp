@@ -32,8 +32,6 @@ class Camera : public IObject {
   void lookAt(const Math::Vector3D &target);
   void save(libconfig::Setting &parent) const;
 
-  std::string toString(void);
-
   Ray ray(double u, double v);
 
  private:
