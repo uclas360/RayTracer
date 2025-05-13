@@ -28,6 +28,7 @@ class Camera : public IObject {
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t scale) override;
   void setPosition(const Math::Vector3D &newPos) override;
+  void lookAt(const Math::Vector3D &target);
 
   Ray ray(double u, double v);
 

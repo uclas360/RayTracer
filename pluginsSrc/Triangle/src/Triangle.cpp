@@ -13,26 +13,17 @@
 
 namespace RayTracer {
 
-bool loopUpVector(const libconfig::Setting &setting, Math::Vector3D &vector) {
-  bool res = true;
-
-  res &= setting.lookupValue("posX", vector.x);
-  res &= setting.lookupValue("posY", vector.y);
-  res &= setting.lookupValue("posZ", vector.z);
-  return res;
-}
-
 Triangle::Triangle(const libconfig::Setting &settings) {
   try {
     libconfig::Setting &a = settings.lookup("a");
     libconfig::Setting &b = settings.lookup("b");
     libconfig::Setting &c = settings.lookup("c");
-    if (!loopUpVector(a, this->a))
-      throw ParsingException("error parsing sphere object, wrong \"a\" field");
-    if (!loopUpVector(b, this->b))
-      throw ParsingException("error parsing sphere object, wrong \"b\" field");
-    if (!loopUpVector(c, this->c))
-      throw ParsingException("error parsing sphere object, wrong \"c\" field");
+    if (!Math::lookUpVector(a, this->a))
+      throw ParsingException("error parsing triangle object, wrong \"a\" field");
+    if (!Math::lookUpVector(b, this->b))
+      throw ParsingException("error parsing triangle object, wrong \"b\" field");
+    if (!Math::lookUpVector(c, this->c))
+      throw ParsingException("error parsing triangle object, wrong \"c\" field");
   } catch (const libconfig::SettingNotFoundException &e) {
     throw ParsingException(e.what());
   } catch (const ParsingException &e) {

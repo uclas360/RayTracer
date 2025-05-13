@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <libconfig.h++>
 #include "Utils.hpp"
 
 namespace Math {
@@ -84,6 +85,8 @@ class Vector3D {
             return -on_unit_sphere;
     }
 };
+
+bool lookUpVector(const libconfig::Setting &setting, Vector3D &vector);
 
 std::ostream &operator<<(std::ostream &out, const Vector3D &vec);
 
