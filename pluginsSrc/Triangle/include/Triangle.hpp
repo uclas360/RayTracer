@@ -32,6 +32,7 @@ class Triangle : public IShape {
   void rotate(const Math::Vector3D &);
   void scale(size_t scale);
   void setPosition(const Math::Vector3D &pos);
+  void save(libconfig::Setting &parent) const override {};
 
  protected:
  private:

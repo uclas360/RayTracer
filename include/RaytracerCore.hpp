@@ -41,6 +41,11 @@ class RaytracerCore {
     RaytracerCore(const ArgManager::ArgumentStruct &);
     void compute(void);
 
+    RayTracer::Camera &getCam(void) {return camera_;};
+    RayTracer::Scene &getMainScene(void) {return mainScene_;};
+    void setMoving(bool moving) {moving_ = moving;};
+
+
    private:
     void computeGraphic(void);
     void computeOutput(void);
@@ -93,6 +98,7 @@ class RaytracerCore {
         {sf::Keyboard::A, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, 0, CAM_SPEED});}},
         {sf::Keyboard::Left, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y += 0.1;}},
         {sf::Keyboard::Right, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y -= 0.1;}},
+        {sf::Keyboard::P, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.lookAt({0, 0, -2});}},
     };
 };
 

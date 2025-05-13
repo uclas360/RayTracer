@@ -18,6 +18,7 @@ class HitRecord;
 class IShape : public IObject {
  public:
   virtual HitRecord hits(const Ray &ray) const = 0;
+  virtual void save(libconfig::Setting &parent) const = 0;
 };
 
 class HitRecord {

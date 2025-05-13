@@ -8,6 +8,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <iosfwd>
 #include <libconfig.h++>
 
 #include "Raytracer/Ray.hpp"
@@ -29,6 +30,9 @@ class Camera : public IObject {
   void scale(size_t scale) override;
   void setPosition(const Math::Vector3D &newPos) override;
   void lookAt(const Math::Vector3D &target);
+  void save(libconfig::Setting &parent) const;
+
+  std::string toString(void);
 
   Ray ray(double u, double v);
 

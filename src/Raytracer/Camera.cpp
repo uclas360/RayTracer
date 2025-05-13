@@ -7,8 +7,9 @@
 
 #include "Raytracer/Camera.hpp"
 
-#include <utility>
 #include <cmath>
+#include <libconfig.h++>
+#include <utility>
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
@@ -29,6 +30,18 @@ RayTracer::Camera::Camera(libconfig::Setting &settings)
     throw ParsingException(e.what());
   }
   screen_.pos = {this->pos_.x - 0.5, this->pos_.y - 0.5, this->pos_.z - 1};
+  try {
+    Math::Vector3D rotationVector;
+    libconfig::Setting &rotation = settings.lookup("rotation");
+    if (!Math::lookUpVector(rotation, rotationVector)) {
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"rotation\" field");
+    }
+    this->rotate(rotationVector);
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+  }
 };
 
 RayTracer::Ray RayTracer::Camera::ray(double u, double v) {
@@ -55,6 +68,7 @@ void RayTracer::Camera::rotateX(double angle) {
   toScreen.rotateX(angle);
   this->screen_.pos += toScreen;
   this->screen_.bottomSide.rotateX(angle);
+  this->rotation_.x += angle;
 }
 
 void RayTracer::Camera::rotateY(double angle) {
@@ -65,6 +79,7 @@ void RayTracer::Camera::rotateY(double angle) {
   toScreen.rotateY(angle);
   this->screen_.pos += toScreen;
   this->screen_.bottomSide.rotateY(angle);
+  this->rotation_.y += angle;
 }
 
 void RayTracer::Camera::rotateZ(double angle) {
@@ -75,6 +90,7 @@ void RayTracer::Camera::rotateZ(double angle) {
   toScreen.rotateZ(angle);
   this->screen_.pos += toScreen;
   this->screen_.bottomSide.rotateZ(angle);
+  this->rotation_.z += angle;
 }
 
 void RayTracer::Camera::scale(size_t scale) { (void)scale; }
@@ -85,5 +101,13 @@ void RayTracer::Camera::setPosition(const Math::Vector3D &newPos) {
   this->screen_.pos += offset;
 }
 
-void RayTracer::Camera::lookAt(const Math::Vector3D &target) {
+void RayTracer::Camera::lookAt(const Math::Vector3D &target) {}
+
+void RayTracer::Camera::save(libconfig::Setting &parent) const {
+  libconfig::Setting &pos = parent.add("pos", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(pos, this->pos_);
+  libconfig::Setting &rotation =
+      parent.add("rotation", libconfig::Setting::TypeGroup);
+      std::cout << "rotation: " << this->rotation_ << std::endl;
+  Math::writeUpVector(rotation, this->rotation_);
 }

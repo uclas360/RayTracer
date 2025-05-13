@@ -87,6 +87,7 @@ class Vector3D {
 };
 
 bool lookUpVector(const libconfig::Setting &setting, Vector3D &vector);
+void writeUpVector(libconfig::Setting &setting, const Math::Vector3D &vector);
 
 std::ostream &operator<<(std::ostream &out, const Vector3D &vec);
 

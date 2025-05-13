@@ -26,10 +26,11 @@ class CustomShape : public IShape {
   CustomShape(const libconfig::Setting &settings);
   ~CustomShape();
   HitRecord hits(const Ray &) const override;
-  void move(const Math::Vector3D &) override {};
+  void move(const Math::Vector3D &offset) override;
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t) override;
   void setPosition(const Math::Vector3D &) override;
+  void save(libconfig::Setting &parent) const override {};
 
  private:
   void parseLine(const std::string &line);
@@ -40,6 +41,7 @@ class CustomShape : public IShape {
   void getPos(const libconfig::Setting &settings);
   void getRotation(const libconfig::Setting &settings);
   void getScale(const libconfig::Setting &settings);
+
   std::vector<Math::Vector3D> _vertices;
   std::vector<Math::Vector3D> _textureVertices;
   std::vector<Math::Vector3D> _normals;

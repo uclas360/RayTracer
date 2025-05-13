@@ -167,4 +167,9 @@ bool lookUpVector(const libconfig::Setting &setting, Math::Vector3D &vector) {
   return res;
 }
 
+void writeUpVector(libconfig::Setting &setting, const Math::Vector3D &vector) {
+  setting.add("x", libconfig::Setting::TypeFloat) = vector.x;
+  setting.add("y", libconfig::Setting::TypeFloat) = vector.y;
+  setting.add("z", libconfig::Setting::TypeFloat) = vector.z;
+}
 }  // namespace Math

@@ -111,8 +111,15 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
 }
 
 void CustomShape::setPosition(const Math::Vector3D &pos) {
+  Math::Vector3D toPos = pos - this->pos_;
   for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->move(pos);
+    _faces[i]->move(toPos);
+  }
+}
+
+void CustomShape::move(const Math::Vector3D &offset) {
+  for (size_t i = 0; i < _faces.size(); ++i) {
+    _faces[i]->move(offset);
   }
 }
 
@@ -164,20 +171,21 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
 
   _triangleLoader = getLoader();
   if (!settings.lookupValue("file", path))
-    throw ParsingException(
-        "Error parsing custom shape, missing \"file\" field");
-  std::ifstream file(path);
-  std::string line;
-
-  if (!file.is_open()) {
-    throw ParsingException("error parsing custom shape, file not openned");
-  }
-  while (getline(file, line)) {
-    parseLine(line);
-  }
-  getPos(settings);
-  getRotation(settings);
+  throw ParsingException(
+    "Error parsing custom shape, missing \"file\" field");
+    std::ifstream file(path);
+    std::string line;
+    
+    if (!file.is_open()) {
+      throw ParsingException("error parsing custom shape, file not openned");
+    }
+    while (getline(file, line)) {
+      parseLine(line);
+    }
+    getPos(settings);
+    getRotation(settings);
 }
+
 
 HitRecord CustomShape::hits(const Ray &ray) const {
   HitRecord record;

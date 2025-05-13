@@ -28,7 +28,8 @@ Sphere::Sphere(const libconfig::Setting &settings) {
           "error parsing sphere object, wrong \"pos\" field");
     }
     if (!settings.lookupValue("radius", this->radius)) {
-      throw ParsingException("error parsing sphere object, wrong \"radius\" field");
+      throw ParsingException(
+          "error parsing sphere object, wrong \"radius\" field");
     }
   } catch (const ParsingException &e) {
     throw e;
@@ -60,13 +61,26 @@ void Sphere::move(const Math::Vector3D &offset) { this->pos += offset; }
 
 void Sphere::rotate(const Math::Vector3D &angles) { (void)(angles); }
 
-void Sphere::scale(size_t scale) { this->radius *= (double)scale; }
+void Sphere::scale(size_t scale) { this->radius *= (double)scale / 100; }
 
 void Sphere::setPosition(const Math::Vector3D &newPos) { this->pos = newPos; }
 
 std::ostream &operator<<(std::ostream &out, const Sphere &sphere) {
   return out << "Sphere(pos=" << sphere.pos << ", radius=" << sphere.radius
              << ")" << std::endl;
+}
+
+void Sphere::save(libconfig::Setting &parent) const {
+  libconfig::Setting &sphereSettings =
+      parent.add(libconfig::Setting::TypeGroup);
+  sphereSettings.add("type", libconfig::Setting::TypeString) = "shape";
+  sphereSettings.add("name", libconfig::Setting::TypeString) = "sphere";
+  libconfig::Setting &data =
+      sphereSettings.add("data", libconfig::Setting::TypeGroup);
+  libconfig::Setting &posSettings =
+      data.add("pos", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(posSettings, this->pos);
+  data.add("radius", libconfig::Setting::TypeFloat) = radius;
 }
 
 }  // namespace RayTracer

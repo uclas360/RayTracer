@@ -1,0 +1,183 @@
+/*
+** EPITECH PROJECT, 2025
+** Raytracer
+** File description:
+** Shell
+*/
+
+#include "UI/Shell/Shell.hpp"
+
+#include <fstream>
+#include <iostream>
+
+namespace Graphics {
+Shell::Shell(std::reference_wrapper<RaytracerCore> core, double width,
+             double height)
+    : core_(core) {
+  size_ = {(float)width, (float)height};
+  texture_.create(width, height);
+  texture_.clear(bgcolor_);
+  font_.loadFromFile("assets/fonts/roboto.ttf");
+  text_.setFont(font_);
+  text_.setCharacterSize(width / 20);
+  text_.setFillColor(sf::Color::White);
+  text_.setString(str_);
+  sprite.setTexture(texture_.getTexture());
+  cursor.setFillColor(sf::Color::White);
+  cursor.setSize({10, 20});
+  selectedId_ = 0;
+}
+
+Shell::~Shell() {}
+
+void Shell::updateStr(const sf::Event &events) {
+  if (events.key.code >= 0 && events.key.code < 26) {
+    str_ += (events.key.code + 'a');
+  }
+  if (events.key.code >= sf::Keyboard::Num0 &&
+      events.key.code <= sf::Keyboard::Num9) {
+    str_ += ('0' + (events.key.code - sf::Keyboard::Num0));
+  } else if (events.key.code >= sf::Keyboard::Numpad0 &&
+             events.key.code <= sf::Keyboard::Numpad9) {
+    str_ += ('0' + (events.key.code - sf::Keyboard::Numpad0));
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace)) {
+    if (str_.size()) str_.pop_back();
+  }
+  for (const auto [key, value] : KEYS) {
+    if (events.key.code == key) {
+      str_ += value;
+    }
+  }
+}
+
+std::vector<std::string> parseArgs(std::string str) {
+  std::stringstream ss(str);
+  std::string arg;
+  std::vector<std::string> args;
+  while (ss >> arg) {
+    args.push_back(arg);
+  }
+  return args;
+}
+
+void Shell::update(const sf::Event &events) {
+  updateStr(events);
+  core_.get().setMoving(false);
+  std::vector<std::string> args;
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && str_ != "") {
+    history_.push_back(str_);
+    args = parseArgs(str_);
+    for (auto [key, value] : functions_) {
+      if (key == args[0]) {
+        core_.get().setMoving(true);
+        args.erase(args.begin());
+        value(args);
+      }
+    }
+    str_.clear();
+  }
+  texture_.clear(bgcolor_);
+  text_.setString(str_);
+  sf::Vector2f textsize = text_.getGlobalBounds().getSize();
+  text_.setPosition({0, size_.y - (textsize.y * 2)});
+  cursor.setPosition(
+      {text_.getPosition().x + textsize.x + 2, text_.getPosition().y});
+  texture_.draw(text_);
+  texture_.draw(cursor);
+  texture_.display();
+}
+
+void Shell::select(const std::vector<std::string> &args) {
+  std::reference_wrapper<RayTracer::Camera> cam =
+      std::ref(core_.get().getCam());
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+  RayTracer::Ray ray = cam.get().ray(0.5, 0.5);
+  RayTracer::HitRecord record;
+  double closest = INFINITY;
+
+  for (int i = 0; i < scene.get().shapes_.size(); ++i) {
+    RayTracer::HitRecord temp = scene.get().shapes_[i]->hits(ray);
+    if (!temp.missed && temp.t > 0 && temp.t < closest) {
+      closest = temp.t;
+      record = temp;
+      selectedId_ = i;
+    }
+  }
+}
+
+void Shell::move(const std::vector<std::string> &args) {
+  Math::Vector3D vector;
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+
+  if (args.size() < 3) return;
+  try {
+    vector = {std::stod(args[0]), std::stod(args[1]), std::stod(args[2])};
+  } catch (const std::invalid_argument &) {
+  }
+  scene.get().shapes_[selectedId_]->move(vector);
+}
+
+void Shell::setPos(const std::vector<std::string> &args) {
+  Math::Vector3D vector;
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+
+  if (args.size() < 3) return;
+  try {
+    vector = {std::stod(args[0]), std::stod(args[1]), std::stod(args[2])};
+  } catch (const std::invalid_argument &) {
+  }
+  scene.get().shapes_[selectedId_]->setPosition(vector);
+}
+
+void Shell::rotate(const std::vector<std::string> &args) {
+  Math::Vector3D vector;
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+
+  if (args.size() < 3) return;
+  try {
+    vector = {std::stod(args[0]), std::stod(args[1]), std::stod(args[2])};
+  } catch (const std::invalid_argument &) {
+  }
+  scene.get().shapes_[selectedId_]->rotate(vector);
+}
+
+void Shell::scale(const std::vector<std::string> &args) {
+  double scale = 0;
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+
+  if (args.size() < 1) return;
+  try {
+    scale = std::stod(args[0]);
+  } catch (const std::invalid_argument &) {
+  }
+  scene.get().shapes_[selectedId_]->scale(scale);
+}
+
+void Shell::save(const std::vector<std::string> &args) {
+  if (args.size() < 1) return;
+  std::reference_wrapper<RayTracer::Scene> scene =
+      std::ref(core_.get().getMainScene());
+  std::reference_wrapper<RayTracer::Camera> cam =
+      std::ref(core_.get().getCam());
+  libconfig::Config config;
+  config.setOptions(libconfig::Config::Option::OptionAutoConvert);
+  libconfig::Setting &root = config.getRoot();
+  libconfig::Setting &camera =
+      root.add("camera", libconfig::Setting::TypeGroup);
+  libconfig::Setting &objects =
+      root.add("objects", libconfig::Setting::TypeList);
+
+  cam.get().save(camera);
+  for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
+    scene.get().shapes_[i].get()->save(objects);
+  }
+  config.writeFile(args[0].c_str());
+}
+
+}  // namespace Graphics
