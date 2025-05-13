@@ -8,6 +8,7 @@
 #include "Raytracer/Camera.hpp"
 
 #include <utility>
+#include <cmath>
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
@@ -16,21 +17,18 @@
 RayTracer::Camera::Camera(libconfig::Setting &settings)
     : screen_(Math::Vector3D(-0.5, -0.5, -1), Math::Vector3D(1, 0, 0),
               Math::Vector3D(0, 1, 0)) {
-  double posX;
-  double posY;
-  double posZ;
-
-  if (!settings.lookupValue("posX", posX)) {
-    throw ParsingException("error creating camera, posX field missing");
+  try {
+    libconfig::Setting &pos = settings.lookup("pos");
+    if (!Math::lookUpVector(pos, this->pos_)) {
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"pos\" field");
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
-  if (!settings.lookupValue("posY", posY)) {
-    throw ParsingException("error creating camera, posY field missing");
-  }
-  if (!settings.lookupValue("posZ", posZ)) {
-    throw ParsingException("error creating camera, posZ field missing");
-  }
-  this->pos_ = {posX, posY, posZ};
-  screen_.pos = {posX - 0.5, posY - 0.5, posZ - 1};
+  screen_.pos = {this->pos_.x - 0.5, this->pos_.y - 0.5, this->pos_.z - 1};
 };
 
 RayTracer::Ray RayTracer::Camera::ray(double u, double v) {
@@ -85,4 +83,7 @@ void RayTracer::Camera::setPosition(const Math::Vector3D &newPos) {
   Math::Vector3D offset = newPos - this->pos_;
   this->pos_ += offset;
   this->screen_.pos += offset;
+}
+
+void RayTracer::Camera::lookAt(const Math::Vector3D &target) {
 }
