@@ -24,7 +24,7 @@ Shell::Shell(std::reference_wrapper<RaytracerCore> core, double width,
   text_.setString(str_);
   sprite.setTexture(texture_.getTexture());
   cursor.setFillColor(sf::Color::White);
-  cursor.setSize({10, 20});
+  cursor.setSize({10, size_.y / 20});
   selectedId_ = 0;
 }
 
