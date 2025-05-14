@@ -65,6 +65,7 @@ void Shell::update(const sf::Event &events) {
   updateStr(events);
   core_.get().setMoving(false);
   std::vector<std::string> args;
+  text_.setFillColor(sf::Color::White);
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && str_ != "") {
     history_.push_back(str_);
     args = parseArgs(str_);
@@ -78,9 +79,20 @@ void Shell::update(const sf::Event &events) {
     str_.clear();
   }
   texture_.clear(bgcolor_);
+  while ((history_.size() + 2) * size_.y / 20 >= size_.y) {
+    history_.erase(history_.begin());
+  }
+  for (size_t i = 0; i < history_.size(); ++i) {
+    text_.setString(history_[i]);
+    sf::Vector2f textsize = text_.getGlobalBounds().getSize();
+    text_.setPosition(0, i * size_.y / 20);
+    texture_.draw(text_);
+  }
+  if (functions_.find(str_) != functions_.end())
+    text_.setFillColor(sf::Color::Green);
   text_.setString(str_);
   sf::Vector2f textsize = text_.getGlobalBounds().getSize();
-  text_.setPosition({0, size_.y - (textsize.y * 2)});
+  text_.setPosition({0, size_.y - size_.y / 20});
   cursor.setPosition(
       {text_.getPosition().x + textsize.x + 2, text_.getPosition().y});
   texture_.draw(text_);
@@ -100,7 +112,7 @@ void Shell::select(const std::vector<std::string> &args) {
   if (args.size()) {
     try {
       selectedId_ = std::stoi(args[0]);
-      if (selectedId_ >= (int) scene.get().shapes_.size()) {
+      if (selectedId_ >= (int)scene.get().shapes_.size()) {
         selectedId_ = 0;
       }
       return;
@@ -189,6 +201,19 @@ void Shell::save(const std::vector<std::string> &args) {
     scene.get().shapes_[i].get()->save(objects);
   }
   config.writeFile(args[0].c_str());
+}
+
+void Shell::goTo(const std::vector<std::string> &args) {
+  Math::Vector3D vector;
+  std::reference_wrapper<RayTracer::Camera> cam =
+      std::ref(core_.get().getCam());
+
+  if (args.size() < 3) return;
+  try {
+    vector = {std::stod(args[0]), std::stod(args[1]), std::stod(args[2])};
+  } catch (const std::invalid_argument &) {
+  }
+  cam.get().setPosition(vector);
 }
 
 }  // namespace Graphics
