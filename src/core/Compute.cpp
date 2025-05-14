@@ -12,34 +12,40 @@
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
+#include "Interval.hpp"
 
 Math::Vector3D getSkyColor(const RayTracer::Ray &r) {
-  Math::Vector3D unit_direction = r.dir.normalized();
-  double a = 0.5 * (unit_direction.y + 1.0);
-  return Math::Vector3D(0.9, 0.9, 0.9) * (1.0 - a) +
-         Math::Vector3D(0.3, 0.5, 1.0) * a;
+    Math::Vector3D unit_direction = r.dir.normalized();
+    double a = 0.5 * (unit_direction.y + 1.0);
+    return Math::Vector3D(0.9, 0.9, 0.9) * (1.0 - a) +
+           Math::Vector3D(0.3, 0.5, 1.0) * a;
 }
 
-Math::Vector3D ray_color(const RayTracer::Ray &r, int depth,
+Math::Vector3D trace_ray(const RayTracer::Ray &r, int depth,
                          const RayTracer::Scene &scene) {
-  if (depth <= 0) return Math::Vector3D(0, 0, 0);
+    if (depth <= 0) return Math::Vector3D(0, 0, 0);
 
-  RayTracer::HitRecord rec = scene.hits(r);
+    RayTracer::HitRecord rec = scene.hits(r, Interval(0, DOUBLE_INFINITY));
 
-  if (!rec.missed) {
-    Math::Vector3D direction = Math::Vector3D::random_on_hemisphere(rec.normal);
-    return ray_color(RayTracer::Ray(rec.p + rec.normal * EPSILON, direction),
-                     depth - 1, scene) *
-           LIGHT_REFLEXION;
-  }
+    if (rec.missed || rec.t < 1E-10) {
+        return getSkyColor(r);
+    }
 
-  Math::Vector3D unit_direction = r.dir.normalized();
-  double a = 0.5 * (unit_direction.y + 1.0);
-  return Math::Vector3D(0.9, 0.9, 0.9) * (1.0 - a) +
-         Math::Vector3D(0.3, 0.5, 1.0) * a;
+    RayTracer::Ray scattered;
+    Math::Vector3D attenuation;
+    if (rec.mat->get()->scatter(r, rec, attenuation, scattered))
+        return attenuation * trace_ray(scattered, depth - 1, scene);
+    return Math::Vector3D(0, 0, 0);
 }
 
-void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel, size_t xResolution, size_t yResolution) {
+double linear_to_gamma(double linear_component) {
+    if (linear_component > 0) return std::sqrt(linear_component);
+
+    return 0;
+}
+
+void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel,
+                                 size_t xResolution, size_t yResolution) {
     size_t y = pixel / xResolution;
     size_t x = pixel % xResolution;
     double u = (double)x / xResolution;
@@ -47,40 +53,15 @@ void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel, size
     RayTracer::Ray r = this->camera_.ray(u, v);
     RayTracer::HitRecord hitRecord;
     Math::Vector3D vec;
-    Math::Vector3D lightPos = {0, -2, -1};
 
-
-    hitRecord = this->mainScene_.hits(r);
-    if (!hitRecord.missed) {
-    }
-    vec = ray_color(r, 2, this->mainScene_);
+    vec = trace_ray(r, MAX_RAY_BOUNCE, this->mainScene_);
+    vec.x = linear_to_gamma(vec.x);
+    vec.y = linear_to_gamma(vec.y);
+    vec.z = linear_to_gamma(vec.z);
     image[pixel * 4] = static_cast<unsigned char>(vec.x * 255);
     image[pixel * 4 + 1] = static_cast<unsigned char>(vec.y * 255);
     image[pixel * 4 + 2] = static_cast<unsigned char>(vec.z * 255);
     image[pixel * 4 + 3] = 255;
-
-    // Math::Vector3D toLight = lightPos - hitRecord.p;
-
-    if (!hitRecord.missed) {
-      //float lightEfficiency = hitRecord.normal.dot(toLight.normalized());
-      //RayTracer::HitRecord lightHitRecord = this->mainScene_.hits(
-      //    RayTracer::Ray(hitRecord.p + hitRecord.normal * EPSILON, toLight));
-
-      // if (lightHitRecord.missed)
-      //     setPixelColor(array, y * width + x,
-      //                   {static_cast<unsigned char>(
-      //                        std::max(0.0f, lightEfficiency *
-      //                        255)),
-      //                    static_cast<unsigned char>(
-      //                        std::max(0.0f, lightEfficiency *
-      //                        255)),
-      //                    static_cast<unsigned char>(
-      //                        std::max(0.0f, lightEfficiency *
-      //                        255))});
-      // else
-      //     setPixelColor(array, y * width + x, {0, 0, 0});
-      // }
-    }
 }
 
 void RaytracerCore::compute(void) {

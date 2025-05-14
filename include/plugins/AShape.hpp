@@ -10,15 +10,18 @@
 
 #include <memory>
 
-#include "plugins/IShape.hpp"
+#include "AABB.hpp"
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
 
 class AShape : public IShape {
-    public:
+   public:
     void setMaterial(std::unique_ptr<Material> &) override;
-    protected:
+    const AABB &boundingBox() const override;
+
+   protected:
+    AABB bbox;
     std::unique_ptr<Material> material_;
 };
 

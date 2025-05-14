@@ -13,4 +13,8 @@ void AShape::setMaterial(std::unique_ptr<Material> &newMaterial) {
     this->material_.swap(newMaterial);
 };
 
+const AABB &AShape::boundingBox() const {
+    return this->bbox;
+}
+
 }

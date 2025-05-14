@@ -15,6 +15,7 @@
 #include "plugins/Material.hpp"
 #define CAM_SPEED 0.03
 #define LIGHT_REFLEXION 0.6
+#define MAX_RAY_BOUNCE 10
 
 #include <cstdint>
 #include <map>

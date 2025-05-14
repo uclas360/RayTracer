@@ -6,6 +6,7 @@
 */
 
 #include "../include/Lambertian.hpp"
+
 #include <libconfig.h++>
 
 #include "RaytracerCore.hpp"
@@ -15,16 +16,16 @@ namespace RayTracer {
 
 Lambertian::Lambertian(const libconfig::Setting &config) {
     if (!config.lookupValue("red", this->albedo.x)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"red\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"red\" field");
     }
     if (!config.lookupValue("green", this->albedo.z)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"green\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"green\" field");
     }
     if (!config.lookupValue("blue", this->albedo.z)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"blue\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"blue\" field");
     }
 }
 

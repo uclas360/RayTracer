@@ -24,3 +24,7 @@ output.ppm
 windows*
 data.img
 *.iso
+gprof2dot
+.clang-format
+uftrace
+scene.cfg

@@ -9,6 +9,7 @@ add_library(${LIB_NAME} STATIC
     src/HitRecord.cpp
     src/AShape.cpp
     src/MaterialUtils.cpp
+    src/AABB.cpp
 )
 
 target_include_directories(${LIB_NAME}

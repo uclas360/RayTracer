@@ -179,12 +179,12 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
   getRotation(settings);
 }
 
-HitRecord CustomShape::hits(const Ray &ray) const {
+HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
   HitRecord record;
   double closest_t = INFINITY;
 
   for (const auto& face : _faces) {
-    HitRecord temp = face->hits(ray);
+    HitRecord temp = face->hits(ray, ray_t);
     if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
       closest_t = temp.t;
       record = temp;

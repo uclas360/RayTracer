@@ -23,7 +23,7 @@ class Plane : public AShape {
     Plane();
     Plane(Math::Vector3D pos, double radius);
     Plane(const libconfig::Setting &);
-    HitRecord hits(const Ray &ray) const override;
+    HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;

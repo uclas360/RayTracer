@@ -63,7 +63,7 @@ void Triangle::rotate(const Math::Vector3D &angles) {
   // c -= toOrigin;
 }
 
-HitRecord Triangle::hits(const Ray &ray) const {
+HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
   Math::Vector3D ab = b - a;
   Math::Vector3D ac = c - a;
   Math::Vector3D n = ab.cross(ac);
@@ -91,7 +91,9 @@ HitRecord Triangle::hits(const Ray &ray) const {
   ne = ca.cross(cp);
   if (n.dot(ne) < 0) return HitRecord();
 
-  return HitRecord(t, ray, *this, n.normalized());
+  if (!ray_t.contains(t)) return HitRecord();
+  
+  return HitRecord(t, ray, *this, n.normalized(), this->material_);
 }
 }  // namespace RayTracer
 

@@ -21,7 +21,7 @@ namespace RayTracer {
 
 class Scene : public AShape {
  public:
-  HitRecord hits(const Ray &ray) const override;
+  HitRecord hits(const Ray &ray, Interval ray_t) const override;
   void move(const Math::Vector3D &offset) override;
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t scale) override;

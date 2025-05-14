@@ -20,6 +20,7 @@ class Vector3D {
     double x;
     double y;
     double z;
+    double *arr[3] = {&x, &y, &z};
 
     Vector3D() : x(0), y(0), z(0) {};
     Vector3D(double x, double y, double z) : x(x), y(y), z(z) {};

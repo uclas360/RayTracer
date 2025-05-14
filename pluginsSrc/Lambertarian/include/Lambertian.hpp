@@ -6,6 +6,7 @@
 */
 
 #include <libconfig.h++>
+
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
@@ -21,4 +22,4 @@ class Lambertian : public Material {
     Math::Vector3D albedo;
 };
 
-};
+};  // namespace RayTracer

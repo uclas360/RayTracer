@@ -14,12 +14,12 @@
 
 namespace RayTracer {
 
-HitRecord RayTracer::Scene::hits(const Ray &ray) const {
+HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {
     HitRecord closest;
     float closestDistance = DOUBLE_INFINITY;
 
     for (const auto &shape : this->shapes_) {
-        const HitRecord hit = shape->hits(ray);
+        const HitRecord hit = shape->hits(ray, ray_t);
         if (!hit.missed && hit.t < closestDistance) {
             closestDistance = hit.t;
             closest = hit;
