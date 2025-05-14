@@ -8,6 +8,7 @@ add_library(${LIB_NAME} STATIC
     src/Ray.cpp
     src/HitRecord.cpp
     src/AShape.cpp
+    src/MaterialUtils.cpp
 )
 
 target_include_directories(${LIB_NAME}

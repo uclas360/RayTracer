@@ -8,30 +8,24 @@
 #include "../include/Lambertian.hpp"
 #include <libconfig.h++>
 
-#include "Raytracer/math/Color.hpp"
 #include "RaytracerCore.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
 Lambertian::Lambertian(const libconfig::Setting &config) {
-    double r;
-    double g;
-    double b;
-
-    if (!config.lookupValue("red", r)) {
+    if (!config.lookupValue("red", this->albedo.x)) {
       throw ParsingException(
           "error parsing lambertian material, missing \"red\" field");
     }
-    if (!config.lookupValue("green", g)) {
+    if (!config.lookupValue("green", this->albedo.z)) {
       throw ParsingException(
           "error parsing lambertian material, missing \"green\" field");
     }
-    if (!config.lookupValue("blue", b)) {
+    if (!config.lookupValue("blue", this->albedo.z)) {
       throw ParsingException(
           "error parsing lambertian material, missing \"blue\" field");
     }
-    this->albedo = {(double)COLOR_RANGE((int)r), (double)COLOR_RANGE((int)g), (double)COLOR_RANGE((int)b)};
 }
 
 bool Lambertian::scatter(const Ray &, const HitRecord &rec,

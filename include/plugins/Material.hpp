@@ -12,11 +12,11 @@
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/IPlugin.hpp"
 
-namespace RayTracer  {
+namespace RayTracer {
 
 class HitRecord;  // this fix cross include, trust the process
 
-class Material: public IPlugin {
+class Material : public IPlugin {
    public:
     virtual ~Material() = default;
 
@@ -24,6 +24,11 @@ class Material: public IPlugin {
                          Math::Vector3D &attenuation, Ray &scattered) const = 0;
 };
 
-};
+};  // namespace RayTracer
+
+Math::Vector3D reflect(const Math::Vector3D &v, const Math::Vector3D &n);
+Math::Vector3D refract(const Math::Vector3D &uv, const Math::Vector3D &n,
+                       double etai_over_etat);
+double reflectance(double cosine, double refraction_index);
 
 #endif
