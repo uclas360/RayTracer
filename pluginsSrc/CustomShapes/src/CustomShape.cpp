@@ -99,13 +99,7 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
   Math::Vector3D toOrigin = -pos_;
 
   for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->move(toOrigin);
-  }
-  for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->rotate(angles);
-  }
-  for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->move((toOrigin * -1));
   }
   this->rotation_ += angles;
 }
