@@ -5,12 +5,10 @@
 ** Cylinder
 */
 
-#include "../include/Cylinder.hpp"
+#include "Cylinder.hpp"
 
 #include <cmath>
 #include <libconfig.h++>
-#include <ostream>
-
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
@@ -36,10 +34,10 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
 }
 
 HitRecord Cylinder::hits(const Ray &ray) const {
-  Math::Vector3D oc = ray.pos - pos_;
+  Math::Vector3D oc = ray.pos - this->pos_;
   double a = ray.dir.x * ray.dir.x + ray.dir.z * ray.dir.z;
   double b = 2.0 * (oc.x * ray.dir.x + oc.z * ray.dir.z);
-  double c = oc.x * oc.x + oc.z * oc.z - radius_ * radius_;
+  double c = oc.x * oc.x + oc.z * oc.z - this->radius_ * this->radius_;
 
   if (fabs(a) < EPSILON) return hitsCapOnly(ray);
   double discriminant = b * b - 4 * a * c;
@@ -51,11 +49,11 @@ HitRecord Cylinder::hits(const Ray &ray) const {
   double t = t1;
   double y1 = oc.y + t1 * ray.dir.y;
 
-  if (t1 < EPSILON || y1 < 0 || y1 > height_) {
+  if (t1 < EPSILON || y1 < 0 || y1 > this->height_) {
     t = t2;
     double y2 = oc.y + t2 * ray.dir.y;
 
-    if (t2 < EPSILON || y2 < 0 || y2 > height_) return hitsCapOnly(ray);
+    if (t2 < EPSILON || y2 < 0 || y2 > this->height_) return hitsCapOnly(ray);
   }
   Math::Vector3D p = ray.pos + ray.dir * t;
   Math::Vector3D normal(p.x - pos_.x, 0, p.z - pos_.z);
@@ -73,25 +71,25 @@ HitRecord Cylinder::hitsCapOnly(const Ray &ray) const {
   Math::Vector3D normal;
 
   if (fabs(ray.dir.y) > EPSILON) {
-    double t = (pos_.y - ray.pos.y) / ray.dir.y;
+    double t = (this->pos_.y - ray.pos.y) / ray.dir.y;
     if (t > EPSILON) {
       Math::Vector3D p = ray.pos + ray.dir * t;
-      double distance = (p - Math::Vector3D(pos_.x, pos_.y, pos_.z)).length();
-      if (distance <= radius_) {
+      double distance = (p - Math::Vector3D(this->pos_.x, this->pos_.y, this->pos_.z)).length();
+      if (distance <= this->radius_) {
         t_min = t;
         normal = Math::Vector3D(0, -1, 0);
       }
     }
   }
   if (fabs(ray.dir.y) > EPSILON) {
-    double t = (pos_.y + height_ - ray.pos.y) / ray.dir.y;
+    double t = (this->pos_.y + this->height_ - ray.pos.y) / ray.dir.y;
 
     if (t > EPSILON && t < t_min) {
       Math::Vector3D p = ray.pos + ray.dir * t;
       double distance =
-          (p - Math::Vector3D(pos_.x, pos_.y + height_, pos_.z)).length();
+          (p - Math::Vector3D(this->pos_.x, this->pos_.y + this->height_, this->pos_.z)).length();
 
-      if (distance <= radius_) {
+      if (distance <= this->radius_) {
         t_min = t;
         normal = Math::Vector3D(0, 1, 0);
       }
@@ -112,6 +110,21 @@ void Cylinder::scale(size_t scale) { this->radius_ *= (double)scale; }
 void Cylinder::setPosition(const Math::Vector3D &newPos) {
   this->pos_ = newPos;
 }
+
+void Cylinder::save(libconfig::Setting &parent) const {
+    libconfig::Setting &sphereSettings =
+        parent.add(libconfig::Setting::TypeGroup);
+    sphereSettings.add("type", libconfig::Setting::TypeString) = "shape";
+    sphereSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    libconfig::Setting &data =
+        sphereSettings.add("data", libconfig::Setting::TypeGroup);
+    libconfig::Setting &posSettings =
+        data.add("pos", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(posSettings, this->pos_);
+    data.add("radius", libconfig::Setting::TypeFloat) = this->radius_;
+    data.add("height", libconfig::Setting::TypeFloat) = this->height_;
+}
+
 
 }  // namespace RayTracer
 

@@ -27,11 +27,11 @@ class Plane : public IShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
-    void save(libconfig::Setting &parent) const override {};
+    void save(libconfig::Setting &parent) const override;
 
-    Math::Vector3D pos;
-    Math::Vector3D orientation;
-    double radius;
+    Math::Vector3D pos_;
+    Math::Vector3D orientation_;
+    double radius_;
 };
 
 std::ostream &operator<<(std::ostream &out, const Plane &ray);

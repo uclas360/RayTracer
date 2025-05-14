@@ -7,8 +7,7 @@
 
 #include "CustomShape.hpp"
 
-#include <iostream>
-#include <regex>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -19,7 +18,7 @@ namespace RayTracer {
 void CustomShape::parseVertex(const std::vector<std::string> &args) {
   if (args.size() != 3) throw ParsingException("v: NOT ENOUGH COORDS");
   try {
-    _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
+    this->vertices_.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
                                        std::stof(args[2])));
   } catch (const std::invalid_argument &e) {
     throw ParsingException("Error parsing custom shape vertex, wrong double");
@@ -29,7 +28,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
 void CustomShape::parseTexture(const std::vector<std::string> &args) {
   if (args.size() != 2) throw ParsingException("vt: NOT ENOUGH COORDS");
   try {
-    _textureVertices.push_back(
+    this->textureVertices_.push_back(
         Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
   } catch (const std::invalid_argument &e) {
     throw ParsingException(
@@ -40,7 +39,7 @@ void CustomShape::parseTexture(const std::vector<std::string> &args) {
 void CustomShape::parseNormals(const std::vector<std::string> &args) {
   if (args.size() != 3) throw ParsingException("vn: NOT ENOUGH COORDS");
   try {
-    _normals.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
+    this->normals_.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
                                       std::stof(args[2])));
   } catch (const std::invalid_argument &e) {
     throw ParsingException(
@@ -61,17 +60,17 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
     while (std::getline(stream, tmp, '/')) {
       vectors.push_back(tmp);
     }
-    points.push_back((_vertices[std::stoi(vectors[0]) - 1]));
+    points.push_back((vertices_[std::stoi(vectors[0]) - 1]));
     if (vectors.size() == 3)
-      normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
+      this->normals_.push_back((normals_[std::stoi(vectors[2]) - 1]));
   }
-  _faces.push_back(
-      _triangleLoader
+  faces_.push_back(
+      triangleLoader_
           ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
               "value_entry_point", points[0], points[1], points[2]));
   if (points.size() == 4) {
-    _faces.push_back(
-        _triangleLoader
+    this->faces_.push_back(
+        this->triangleLoader_
             ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
                 "value_entry_point", points[0], points[2], points[3]));
   }
@@ -85,8 +84,8 @@ void CustomShape::parseLine(const std::string &line) {
 
   stream >> type;
   while (stream >> temp) args.push_back(temp);
-  if (_functions.find(type) != _functions.end())
-    _functions.at(type)(this, args);
+  if (this->functions_.find(type) != this->functions_.end())
+    this->functions_.at(type)(this, args);
 }
 
 static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
@@ -96,10 +95,10 @@ static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
 }
 
 void CustomShape::rotate(const Math::Vector3D &angles) {
-  Math::Vector3D toOrigin = -pos_;
+  //Math::Vector3D toOrigin = -pos_;
 
-  for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->rotate(angles);
+  for (size_t i = 0; i < this->faces_.size(); ++i) {
+    this->faces_[i]->rotate(angles);
   }
   this->rotation_ += angles;
 }
@@ -111,8 +110,8 @@ void CustomShape::setPosition(const Math::Vector3D &pos) {
 }
 
 void CustomShape::move(const Math::Vector3D &offset) {
-  for (size_t i = 0; i < _faces.size(); ++i) {
-    _faces[i]->move(offset);
+  for (size_t i = 0; i < this->faces_.size(); ++i) {
+    this->faces_[i]->move(offset);
   }
   this->pos_ += offset;
 }
@@ -162,13 +161,11 @@ void CustomShape::getScale(const libconfig::Setting &settings) {
 }
 
 CustomShape::CustomShape(const libconfig::Setting &settings) {
-  std::string path;
-
-  _triangleLoader = getLoader();
-  if (!settings.lookupValue("file", path))
+  this->triangleLoader_ = getLoader();
+  if (!settings.lookupValue("file", this->path_))
     throw ParsingException(
         "Error parsing custom shape, missing \"file\" field");
-  std::ifstream file(path);
+  std::ifstream file(this->path_);
   std::string line;
 
   if (!file.is_open()) {
@@ -178,9 +175,22 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     parseLine(line);
   }
   file.close();
-  _path = path;
   getPos(settings);
   getRotation(settings);
+}
+
+HitRecord CustomShape::hits(const Ray &ray) const {
+  HitRecord record;
+  double closest_t = INFINITY;
+
+  for (const auto &face : this->faces_) {
+    HitRecord temp = face->hits(ray);
+    if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
+      closest_t = temp.t;
+      record = temp;
+    }
+  }
+  return record;
 }
 
 void CustomShape::save(libconfig::Setting &parent) const {
@@ -189,26 +199,12 @@ void CustomShape::save(libconfig::Setting &parent) const {
   shapeSettings.add("name", libconfig::Setting::TypeString) = "customShape";
   libconfig::Setting &data =
       shapeSettings.add("data", libconfig::Setting::TypeGroup);
-  data.add("file", libconfig::Setting::TypeString) = _path;
+  data.add("file", libconfig::Setting::TypeString) = this->path_;
   libconfig::Setting &pos = data.add("pos", libconfig::Setting::TypeGroup);
   Math::writeUpVector(pos, this->pos_);
   libconfig::Setting &rotation =
       data.add("rotation", libconfig::Setting::TypeGroup);
   Math::writeUpVector(rotation, this->rotation_);
-}
-
-HitRecord CustomShape::hits(const Ray &ray) const {
-  HitRecord record;
-  double closest_t = INFINITY;
-
-  for (const auto &face : _faces) {
-    HitRecord temp = face->hits(ray);
-    if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
-      closest_t = temp.t;
-      record = temp;
-    }
-  }
-  return record;
 }
 
 CustomShape::~CustomShape() {}

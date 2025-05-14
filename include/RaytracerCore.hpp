@@ -89,16 +89,16 @@ class RaytracerCore {
     bool moving_ = false;
 
     void handleKeys(void);
-    const std::map<sf::Keyboard::Key, std::function<void(RaytracerCore &, Math::Vector3D &)>> keyboardEvent = {
-        {sf::Keyboard::Q, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({-CAM_SPEED, 0, 0});}},
-        {sf::Keyboard::D, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({CAM_SPEED, 0, 0});}},
-        {sf::Keyboard::Z, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, -CAM_SPEED, 0});}},
-        {sf::Keyboard::S, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, CAM_SPEED, 0});}},
-        {sf::Keyboard::E, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, 0, -CAM_SPEED});}},
-        {sf::Keyboard::A, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.move({0, 0, CAM_SPEED});}},
-        {sf::Keyboard::Left, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y += 0.1;}},
-        {sf::Keyboard::Right, [](RaytracerCore &, Math::Vector3D &camRotation) {camRotation.y -= 0.1;}},
-        {sf::Keyboard::P, [](RaytracerCore &this_, Math::Vector3D &) {this_.camera_.lookAt({0, 0, -2});}},
+    const std::map<sf::Keyboard::Key, std::function<void(Math::Vector3D &)>> keyboardEvent{
+        {sf::Keyboard::Q, [this](Math::Vector3D &) {this->camera_.move({-CAM_SPEED, 0, 0});}},
+        {sf::Keyboard::D, [this](Math::Vector3D &) {this->camera_.move({CAM_SPEED, 0, 0});}},
+        {sf::Keyboard::Z, [this](Math::Vector3D &) {this->camera_.move({0, -CAM_SPEED, 0});}},
+        {sf::Keyboard::S, [this](Math::Vector3D &) {this->camera_.move({0, CAM_SPEED, 0});}},
+        {sf::Keyboard::E, [this](Math::Vector3D &) {this->camera_.move({0, 0, -CAM_SPEED});}},
+        {sf::Keyboard::A, [this](Math::Vector3D &) {this->camera_.move({0, 0, CAM_SPEED});}},
+        {sf::Keyboard::Left, [](Math::Vector3D &camRotation) {camRotation.y += 0.1;}},
+        {sf::Keyboard::Right, [](Math::Vector3D &camRotation) {camRotation.y -= 0.1;}},
+        {sf::Keyboard::P, [this](Math::Vector3D &) {this->camera_.lookAt({0, 0, -2});}},
     };
 };
 

@@ -25,7 +25,7 @@ class Cylinder : public IShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
-    void save(libconfig::Setting &parent) const override {};
+    void save(libconfig::Setting &parent) const override;
 
     private:
     HitRecord hitsCapOnly(const Ray &ray) const;

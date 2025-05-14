@@ -8,9 +8,7 @@
 #ifndef CUSTOMSHAPE_HPP_
 #define CUSTOMSHAPE_HPP_
 
-#include <fstream>
 #include <functional>
-#include <iostream>
 #include <libconfig.h++>
 #include <map>
 
@@ -42,22 +40,22 @@ class CustomShape : public IShape {
   void getRotation(const libconfig::Setting &settings);
   void getScale(const libconfig::Setting &settings);
 
-  std::vector<Math::Vector3D> _vertices;
-  std::vector<Math::Vector3D> _textureVertices;
-  std::vector<Math::Vector3D> _normals;
+  std::vector<Math::Vector3D> vertices_;
+  std::vector<Math::Vector3D> textureVertices_;
+  std::vector<Math::Vector3D> normals_;
 
-  std::string _path;
+  std::string path_;
 
     double scale_ = 100;
     Math::Vector3D pos_;
     Math::Vector3D rotation_;
 
-  std::unique_ptr<DlLoader<IShape>> _triangleLoader;
+  std::unique_ptr<DlLoader<IShape>> triangleLoader_;
 
-  std::vector<std::unique_ptr<IShape>> _faces;
+  std::vector<std::unique_ptr<IShape>> faces_;
   const std::map<std::string,
                  std::function<void(CustomShape *, std::vector<std::string>)>>
-      _functions = {
+      functions_ = {
           {"v", &CustomShape::parseVertex},
           {"vt", &CustomShape::parseTexture},
           {"vn", &CustomShape::parseNormals},

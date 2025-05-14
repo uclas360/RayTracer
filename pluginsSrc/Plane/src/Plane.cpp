@@ -5,7 +5,7 @@
 ** Plane
 */
 
-#include "../include/Plane.hpp"
+#include "Plane.hpp"
 
 #include <cmath>
 #include <libconfig.h++>
@@ -17,18 +17,18 @@
 
 namespace RayTracer {
 
-Plane::Plane() : radius(0) {};
-Plane::Plane(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {};
+Plane::Plane() : radius_(0) {};
+Plane::Plane(Math::Vector3D pos, double radius) : pos_(pos), radius_(radius) {};
 
 Plane::Plane(const libconfig::Setting &settings) {
   try {
     libconfig::Setting &pos = settings.lookup("pos");
     libconfig::Setting &normal = settings.lookup("orientation");
-    if (!Math::lookUpVector(pos, this->pos)) {
+    if (!Math::lookUpVector(pos, this->pos_)) {
       throw ParsingException(
           "error parsing plane object, wrong \"pos\" field");
     }
-    if (!Math::lookUpVector(normal, this->orientation)) {
+    if (!Math::lookUpVector(normal, this->orientation_)) {
       throw ParsingException(
           "error parsing plane object, wrong \"orientation\" field");
     }
@@ -40,29 +40,44 @@ Plane::Plane(const libconfig::Setting &settings) {
 }
 
 HitRecord Plane::hits(const Ray &ray) const {
-  double denom = orientation.dot(ray.dir);
+  double denom = orientation_.dot(ray.dir);
   if (std::abs(denom) > EPSILON) {
-    Math::Vector3D p0l0 = pos - ray.pos;
-    double t = p0l0.dot(orientation) / denom;
+    Math::Vector3D p0l0 = pos_ - ray.pos;
+    double t = p0l0.dot(orientation_) / denom;
     if (t >= 0) {
-      HitRecord rec = HitRecord(t, ray, *this, this->orientation);
+      HitRecord rec = HitRecord(t, ray, *this, this->orientation_);
       return rec;
     }
   }
   return HitRecord();
 }
 
-void Plane::move(const Math::Vector3D &offset) { this->pos += offset; }
+void Plane::move(const Math::Vector3D &offset) { this->pos_ += offset; }
 
 void Plane::rotate(const Math::Vector3D &angles) { (void)(angles); }
 
-void Plane::scale(size_t scale) { this->radius *= (double)scale; }
+void Plane::scale(size_t scale) { this->radius_ *= (double)scale; }
 
-void Plane::setPosition(const Math::Vector3D &newPos) { this->pos = newPos; }
+void Plane::setPosition(const Math::Vector3D &newPos) { this->pos_ = newPos; }
 
 std::ostream &operator<<(std::ostream &out, const Plane &plane) {
-  return out << "Plane(pos=" << plane.pos << ", radius=" << plane.radius << ")"
+  return out << "Plane(pos=" << plane.pos_ << ", radius=" << plane.radius_ << ")"
              << std::endl;
+}
+
+void Plane::save(libconfig::Setting &parent) const {
+    libconfig::Setting &sphereSettings =
+        parent.add(libconfig::Setting::TypeGroup);
+    sphereSettings.add("type", libconfig::Setting::TypeString) = "shape";
+    sphereSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    libconfig::Setting &data =
+        sphereSettings.add("data", libconfig::Setting::TypeGroup);
+    libconfig::Setting &posSettings =
+        data.add("pos", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(posSettings, this->pos_);
+    libconfig::Setting &orientationSettings =
+        data.add("orientation", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(orientationSettings, this->orientation_);
 }
 
 }  // namespace RayTracer
