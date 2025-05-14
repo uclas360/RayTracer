@@ -51,7 +51,14 @@ static Texture::TextureInfos getTextureInfos(const std::string &filePath, std::i
     return infos;
 };
 
-static Math::Vector3D getPixel(const std::string &filePath, std::stringstream &ss) {
+static void scaleColor(double &base, size_t max) {
+    if (base > max) {
+        throw ParsingException("number greater than the max value for color");
+    }
+    base = (base * 255) / max;
+}
+
+static Math::Vector3D getPixel(const std::string &filePath, std::stringstream &ss, size_t maxValue) {
     Math::Vector3D pixel;
 
     ss >> pixel.x >> pixel.y >> pixel.z;
@@ -59,6 +66,9 @@ static Math::Vector3D getPixel(const std::string &filePath, std::stringstream &s
     if (ss.fail()) {
         throw ParsingException(filePath + ": failed to parse pixel");
     }
+    scaleColor(pixel.x, maxValue);
+    scaleColor(pixel.y, maxValue);
+    scaleColor(pixel.z, maxValue);
     return pixel;
 }
 
@@ -77,7 +87,7 @@ Texture::Texture(std::string filePath) {
     for (size_t y = 0; y < infos.height; y++) {
         this->image_.push_back({});
         for (size_t x = 0; x < infos.width; x++) {
-            this->image_[y].push_back(getPixel(filePath, ssPixels));
+            this->image_[y].push_back(getPixel(filePath, ssPixels, infos.maxValue));
         }
     }
 }
