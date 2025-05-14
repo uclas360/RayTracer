@@ -49,7 +49,7 @@ static void initInMap(
 #if defined _WIN32
         map.insert({name, std::make_unique<WindowsLoader<Plugin>>("plugin/" + name)});
 #endif
-        //
+//
     } catch (const LoaderException &ex) {
         throw ParsingException("error loading pluggin :" + std::string(ex.what()));
     }
