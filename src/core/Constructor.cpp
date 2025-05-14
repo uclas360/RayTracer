@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <thread>
+#include "Raytracer/Texture.hpp"
 
 #include "Raytracer/Camera.hpp"
 #include "RaytracerCore.hpp"
@@ -138,6 +139,7 @@ void RaytracerCore::startThreads(size_t nbThreads) {
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
     : graphic_(args.graphicMode),
+      nbImage_(0),
       imageMean_(args.xResolution * args.yResolution * 4, 0),
       width_(args.width),
       height_(args.height),
@@ -145,7 +147,7 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
       yResolution_(args.yResolution),
       compressedXResolution_(std::max((int)(args.xResolution / 10), 20)),
       compressedYResolution_(std::max((int)args.yResolution / 10, 20)),
-      compressedImage_(this->compressedXResolution_ * this->compressedYResolution_ * 4, 0){
+      compressedImage_(this->compressedXResolution_ * this->compressedYResolution_ * 4, 0) {
     std::optional<RayTracer::Camera> camera = std::nullopt;
     libconfig::Config config;
 
