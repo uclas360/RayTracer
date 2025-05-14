@@ -80,6 +80,7 @@ class RaytracerCore {
 
     std::mutex imageMutex_;
     size_t nbImage_ = 0;
+    std::vector<int> image_;
     std::vector<std::uint8_t> imageMean_;
     size_t width_;
     size_t height_;

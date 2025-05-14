@@ -26,14 +26,16 @@ void RaytracerCore::computePrecision() {
     }
     this->imageMutex_.lock();
     if (this->nbImage_ == 0) {
+        for (size_t i = 0; i < this->image_.size(); i++) {
+            this->image_[i] = image[i];
+        }
         this->imageMean_ = image;
     } else {
         for (size_t i = 0; (i < this->imageMean_.size()) && !this->moving_ &&
                            !this->killThreads_;
              i++) {
-            this->imageMean_[i] =
-                (this->imageMean_[i] * this->nbImage_ + image[i]) /
-                (this->nbImage_ + 1);
+            this->image_[i] += image[i];
+            this->imageMean_[i] = this->image_[i] / (this->nbImage_ + 1);
         }
     }
     this->nbImage_ += 1;

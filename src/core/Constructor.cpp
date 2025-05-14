@@ -193,6 +193,7 @@ void RaytracerCore::startThreads(size_t nbThreads) {
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
     : graphic_(args.graphicMode),
+      image_(args.xResolution * args.yResolution * 4, 0),
       imageMean_(args.xResolution * args.yResolution * 4, 0),
       width_(args.width),
       height_(args.height),
