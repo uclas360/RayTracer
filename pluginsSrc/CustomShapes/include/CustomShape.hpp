@@ -32,6 +32,7 @@ class CustomShape : public AShape {
     void scale(size_t) override;
     void setPosition(const Math::Vector3D &) override;
     void setMaterial(std::unique_ptr<Material> &) override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
 
    private:
     void parseLine(const std::string &line);

@@ -51,6 +51,7 @@ class AABB : public IShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
     const AABB &boundingBox() const override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
     void setMaterial(std::unique_ptr<Material> &newMaterial) override;
 
    private:

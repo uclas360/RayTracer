@@ -5,8 +5,6 @@
 ** Texture
 */
 
-#include "Raytracer/Texture.hpp"
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -16,6 +14,7 @@
 
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
+#include "plugins/AShape.hpp"
 
 namespace RayTracer {
 
@@ -65,7 +64,6 @@ static Math::Vector3D getPixel(const std::string &filePath,
     Math::Vector3D pixel;
 
     ss >> pixel.x >> pixel.y >> pixel.z;
-
     if (ss.fail()) {
         throw ParsingException(filePath + ": failed to parse pixel");
     }
@@ -74,6 +72,8 @@ static Math::Vector3D getPixel(const std::string &filePath,
     scaleColor(pixel.z, maxValue);
     return pixel;
 }
+
+Texture::Texture(): image_(1, {1, {1, 1, 1}}) {}
 
 Texture::Texture(std::string filePath) {
     std::ifstream stream(filePath);
@@ -96,4 +96,12 @@ Texture::Texture(std::string filePath) {
         }
     }
 }
+
+Math::Vector3D Texture::getColor(double u, double v) const {
+    size_t y = (size_t)((this->image_.size()) * v) % this->image_.size();
+    size_t x = (size_t)(this->image_[y].size() * u) % this->image_[y].size();
+
+    return this->image_[y][x];
+}
+
 };  // namespace RayTracer

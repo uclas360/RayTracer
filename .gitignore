@@ -18,7 +18,7 @@ compile_flags.txt
 build
 test*
 vgcore*
-output.ppm
+*.ppm
 *.obj
 *.conf
 windows*

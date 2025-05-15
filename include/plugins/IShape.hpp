@@ -12,6 +12,7 @@
 
 #include "Interval.hpp"
 #include "Raytracer/Ray.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "plugins/IObject.hpp"
 #include "plugins/Material.hpp"
 
@@ -24,6 +25,7 @@ class IShape : public IObject {
    public:
     virtual void setMaterial(std::unique_ptr<Material> &) = 0;
     virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
+    virtual Math::Vector3D getPointColor(const Math::Vector3D &point) const = 0;
     virtual const AABB &boundingBox() const = 0;
 };
 

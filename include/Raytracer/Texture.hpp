@@ -5,7 +5,9 @@
 ** Texture
 */
 
-#include <cstdint>
+#ifndef TEXTURE_HPP
+#define TEXTURE_HPP
+
 #include <string>
 #include <vector>
 
@@ -14,8 +16,9 @@ namespace RayTracer {
 
 class Texture {
    public:
+    Texture();
     Texture(std::string filePath);
-    Math::Vector3D getColor(double u, double v);
+    Math::Vector3D getColor(double u, double v) const;
 
     struct TextureInfos {
         size_t width;
@@ -28,3 +31,5 @@ class Texture {
 };
 
 };  // namespace RayTracer
+
+#endif

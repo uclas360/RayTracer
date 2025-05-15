@@ -15,8 +15,6 @@
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
 
-// TODO : a Scene class
-
 namespace RayTracer {
 
 class Scene : public AShape {
@@ -26,6 +24,7 @@ class Scene : public AShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
 
     void addShape(std::unique_ptr<IShape> shape);
     void addLight(std::unique_ptr<ILight> light);

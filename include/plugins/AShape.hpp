@@ -12,6 +12,7 @@
 
 #include "AABB.hpp"
 #include "plugins/Material.hpp"
+#include "Raytracer/Texture.hpp"
 
 namespace RayTracer {
 
@@ -24,6 +25,7 @@ class AShape : public IShape {
     int depth = 0;
     AABB bbox;
     std::unique_ptr<Material> material_;
+    Texture texture_;
 };
 
 };  // namespace RayTracer
