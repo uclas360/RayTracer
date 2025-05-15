@@ -159,6 +159,12 @@ bool Vector3D::near_zero() const {
                (std::fabs(this->z) < s);
 }
 
+void Vector3D::setRange(double range, double newRange) {
+    this->x = (this->x * newRange) / range;
+    this->y = (this->y * newRange) / range;
+    this->z = (this->z * newRange) / range;
+}
+
 std::ostream &operator<<(std::ostream &out, const Math::Vector3D &vec) {
   out << "Vector3D(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
   return out;

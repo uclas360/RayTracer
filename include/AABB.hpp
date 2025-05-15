@@ -50,7 +50,7 @@ class AABB : public IShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
     const AABB &boundingBox() const override;
-    void setMaterial(std::unique_ptr<Material> &newMaterial);
+    void setMaterial(std::unique_ptr<Material> &newMaterial) override;
 
    private:
     void padToMinimums();
