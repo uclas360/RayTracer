@@ -30,7 +30,7 @@ Metal::Metal(const libconfig::Setting &config) {
         throw ParsingException(
             "error parsing lambertian material, missing \"fuzz\" field");
     }
-
+    this->albedo.setRange(255, 1);
 }
 
 static Math::Vector3D reflect(const Math::Vector3D &v,

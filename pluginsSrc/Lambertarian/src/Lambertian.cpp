@@ -27,6 +27,7 @@ Lambertian::Lambertian(const libconfig::Setting &config) {
         throw ParsingException(
             "error parsing lambertian material, missing \"blue\" field");
     }
+    this->albedo.setRange(255, 1);
 }
 
 bool Lambertian::scatter(const Ray &, const HitRecord &rec,
