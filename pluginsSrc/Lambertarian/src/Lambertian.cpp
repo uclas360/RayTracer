@@ -19,7 +19,7 @@ Lambertian::Lambertian(const libconfig::Setting &config) {
         throw ParsingException(
             "error parsing lambertian material, missing \"red\" field");
     }
-    if (!config.lookupValue("green", this->albedo.z)) {
+    if (!config.lookupValue("green", this->albedo.y)) {
         throw ParsingException(
             "error parsing lambertian material, missing \"green\" field");
     }

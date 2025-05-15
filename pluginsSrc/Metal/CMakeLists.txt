@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(LIB_NAME Metal)
+set(LIB_NAME metal)
 
 add_library(${LIB_NAME} SHARED
     src/Metal.cpp
