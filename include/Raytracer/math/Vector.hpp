@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <libconfig.h++>
 #include "Utils.hpp"
 
 namespace Math {
@@ -19,6 +20,7 @@ class Vector3D {
     double x;
     double y;
     double z;
+    double *arr[3] = {&x, &y, &z};
 
     Vector3D() : x(0), y(0), z(0) {};
     Vector3D(double x, double y, double z) : x(x), y(y), z(z) {};
@@ -52,6 +54,7 @@ class Vector3D {
     Vector3D &operator*=(const double &other);
     Vector3D &operator/=(const double &other);
     bool operator==(const Vector3D other);
+    bool near_zero() const;
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());
@@ -84,6 +87,8 @@ class Vector3D {
             return -on_unit_sphere;
     }
 };
+
+bool lookUpVector(const libconfig::Setting &setting, Vector3D &vector);
 
 std::ostream &operator<<(std::ostream &out, const Vector3D &vec);
 

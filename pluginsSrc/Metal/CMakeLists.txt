@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(LIB_NAME sphere)
+set(LIB_NAME metal)
 
 add_library(${LIB_NAME} SHARED
-    src/Sphere.cpp
+    src/Metal.cpp
 )
 
 target_link_libraries(

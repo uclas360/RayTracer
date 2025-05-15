@@ -11,18 +11,19 @@
 #include <iostream>
 #include <libconfig.h++>
 
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 
 namespace RayTracer {
 
-class Sphere : public IShape {
+class Sphere : public AShape {
     public:
     Sphere();
     Sphere(Math::Vector3D pos, double radius);
     Sphere(const libconfig::Setting &);
-    HitRecord hits(const Ray &ray) const override;
+    HitRecord hits(const Ray &ray, Interval interval) const override;
     void move(const Math::Vector3D &offset) override;
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;

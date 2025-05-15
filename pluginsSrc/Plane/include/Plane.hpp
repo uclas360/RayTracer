@@ -12,28 +12,29 @@
 #include <libconfig.h++>
 
 #include "plugins/AShape.hpp"
+#include "plugins/IShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 
 namespace RayTracer {
 
-class Cylinder : public AShape {
+class Plane : public AShape {
     public:
-    Cylinder(const libconfig::Setting &);
+    Plane();
+    Plane(Math::Vector3D pos, double radius);
+    Plane(const libconfig::Setting &);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
 
-    private:
-    HitRecord hitsCapOnly(const Ray &ray, Interval ray_t) const;
-    Math::Vector3D pos_;
-    double radius_;
-    double height_;
+    Math::Vector3D pos;
+    Math::Vector3D orientation;
+    double radius;
 };
 
-std::ostream &operator<<(std::ostream &out, const Cylinder &ray);
+std::ostream &operator<<(std::ostream &out, const Plane &ray);
 
 }  // namespace RayTracer
 

@@ -9,10 +9,13 @@
 #define RAYTRACER_CORE_HPP
 
 #include <SFML/Window/Keyboard.hpp>
+#include <libconfig.h++>
 #include <mutex>
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/Material.hpp"
 #define CAM_SPEED 0.03
 #define LIGHT_REFLEXION 0.6
+#define MAX_RAY_BOUNCE 10
 
 #include <cstdint>
 #include <map>
@@ -52,13 +55,19 @@ class RaytracerCore {
 
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>> shapesPlugins_;
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>> materials_;
 
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
+    void initMaterials(std::unique_ptr<RayTracer::IShape> &shape, const libconfig::SettingIterator &shapeSetting);
 
     void initCamera(const std::string &file, const libconfig::Config &config,
                     std::optional<RayTracer::Camera> &camera);
+
+    void initShape(const std::string &name, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+    void initLight(const std::string &name, RayTracer::Scene &scene, const libconfig::SettingIterator &iterator);
+
 
     bool graphic_;
 
@@ -71,6 +80,7 @@ class RaytracerCore {
 
     std::mutex imageMutex_;
     size_t nbImage_ = 0;
+    std::vector<int> image_;
     std::vector<std::uint8_t> imageMean_;
     size_t width_;
     size_t height_;

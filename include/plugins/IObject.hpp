@@ -9,9 +9,11 @@
 #define IOBJECT_HPP
 
 #include <cstddef>
+#include <memory>
 
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/IPlugin.hpp"
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
