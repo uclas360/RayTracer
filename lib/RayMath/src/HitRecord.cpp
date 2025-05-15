@@ -17,8 +17,8 @@ HitRecord::HitRecord(const double t, const Ray &ray, const IShape &shape,
     this->p = ray.at(t);
     this->frontFace = ray.dir.dot(normal) < 0;
     this->normal = this->frontFace ? normal : -normal;
-    this->shapeHit = shape;
-    this->mat = mat;
+    this->shapeHit = &shape;
+    this->mat = mat.get();
 }
 
 }  // namespace RayTracer

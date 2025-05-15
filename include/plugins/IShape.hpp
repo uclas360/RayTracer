@@ -40,8 +40,8 @@ class HitRecord {
     double t = 0;
     bool frontFace = false;
     bool missed = true;
-    std::optional<std::reference_wrapper<const IShape>> shapeHit;
-    std::optional<std::reference_wrapper<const std::unique_ptr<Material>>> mat;
+    const IShape *shapeHit;
+    const Material *mat;
 
     HitRecord() = default;
     HitRecord(const double t, const Ray &ray, const IShape &shape,
