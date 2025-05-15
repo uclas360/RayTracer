@@ -10,27 +10,28 @@
 
 #include <algorithm>
 
-#include "FixCrossInclude.hpp"
 #include "AABB.hpp"
 #include "AShape.hpp"
+#include "FixCrossInclude.hpp"
 #include "Ray.hpp"
 #include "Scene.hpp"
 
 class BVHNode : public RayTracer::AShape {
    public:
-
     BVHNode(RayTracer::Scene list, int depth)
         : BVHNode(list.shapeList, 0, list.shapeList.size()) {
-            this->depth = depth;
+        this->depth = depth;
     }
 
     BVHNode(std::vector<std::shared_ptr<IShape>> &objects, size_t start,
             size_t end) {
-        this->bbox = RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                    Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                    Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY));
+        this->bbox =
+            RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
+                            Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
+                            Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY));
         for (size_t object_index = start; object_index < end; object_index++)
-            this->bbox = RayTracer::AABB(this->bbox, objects[object_index]->boundingBox());
+            this->bbox = RayTracer::AABB(this->bbox,
+                                         objects[object_index]->boundingBox());
 
         int axis = this->bbox.longestAxis();
         bool (*comparator)(const std::shared_ptr<IShape> a,
@@ -53,7 +54,8 @@ class BVHNode : public RayTracer::AShape {
             this->right = std::make_shared<BVHNode>(objects, mid, end);
         }
 
-        this->bbox = RayTracer::AABB(this->left->boundingBox(), this->right->boundingBox());
+        this->bbox = RayTracer::AABB(this->left->boundingBox(),
+                                     this->right->boundingBox());
     }
 
     RayTracer::HitRecord hit(const RayTracer::Ray &r,

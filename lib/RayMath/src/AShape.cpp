@@ -17,4 +17,4 @@ const AABB &AShape::boundingBox() const {
     return this->bbox;
 }
 
-}
+}  // namespace RayTracer

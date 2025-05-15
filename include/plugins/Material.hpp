@@ -8,6 +8,8 @@
 #ifndef MATERIAL_HPP
 #define MATERIAL_HPP
 
+#include <memory>
+
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/IPlugin.hpp"
@@ -22,6 +24,7 @@ class Material : public IPlugin {
 
     virtual bool scatter(const Ray &r_in, const HitRecord &rec,
                          Math::Vector3D &attenuation, Ray &scattered) const = 0;
+    virtual std::unique_ptr<Material> duplicate(void) = 0;
 };
 
 };  // namespace RayTracer

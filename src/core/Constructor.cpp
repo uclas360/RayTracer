@@ -16,9 +16,9 @@
 #include <thread>
 #include <utility>
 
-#include "Raytracer/Texture.hpp"
 #include "Raytracer/Camera.hpp"
 #include "Raytracer/Scene.hpp"
+#include "Raytracer/Texture.hpp"
 #include "RaytracerCore.hpp"
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/IShape.hpp"
@@ -43,16 +43,19 @@ static void initInMap(
     try {
 // LINUX
 #if defined __linux__
-        map.insert({name, std::make_unique<DlLoader<Plugin>>("plugin/" + name)});
+        map.insert(
+            {name, std::make_unique<DlLoader<Plugin>>("plugin/" + name)});
 #endif
 //
 // WINDOWS
 #if defined _WIN32
-        map.insert({name, std::make_unique<WindowsLoader<Plugin>>("plugin/" + name)});
+        map.insert(
+            {name, std::make_unique<WindowsLoader<Plugin>>("plugin/" + name)});
 #endif
-//
+        //
     } catch (const LoaderException &ex) {
-        throw ParsingException("error loading pluggin :" + std::string(ex.what()));
+        throw ParsingException("error loading pluggin :" +
+                               std::string(ex.what()));
     }
 }
 
@@ -73,8 +76,7 @@ void RaytracerCore::initCamera(const std::string &file,
     }
 }
 
-void RaytracerCore::initShape(const std::string &name,
-                              RayTracer::Scene &scene,
+void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
                               const libconfig::SettingIterator &iterator) {
     initInMap<RayTracer::IShape>(this->shapesPlugins_, name);
     std::unique_ptr<RayTracer::IShape> shape;
@@ -83,35 +85,33 @@ void RaytracerCore::initShape(const std::string &name,
         shape = this->shapesPlugins_.at(name)->getInstance(
             "entry_point", iterator->lookup("data"));
     } catch (const std::out_of_range &exp) {
-        throw ParsingException("shape \"" + name +
-                                "\" does not exist");
+        throw ParsingException("shape \"" + name + "\" does not exist");
     } catch (const LoaderException &exc) {
-        throw ParsingException("error loading plugin: " + std::string(exc.what()));
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
     }
     try {
         this->initMaterials(shape, iterator);
     } catch (const ParsingException &exc) {
-        throw ParsingException(
-            "failed to init material for object \"" + name +
-            "\": " + exc.what());
+        throw ParsingException("failed to init material for object \"" + name +
+                               "\": " + exc.what());
     }
     scene.addShape(std::move(shape));
 }
 
-void RaytracerCore::initLight(const std::string &name,
-                              RayTracer::Scene &scene,
+void RaytracerCore::initLight(const std::string &name, RayTracer::Scene &scene,
                               const libconfig::SettingIterator &iterator) {
     initInMap<RayTracer::ILight>(this->lightsPlugins_, name);
     try {
         scene.addLight(this->lightsPlugins_.at(name)->getInstance(
             "entry_point", iterator->lookup("data")));
     } catch (const std::out_of_range &) {
-        throw ParsingException("light \"" + name +
-                                "\" does not exist");
+        throw ParsingException("light \"" + name + "\" does not exist");
     } catch (const libconfig::SettingNotFoundException &) {
         throw ParsingException("missing or invalid \"data\" field");
     } catch (const LoaderException &exc) {
-        throw ParsingException("error loading plugin: " + std::string(exc.what()));
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
     }
 }
 
@@ -131,9 +131,10 @@ void RaytracerCore::initMaterials(
         shape->setMaterial(tmp);
     } catch (const std::out_of_range &) {
         throw ParsingException("material \"" + materialType +
-                                "\" does not exist");
+                               "\" does not exist");
     } catch (const LoaderException &exc) {
-        throw ParsingException("error loading plugin: " + std::string(exc.what()));
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
     }
 }
 

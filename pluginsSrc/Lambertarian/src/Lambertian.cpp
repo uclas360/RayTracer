@@ -41,6 +41,10 @@ bool Lambertian::scatter(const Ray &, const HitRecord &rec,
     return true;
 }
 
+std::unique_ptr<Material> Lambertian::duplicate(void) {
+    return std::make_unique<Lambertian>(*this);
+}
+
 extern "C" {
 void *entry_point(const libconfig::Setting &config) {
     return new Lambertian(config);

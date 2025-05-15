@@ -11,14 +11,14 @@
 #include <iostream>
 #include <libconfig.h++>
 
-#include "plugins/AShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/AShape.hpp"
 
 namespace RayTracer {
 
 class Cylinder : public AShape {
-    public:
+   public:
     Cylinder(const libconfig::Setting &);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
@@ -26,7 +26,7 @@ class Cylinder : public AShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
 
-    private:
+   private:
     HitRecord hitsCapOnly(const Ray &ray, Interval ray_t) const;
     Math::Vector3D pos_;
     double radius_;
@@ -36,7 +36,5 @@ class Cylinder : public AShape {
 std::ostream &operator<<(std::ostream &out, const Cylinder &ray);
 
 }  // namespace RayTracer
-
-
 
 #endif

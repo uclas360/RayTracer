@@ -8,23 +8,25 @@
 #include "../include/Metal.hpp"
 
 #include <libconfig.h++>
+#include <memory>
 
 #include "RaytracerCore.hpp"
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
 Metal::Metal(const libconfig::Setting &config) {
     if (!config.lookupValue("red", this->albedo.x)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"red\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"red\" field");
     }
     if (!config.lookupValue("green", this->albedo.y)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"green\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"green\" field");
     }
     if (!config.lookupValue("blue", this->albedo.z)) {
-      throw ParsingException(
-          "error parsing lambertian material, missing \"blue\" field");
+        throw ParsingException(
+            "error parsing lambertian material, missing \"blue\" field");
     }
     if (!config.lookupValue(("fuzz"), this->fuzz)) {
         throw ParsingException(
@@ -47,6 +49,10 @@ bool Metal::scatter(const Ray &r_in, const HitRecord &rec,
     scattered = Ray(rec.p, reflected);
     attenuation = albedo;
     return scattered.dir.dot(rec.normal) > 0;
+}
+
+std::unique_ptr<Material> Metal::duplicate(void) {
+    return std::make_unique<Metal>(*this);
 }
 
 extern "C" {

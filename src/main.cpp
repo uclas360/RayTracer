@@ -9,9 +9,9 @@
 #include <iostream>
 
 #include "ArgsManager.hpp"
+#include "Raytracer/Texture.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
-#include "Raytracer/Texture.hpp"
 
 int main(int argc, char **argv) {
     if (argc == 2 && std::string(argv[1]) == "-h") {

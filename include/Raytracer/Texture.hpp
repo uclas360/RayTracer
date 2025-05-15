@@ -8,11 +8,12 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
 #include "Raytracer/math/Vector.hpp"
 namespace RayTracer {
 
 class Texture {
-    public:
+   public:
     Texture(std::string filePath);
     Math::Vector3D getColor(double u, double v);
 
@@ -21,8 +22,9 @@ class Texture {
         size_t height;
         size_t maxValue;
     };
-    private:
+
+   private:
     std::vector<std::vector<Math::Vector3D>> image_;
 };
 
-};
+};  // namespace RayTracer

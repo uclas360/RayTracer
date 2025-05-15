@@ -6,6 +6,7 @@
 */
 
 #include "Raytracer/Scene.hpp"
+
 #include <cstdio>
 #include <memory>
 
@@ -44,7 +45,6 @@ void Scene::move(const Math::Vector3D &offset) {
         it->move(offset);
     }
 }
-
 
 void Scene::rotate(const Math::Vector3D &angles) {
     for (auto &it : this->shapes_) {

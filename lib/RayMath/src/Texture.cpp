@@ -5,20 +5,22 @@
 ** Texture
 */
 
+#include "Raytracer/Texture.hpp"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
-#include "Raytracer/Texture.hpp"
 
 namespace RayTracer {
 
-
-static Texture::TextureInfos getTextureInfos(const std::string &filePath, std::ifstream &stream) {
+static Texture::TextureInfos getTextureInfos(const std::string &filePath,
+                                             std::ifstream &stream) {
     std::string format;
     std::string bounds;
     std::string maxValue;
@@ -58,7 +60,8 @@ static void scaleColor(double &base, size_t max) {
     base = (base * 255) / max;
 }
 
-static Math::Vector3D getPixel(const std::string &filePath, std::stringstream &ss, size_t maxValue) {
+static Math::Vector3D getPixel(const std::string &filePath,
+                               std::stringstream &ss, size_t maxValue) {
     Math::Vector3D pixel;
 
     ss >> pixel.x >> pixel.y >> pixel.z;
@@ -77,7 +80,8 @@ Texture::Texture(std::string filePath) {
     TextureInfos infos = getTextureInfos(filePath, stream);
     std::string pixels;
     try {
-        pixels = std::string(std::istreambuf_iterator<char>(stream), (std::istreambuf_iterator<char>()));
+        pixels = std::string(std::istreambuf_iterator<char>(stream),
+                             (std::istreambuf_iterator<char>()));
         std::replace(pixels.begin(), pixels.end(), '\n', ' ');
     } catch (const std::length_error &) {
         throw ParsingException(filePath + ": image is too big");
@@ -87,8 +91,9 @@ Texture::Texture(std::string filePath) {
     for (size_t y = 0; y < infos.height; y++) {
         this->image_.push_back({});
         for (size_t x = 0; x < infos.width; x++) {
-            this->image_[y].push_back(getPixel(filePath, ssPixels, infos.maxValue));
+            this->image_[y].push_back(
+                getPixel(filePath, ssPixels, infos.maxValue));
         }
     }
 }
-};
+};  // namespace RayTracer

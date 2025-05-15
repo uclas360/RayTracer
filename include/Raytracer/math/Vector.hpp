@@ -11,6 +11,7 @@
 #include <cmath>
 #include <iostream>
 #include <libconfig.h++>
+
 #include "Utils.hpp"
 
 namespace Math {
