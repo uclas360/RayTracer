@@ -9,8 +9,8 @@
 
 #include <cmath>
 #include <libconfig.h++>
-#include <ostream>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
@@ -29,6 +29,10 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
             throw ParsingException(
                 "error parsing cylinder object, wrong \"radius / height\" "
                 "field");
+        }
+        std::string texture;
+        if (settings.lookupValue("texture", texture)) {
+            this->texture_ = texture;
         }
     } catch (const ParsingException &e) {
         throw e;
@@ -122,6 +126,17 @@ void Cylinder::scale(size_t scale) {
 
 void Cylinder::setPosition(const Math::Vector3D &newPos) {
     this->pos_ = newPos;
+}
+
+Math::Vector3D Cylinder::getPointColor(const Math::Vector3D &point) const {
+    double theta = std::atan2(point.x, point.z);
+    double raw_u = theta / (2 * M_PI);
+    double u = 1 - (raw_u + 0.5);
+
+    double origin = this->pos_.y + this->height_;
+    double v = (point.y - origin) / this->height_;
+
+    return this->texture_.getColor(u, v);
 }
 
 }  // namespace RayTracer

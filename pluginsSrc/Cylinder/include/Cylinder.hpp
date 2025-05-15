@@ -25,7 +25,7 @@ class Cylinder : public AShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
-    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override;
 
    private:
     HitRecord hitsCapOnly(const Ray &ray, Interval ray_t) const;
