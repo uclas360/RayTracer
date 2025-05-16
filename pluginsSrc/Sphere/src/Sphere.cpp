@@ -35,7 +35,6 @@ Sphere::Sphere(const libconfig::Setting &settings) {
         if (settings.lookupValue("texture", texture)) {
             this->texture_ = texture;
         }
-        std::cout << texture << std::endl;
     } catch (const ParsingException &e) {
         throw e;
     } catch (const libconfig::SettingNotFoundException &e) {

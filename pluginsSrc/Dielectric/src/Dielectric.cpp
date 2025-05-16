@@ -48,6 +48,11 @@ std::unique_ptr<Material> Dielectric::duplicate(void) {
     return std::make_unique<Dielectric>(*this);
 }
 
+void Dielectric::setColor(const Math::Vector3D &newColor) {
+    (void)newColor;
+};
+
+
 extern "C" {
 void *entry_point(const libconfig::Setting &config) {
     return new Dielectric(config);

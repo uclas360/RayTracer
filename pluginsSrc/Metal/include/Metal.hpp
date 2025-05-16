@@ -18,6 +18,7 @@ class Metal : public Material {
     bool scatter(const Ray &r_in, const HitRecord &rec,
                  Math::Vector3D &attenuation, Ray &scattered) const override;
     std::unique_ptr<Material> duplicate(void) override;
+    void setColor(const Math::Vector3D &newColor) override;
 
    private:
     Math::Vector3D albedo;

@@ -55,6 +55,11 @@ std::unique_ptr<Material> Metal::duplicate(void) {
     return std::make_unique<Metal>(*this);
 }
 
+void Metal::setColor(const Math::Vector3D &newColor) {
+    this->albedo = newColor;
+    this->albedo.setRange(255, 1);
+}
+
 extern "C" {
 void *entry_point(const libconfig::Setting &config) {
     return new Metal(config);

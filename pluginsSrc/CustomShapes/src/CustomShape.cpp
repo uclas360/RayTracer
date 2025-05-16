@@ -5,14 +5,15 @@
 ** CustomShape
 */
 
-#include "CustomShape.hpp"
+#include "../include/CustomShape.hpp"
 
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
-#include "plugins/IShape.hpp"
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
@@ -55,6 +56,7 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
     std::string tmp;
     std::stringstream stream;
     std::vector<Math::Vector3D> points;
+    std::vector<Math::Vector3D> textures;
     std::vector<Math::Vector3D> normals;
 
     for (std::string vertex : args) {
@@ -64,14 +66,18 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
             vectors.push_back(tmp);
         }
         points.push_back((_vertices[std::stoi(vectors[0]) - 1]));
+        textures.push_back((this->_textureVertices[std::stoi(vectors[1]) - 1]));
         if (vectors.size() == 3)
             normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
     }
-    _faces.push_back(
-        _triangleLoader
-            ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
-                "value_entry_point", points[0], points[1], points[2]));
+
+    this->textCoordinates_.push_back((textures[0] + textures[1] + textures[2]) / 3);
+    this->_faces.push_back(_triangleLoader
+        ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
+            "value_entry_point", points[0], points[1], points[2]));
+
     if (points.size() == 4) {
+        this->textCoordinates_.push_back((textures[0] + textures[2] + textures[3]) / 3);
         _faces.push_back(
             _triangleLoader
                 ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
@@ -91,9 +97,9 @@ void CustomShape::parseLine(const std::string &line) {
         _functions.at(type)(this, args);
 }
 
-static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
+static std::unique_ptr<DlLoader<Triangle>> getLoader(void) {
 #if defined __linux__
-    return std::make_unique<DlLoader<IShape>>("plugin/triangle");
+    return std::make_unique<DlLoader<Triangle>>("plugin/triangle");
 #endif
 }
 
@@ -179,12 +185,20 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     }
     getPos(settings);
     getRotation(settings);
+    std::string texture;
+    if (settings.lookupValue("texture", texture)) {
+        this->texture_ = texture;
+    }
 }
 
 void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
-    for (auto &it : this->_faces) {
+    for (size_t i = 0; i < this->_faces.size(); i++) {
         std::unique_ptr<Material> tmp = material->duplicate();
-        it->setMaterial(tmp);
+        this->_faces[i]->setMaterial(tmp);
+        if (this->haveTexture()) {
+            const Math::Vector3D &textCoord = this->textCoordinates_[i % this->textCoordinates_.size()];
+            this->_faces[i]->getMaterial()->setColor(this->texture_.getColor(textCoord.x, textCoord.y));
+        }
     }
 }
 

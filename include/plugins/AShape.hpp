@@ -20,6 +20,9 @@ class AShape : public IShape {
    public:
     virtual void setMaterial(std::unique_ptr<Material> &) override;
     const AABB &boundingBox() const override;
+    std::unique_ptr<Material> &getMaterial();
+    bool haveTexture() const;
+
 
    protected:
     int depth = 0;

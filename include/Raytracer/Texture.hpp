@@ -19,6 +19,7 @@ class Texture {
     Texture();
     Texture(std::string filePath);
     Math::Vector3D getColor(double u, double v) const;
+    bool hasValue(void) const;
 
     struct TextureInfos {
         size_t width;
@@ -27,6 +28,7 @@ class Texture {
     };
 
    private:
+    bool haveOne_ = false;
     std::vector<std::vector<Math::Vector3D>> image_;
 };
 

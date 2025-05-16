@@ -6,6 +6,8 @@
 */
 
 #include "plugins/AShape.hpp"
+#include <memory>
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
@@ -15,6 +17,14 @@ void AShape::setMaterial(std::unique_ptr<Material> &newMaterial) {
 
 const AABB &AShape::boundingBox() const {
     return this->bbox;
+}
+
+std::unique_ptr<Material> &AShape::getMaterial() {
+    return this->material_;
+}
+
+bool AShape::haveTexture() const {
+    return this->texture_.hasValue();
 }
 
 }  // namespace RayTracer
