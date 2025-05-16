@@ -16,13 +16,13 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "BVHNode.hpp"
 #include "libLoaders/LDLoader.hpp"
 #include "plugins/AShape.hpp"
+#include "plugins/IShape.hpp"
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
-
-class Triangle: public AShape {};
 
 class CustomShape : public AShape {
    public:
@@ -53,9 +53,10 @@ class CustomShape : public AShape {
     Math::Vector3D pos_;
     Math::Vector3D rotation_;
 
-    std::unique_ptr<DlLoader<Triangle>> _triangleLoader;
+    std::unique_ptr<DlLoader<IShape>> _triangleLoader;
+    std::unique_ptr<BVHNode> bvh;
 
-    std::vector<std::unique_ptr<Triangle>> _faces;
+    std::vector<std::unique_ptr<IShape>> _faces;
     std::vector<Math::Vector3D> textCoordinates_;
     const std::map<std::string,
                    std::function<void(CustomShape *, std::vector<std::string>)>>

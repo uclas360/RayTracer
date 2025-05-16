@@ -8,7 +8,7 @@
 #ifndef ISHAPE_HPP
 #define ISHAPE_HPP
 
-#include <optional>
+#include <memory>
 
 #include "Interval.hpp"
 #include "Raytracer/Ray.hpp"
@@ -27,11 +27,12 @@ class IShape : public IObject {
     virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
     virtual Math::Vector3D getPointColor(const Math::Vector3D &point) const = 0;
     virtual const AABB &boundingBox() const = 0;
+    virtual std::unique_ptr<Material> &getMaterial() = 0;
 };
 
 };  // namespace RayTracer
 
-#include "AABB.hpp"  // don't move this, trust the process (cross include)
+//#include "AABB.hpp"  // don't move this, trust the process (cross include)
 
 namespace RayTracer {
 
@@ -50,6 +51,8 @@ class HitRecord {
               const Math::Vector3D &normal,
               const std::unique_ptr<Material> &mat);
 };
+
+std::ostream &operator<<(std::ostream &out, const HitRecord &vec);
 
 };  // namespace RayTracer
 

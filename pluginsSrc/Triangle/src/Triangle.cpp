@@ -12,6 +12,7 @@
 
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
+#include "AABB.hpp"
 
 namespace RayTracer {
 
@@ -30,6 +31,7 @@ Triangle::Triangle(const libconfig::Setting &settings) {
             throw ParsingException(
                 "error parsing triangle object, wrong \"c\" field");
         std::string texture;
+        this->bbox = AABB(AABB(this->a, this->b), AABB(this->c, this->c));
         if (settings.lookupValue("texture", texture)) {
             this->texture_ = texture;
         }
@@ -52,9 +54,10 @@ void Triangle::setPosition(const Math::Vector3D &) {
 }
 
 void Triangle::move(const Math::Vector3D &pos) {
-    a += pos;
-    b += pos;
-    c += pos;
+  a += pos;
+  b += pos;
+  c += pos;
+  this->bbox.move(pos);
 }
 
 void Triangle::rotate(const Math::Vector3D &angles) {
@@ -74,36 +77,37 @@ void Triangle::rotate(const Math::Vector3D &angles) {
 }
 
 HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
-    Math::Vector3D ab = b - a;
-    Math::Vector3D ac = c - a;
-    Math::Vector3D n = ab.cross(ac);
+  // return this->bbox.hits(ray, ray_t);
+  Math::Vector3D ab = b - a;
+  Math::Vector3D ac = c - a;
+  Math::Vector3D n = ab.cross(ac);
 
-    double dot = n.dot(ray.dir);
-    if (fabs(dot) < EPSILON) return HitRecord();
-    double d = -n.dot(a);
-    double t = -(n.dot(ray.pos) + d) / dot;
+  double dot = n.dot(ray.dir);
+  if (fabs(dot) < EPSILON) return HitRecord();
+  double d = -n.dot(a);
+  double t = -(n.dot(ray.pos) + d) / dot;
 
-    if (t < 0) return HitRecord();
-    Math::Vector3D p = ray.pos + ray.dir * t;
-    Math::Vector3D ne;
+  if (t < 0) return HitRecord();
+  Math::Vector3D p = ray.pos + ray.dir * t;
+  Math::Vector3D ne;
 
-    Math::Vector3D ap = p - a;
-    ne = ab.cross(ap);
-    if (n.dot(ne) < 0) return HitRecord();
+  Math::Vector3D ap = p - a;
+  ne = ab.cross(ap);
+  if (n.dot(ne) < 0) return HitRecord();
 
-    Math::Vector3D bc = c - b;
-    Math::Vector3D bp = p - b;
-    ne = bc.cross(bp);
-    if (n.dot(ne) < 0) return HitRecord();
+  Math::Vector3D bc = c - b;
+  Math::Vector3D bp = p - b;
+  ne = bc.cross(bp);
+  if (n.dot(ne) < 0) return HitRecord();
 
-    Math::Vector3D ca = a - c;
-    Math::Vector3D cp = p - c;
-    ne = ca.cross(cp);
-    if (n.dot(ne) < 0) return HitRecord();
+  Math::Vector3D ca = a - c;
+  Math::Vector3D cp = p - c;
+  ne = ca.cross(cp);
+  if (n.dot(ne) < 0) return HitRecord();
 
-    if (!ray_t.contains(t)) return HitRecord();
+  if (!ray_t.contains(t)) return HitRecord();
 
-    return HitRecord(t, ray, *this, n.normalized(), this->material_);
+  return HitRecord(t, ray, *this, n.normalized(), this->material_);
 }
 
 Math::Vector3D Triangle::getPointColor(const Math::Vector3D &point) const {

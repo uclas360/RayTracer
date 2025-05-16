@@ -10,22 +10,25 @@
 
 #include <memory>
 
-#include "AABB.hpp"
 #include "plugins/Material.hpp"
 #include "Raytracer/Texture.hpp"
+#include "plugins/IShape.hpp"
+#include "AABB.hpp"
+
 
 namespace RayTracer {
+
+class AABB;
 
 class AShape : public IShape {
    public:
     virtual void setMaterial(std::unique_ptr<Material> &) override;
     const AABB &boundingBox() const override;
-    std::unique_ptr<Material> &getMaterial();
+    virtual std::unique_ptr<Material> &getMaterial() override;
     bool haveTexture() const;
 
 
    protected:
-    int depth = 0;
     AABB bbox;
     std::unique_ptr<Material> material_;
     Texture texture_;

@@ -9,58 +9,36 @@
 #define INTERVAL_HPP
 
 #include "Utils.hpp"
+#include <iostream>
 
 class Interval {
    public:
     double min, max;
 
-    Interval() : min(+DOUBLE_INFINITY), max(-DOUBLE_INFINITY) {
-    }
+    Interval();
 
-    Interval(double min, double max) : min(min), max(max) {
-    }
+    Interval(double min, double max);
 
-    Interval(const Interval &a, const Interval &b) {
-        min = a.min <= b.min ? a.min : b.min;
-        max = a.max >= b.max ? a.max : b.max;
-    }
+    Interval(const Interval &a, const Interval &b);
 
-    double size() const {
-        return max - min;
-    }
+    double size() const;
 
-    bool contains(double x) const {
-        return min <= x && x <= max;
-    }
+    bool contains(double x) const;
 
-    bool surrounds(double x) const {
-        return min < x && x < max;
-    }
+    bool surrounds(double x) const;
 
-    double mid() const {
-        return (max + min) / 2;
-    }
+    double mid() const;
 
-    double clamp(double x) const {
-        if (x < min) return min;
-        if (x > max) return max;
-        return x;
-    }
+    double clamp(double x) const;
 
-    Interval expand(double delta) const {
-        auto padding = delta / 2;
-        return Interval(min - padding, max + padding);
-    }
+    Interval expand(double delta) const;
 
-    Interval operator+(const double displacement) const {
-        return Interval(this->min + displacement, this->max + displacement);
-    }
+    Interval operator+(const double displacement) const;
 
-    Interval &operator+=(const double &displacement) {
-        this->min += displacement;
-        this->max += displacement;
-        return *this;
-    }
+    Interval &operator+=(const double &displacement);
+
 };
+
+std::ostream &operator<<(std::ostream &out, const Interval &ival);
 
 #endif

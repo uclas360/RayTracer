@@ -8,6 +8,7 @@
 #ifndef AABB_HPP
 #define AABB_HPP
 
+#include <memory>
 #include "FixCrossInclude.hpp"
 #include "Interval.hpp"
 #include "Raytracer/Ray.hpp"
@@ -34,8 +35,6 @@ class AABB : public IShape {
    public:
     Interval x, y, z;
 
-    std::unique_ptr<Material> material_;
-
     AABB();
     AABB(const Interval &x, const Interval &y, const Interval &z);
     AABB(const Math::Vector3D &a, const Math::Vector3D &b);
@@ -54,18 +53,16 @@ class AABB : public IShape {
     const AABB &boundingBox() const override;
     Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
     void setMaterial(std::unique_ptr<Material> &newMaterial) override;
+    std::unique_ptr<Material> &getMaterial() override {return this->material_;};
+
 
    private:
+    std::unique_ptr<Material> material_;
     void padToMinimums();
 };
 
-// AABB operator+(const AABB &bbox, const Math::Vector3D &offset) {
-//     return AABB(bbox.x + offset.x, bbox.y + offset.y, bbox.z + offset.z);
-// }
+std::ostream &operator<<(std::ostream &out, const AABB &aabb);
 
-// AABB operator+(const Math::Vector3D &offset, const AABB &bbox) {
-//     return bbox + offset;
-// }
 }  // namespace RayTracer
 
 #endif

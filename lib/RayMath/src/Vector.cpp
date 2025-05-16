@@ -164,6 +164,10 @@ bool Vector3D::operator==(const Vector3D other) {
     return this->x == other.x && this->y == other.y && this->z == other.z;
 }
 
+bool Vector3D::operator<(const Vector3D &other) const {
+    return this->length() < other.length();
+}
+
 bool Vector3D::near_zero() const {
     double s = 1e-8;
     return (std::fabs(this->x) < s) && (std::fabs(this->y) < s) &&
@@ -174,6 +178,12 @@ void Vector3D::setRange(double range, double newRange) {
     this->x = (this->x * newRange) / range;
     this->y = (this->y * newRange) / range;
     this->z = (this->z * newRange) / range;
+}
+
+double Vector3D::getAxis(int axis) const {
+    if (axis == 0) return this->x;
+    if (axis == 1) return this->y;
+    return this->z;
 }
 
 std::ostream &operator<<(std::ostream &out, const Math::Vector3D &vec) {
