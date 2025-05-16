@@ -11,6 +11,7 @@
 #include <libconfig.h++>
 #include <ostream>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
@@ -31,6 +32,10 @@ Plane::Plane(const libconfig::Setting &settings) {
         if (!Math::lookUpVector(normal, this->orientation)) {
             throw ParsingException(
                 "error parsing plane object, wrong \"orientation\" field");
+        }
+        std::string texture;
+        if (settings.lookupValue("texture", texture)) {
+            this->texture_ = texture;
         }
     } catch (const ParsingException &e) {
         throw e;
@@ -65,6 +70,10 @@ void Plane::scale(size_t scale) {
 
 void Plane::setPosition(const Math::Vector3D &newPos) {
     this->pos = newPos;
+}
+
+Math::Vector3D Plane::getPointColor(const Math::Vector3D &point) const {
+    return this->texture_.getColor(point.x, point.z);
 }
 
 std::ostream &operator<<(std::ostream &out, const Plane &plane) {

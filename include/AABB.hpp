@@ -8,6 +8,7 @@
 #ifndef AABB_HPP
 #define AABB_HPP
 
+#include <memory>
 #include "FixCrossInclude.hpp"
 #include "Interval.hpp"
 #include "Raytracer/Ray.hpp"
@@ -24,6 +25,7 @@ class LambertianDebug : public Material {
     bool scatter(const Ray &r_in, const HitRecord &rec,
                  Math::Vector3D &attenuation, Ray &scattered) const override;
     virtual std::unique_ptr<Material> duplicate(void) override;
+    void setColor(const Math::Vector3D &) override {};
 
    private:
     Math::Vector3D albedo;
@@ -32,8 +34,6 @@ class LambertianDebug : public Material {
 class AABB : public IShape {
    public:
     Interval x, y, z;
-
-    std::unique_ptr<Material> material_;
 
     AABB();
     AABB(const Interval &x, const Interval &y, const Interval &z);
@@ -51,9 +51,13 @@ class AABB : public IShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
     const AABB &boundingBox() const override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
     void setMaterial(std::unique_ptr<Material> &newMaterial) override;
+    std::unique_ptr<Material> &getMaterial() override {return this->material_;};
+
 
    private:
+    std::unique_ptr<Material> material_;
     void padToMinimums();
 };
 

@@ -31,14 +31,11 @@ class Triangle : public AShape {
     };
     Triangle(const libconfig::Setting &settings);
     HitRecord hits(const Ray &, Interval ray_t) const override;
-    void move(const Math::Vector3D &pos);
-    void rotate(const Math::Vector3D &);
-    void scale(size_t scale);
-    void setPosition(const Math::Vector3D &pos);
-
-   protected:
-    std::unique_ptr<Material> material_ =
-        std::make_unique<LambertianDebug>(Math::Vector3D(0.8, 0.8, 0.8));
+    void move(const Math::Vector3D &pos) override;
+    void rotate(const Math::Vector3D &) override;
+    void scale(size_t scale) override;
+    void setPosition(const Math::Vector3D &pos) override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override;
 };
 }  // namespace RayTracer
 

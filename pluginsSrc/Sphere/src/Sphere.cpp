@@ -11,8 +11,8 @@
 #include <libconfig.h++>
 #include <ostream>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
-#include "Utils.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
@@ -36,6 +36,10 @@ Sphere::Sphere(const libconfig::Setting &settings) {
         if (!settings.lookupValue("radius", this->radius)) {
             throw ParsingException(
                 "error parsing sphere object, wrong \"radius\" field");
+        }
+        std::string texture;
+        if (settings.lookupValue("texture", texture)) {
+            this->texture_ = texture;
         }
         Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
         this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
@@ -66,6 +70,16 @@ HitRecord Sphere::hits(const Ray &ray, Interval interval) const {
     return HitRecord(root, ray, *this, (ray.at(root) - this->pos) / radius,
                      this->material_);
 }
+
+Math::Vector3D Sphere::getPointColor(const Math::Vector3D &point) const {
+    Math::Vector3D d = this->pos - point;
+    d = d / this->radius;
+    double u = 0.5 + std::atan2(d.z, d.x) / (2 * M_PI);
+    double v = 0.5 + std::asin(d.y) / M_PI;
+
+    return this->texture_.getColor(u, v);
+};
+
 
 void Sphere::move(const Math::Vector3D &offset) {
     this->pos += offset;

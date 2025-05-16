@@ -12,11 +12,18 @@
 #include <functional>
 #include <vector>
 #include "AABB.hpp"
+#include "CustomException.hpp"
 #include "FixCrossInclude.hpp"
 #include "Raytracer/Ray.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "plugins/AShape.hpp"
 
 namespace RayTracer {
+
+class BVHException: public CustomException {
+    public:
+    BVHException(std::string message): CustomException(message) {};
+};
 
 static bool box_compare(const std::unique_ptr<IShape> &a,
                             const std::unique_ptr<IShape> &b,
@@ -37,6 +44,7 @@ class BVHNode : public AShape {
     void rotate(const Math::Vector3D &) override {};
     void scale(size_t) override {};
     void setPosition(const Math::Vector3D &) override {};
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
 
    private:
     std::unique_ptr<BVHNode> bLeft;

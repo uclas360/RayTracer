@@ -9,6 +9,7 @@
 
 #include <libconfig.h++>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "plugins/IShape.hpp"
 
@@ -39,6 +40,11 @@ bool Lambertian::scatter(const Ray &, const HitRecord &rec,
     scattered = Ray(rec.p, scatter_direction);
     attenuation = this->albedo;
     return true;
+}
+
+void Lambertian::setColor(const Math::Vector3D &newColor) {
+    this->albedo = newColor;
+    this->albedo.setRange(255, 1);
 }
 
 std::unique_ptr<Material> Lambertian::duplicate(void) {

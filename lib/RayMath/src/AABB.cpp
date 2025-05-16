@@ -102,15 +102,6 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
                   r.pos.y >= v_min.y && r.pos.y <= v_max.y &&
                   r.pos.z >= v_min.z && r.pos.z <= v_max.z;
 
-#if DEBUG
-    std::cout << v_min << std::endl;
-    std::cout << v_max << std::endl;
-    std::cout << "dir: " << r.dir << std::endl;
-    std::cout << r.dir.getAxis(0) << std::endl;
-    std::cout << r.dir.getAxis(1) << std::endl;
-    std::cout << r.dir.getAxis(2) << std::endl;
-    std::cout << (v_min.getAxis(0) - r.pos.getAxis(0)) << std::endl;
-#endif
     for (int axis = 0; axis < 3; axis++) {
         double invD = 1.0 / r.dir.getAxis(axis);
         double t0 = (v_min.getAxis(axis) - r.pos.getAxis(axis)) * invD;

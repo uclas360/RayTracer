@@ -19,6 +19,7 @@
 #include "BVHNode.hpp"
 #include "libLoaders/LDLoader.hpp"
 #include "plugins/AShape.hpp"
+#include "plugins/IShape.hpp"
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
@@ -33,6 +34,7 @@ class CustomShape : public AShape {
     void scale(size_t) override;
     void setPosition(const Math::Vector3D &) override;
     void setMaterial(std::unique_ptr<Material> &) override;
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
 
    private:
     void parseLine(const std::string &line);
@@ -55,6 +57,7 @@ class CustomShape : public AShape {
     std::unique_ptr<BVHNode> bvh;
 
     std::vector<std::unique_ptr<IShape>> _faces;
+    std::vector<Math::Vector3D> textCoordinates_;
     const std::map<std::string,
                    std::function<void(CustomShape *, std::vector<std::string>)>>
         _functions = {

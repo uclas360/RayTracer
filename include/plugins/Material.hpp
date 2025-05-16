@@ -25,6 +25,7 @@ class Material : public IPlugin {
     virtual bool scatter(const Ray &r_in, const HitRecord &rec,
                          Math::Vector3D &attenuation, Ray &scattered) const = 0;
     virtual std::unique_ptr<Material> duplicate(void) = 0;
+    virtual void setColor(const Math::Vector3D &newColor) = 0;
 };
 
 };  // namespace RayTracer
