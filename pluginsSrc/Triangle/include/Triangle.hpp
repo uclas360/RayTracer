@@ -39,8 +39,6 @@ class Triangle : public AShape {
    protected:
     std::unique_ptr<Material> material_ =
         std::make_unique<LambertianDebug>(Math::Vector3D(0.8, 0.8, 0.8));
-
-   private:
 };
 }  // namespace RayTracer
 

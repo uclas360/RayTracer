@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "ArgsManager.hpp"
+#include "Raytracer/Texture.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 

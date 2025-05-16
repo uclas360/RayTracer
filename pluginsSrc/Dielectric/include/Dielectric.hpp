@@ -6,6 +6,7 @@
 */
 
 #include <libconfig.h++>
+
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
@@ -16,9 +17,10 @@ class Dielectric : public Material {
 
     bool scatter(const Ray &r_in, const HitRecord &rec,
                  Math::Vector3D &attenuation, Ray &scattered) const override;
+    std::unique_ptr<Material> duplicate(void) override;
 
    private:
-   double refraction_index;
+    double refraction_index;
 };
 
-};
+};  // namespace RayTracer

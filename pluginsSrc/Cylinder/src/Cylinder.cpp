@@ -57,7 +57,8 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
         t = t2;
         double y2 = oc.y + t2 * ray.dir.y;
 
-        if (t2 < EPSILON || y2 < 0 || y2 > height_) return hitsCapOnly(ray, ray_t);
+        if (t2 < EPSILON || y2 < 0 || y2 > height_)
+            return hitsCapOnly(ray, ray_t);
     }
     Math::Vector3D p = ray.pos + ray.dir * t;
     Math::Vector3D normal(p.x - pos_.x, 0, p.z - pos_.z);
@@ -101,7 +102,8 @@ HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
         }
     }
 
-    if (ray_t.contains(t_min)) return HitRecord(t_min, ray, *this, normal, this->material_);
+    if (ray_t.contains(t_min))
+        return HitRecord(t_min, ray, *this, normal, this->material_);
 
     return HitRecord();
 }

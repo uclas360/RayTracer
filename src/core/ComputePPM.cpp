@@ -33,7 +33,8 @@ void RaytracerCore::computeOutput() {
             std::uint8_t *pixels =
                 this->imageMean_.data() +
                 ((y / hScale) * this->xResolution_ + (x / wScale)) * 4;
-            file << (int)pixels[0] << " " << (int)pixels[1] << " " << (int)pixels[2] << "\n";
+            file << (int)pixels[0] << " " << (int)pixels[1] << " "
+                 << (int)pixels[2] << "\n";
         }
     }
 }

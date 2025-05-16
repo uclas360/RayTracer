@@ -62,7 +62,6 @@ class Interval {
         this->max += displacement;
         return *this;
     }
-
     
 };
 

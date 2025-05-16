@@ -5,14 +5,18 @@
 ** CustomShape
 */
 
-#include "CustomShape.hpp"
+#include "../include/CustomShape.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <sstream>
 #include <string>
 
 #include "RaytracerCore.hpp"
+#include "plugins/IShape.hpp"
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
@@ -202,6 +206,14 @@ HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
     }
     return record;
 }
+
+void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
+    for (auto &it : this->_faces) {
+        std::unique_ptr<Material> tmp = material->duplicate();
+        it->setMaterial(tmp);
+    }
+}
+
 
 CustomShape::~CustomShape() {
 }

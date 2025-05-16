@@ -16,7 +16,9 @@ namespace RayTracer {
 
 Dielectric::Dielectric(const libconfig::Setting &config) {
     if (!config.lookupValue("refraction_index", this->refraction_index)) {
-        throw ParsingException( "error parsing dialectic material, missing \"refraction_index\" field");
+        throw ParsingException(
+            "error parsing dialectic material, missing \"refraction_index\" "
+            "field");
     }
 }
 
@@ -40,6 +42,10 @@ bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec,
 
     scattered = Ray(rec.p, direction);
     return true;
+}
+
+std::unique_ptr<Material> Dielectric::duplicate(void) {
+    return std::make_unique<Dielectric>(*this);
 }
 
 extern "C" {

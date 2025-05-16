@@ -19,6 +19,7 @@
 #include "BVHNode.hpp"
 #include "libLoaders/LDLoader.hpp"
 #include "plugins/AShape.hpp"
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
@@ -31,6 +32,7 @@ class CustomShape : public AShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t) override;
     void setPosition(const Math::Vector3D &) override;
+    void setMaterial(std::unique_ptr<Material> &) override;
 
    private:
     void parseLine(const std::string &line);

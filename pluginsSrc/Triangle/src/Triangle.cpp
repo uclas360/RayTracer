@@ -35,14 +35,15 @@ Triangle::Triangle(const libconfig::Setting &settings) {
 }
 
 void Triangle::scale(size_t scale) {
-  Math::Vector3D center = (a + b + c) / 3.0;
+    Math::Vector3D center = (a + b + c) / 3.0;
 
-  a = center + (a - center) * (double)scale / 100.;
-  b = center + (b - center) * (double)scale / 100.;
-  c = center + (c - center) * (double)scale / 100.;
+    a = center + (a - center) * (double)scale / 100.;
+    b = center + (b - center) * (double)scale / 100.;
+    c = center + (c - center) * (double)scale / 100.;
 }
 
-void Triangle::setPosition(const Math::Vector3D &) {}
+void Triangle::setPosition(const Math::Vector3D &) {
+}
 
 void Triangle::move(const Math::Vector3D &pos) {
   a += pos;
@@ -52,19 +53,19 @@ void Triangle::move(const Math::Vector3D &pos) {
 }
 
 void Triangle::rotate(const Math::Vector3D &angles) {
-  // Math::Vector3D center = (a + b + c) / 3;
-  // Math::Vector3D toOrigin = -center;
-  // a += toOrigin;
-  // b += toOrigin;
-  // c += toOrigin;
-  if (angles.y) {
-    a.rotateY(angles.y);
-    b.rotateY(angles.y);
-    c.rotateY(angles.y);
-  }
-  // a -= toOrigin;
-  // b -= toOrigin;
-  // c -= toOrigin;
+    // Math::Vector3D center = (a + b + c) / 3;
+    // Math::Vector3D toOrigin = -center;
+    // a += toOrigin;
+    // b += toOrigin;
+    // c += toOrigin;
+    if (angles.y) {
+        a.rotateY(angles.y);
+        b.rotateY(angles.y);
+        c.rotateY(angles.y);
+    }
+    // a -= toOrigin;
+    // b -= toOrigin;
+    // c -= toOrigin;
 }
 
 HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
@@ -104,10 +105,10 @@ HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
 
 extern "C" {
 void *entry_point(const libconfig::Setting &config) {
-  return new RayTracer::Triangle(config);
+    return new RayTracer::Triangle(config);
 }
 
 void *value_entry_point(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c) {
-  return new RayTracer::Triangle(a, b, c);
+    return new RayTracer::Triangle(a, b, c);
 }
 }

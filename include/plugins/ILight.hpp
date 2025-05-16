@@ -19,6 +19,6 @@ class ILight : public IObject {
     virtual Math::Color getColorFrom(const Math::Vector3D &point) const = 0;
 };
 
-};
+};  // namespace RayTracer
 
 #endif

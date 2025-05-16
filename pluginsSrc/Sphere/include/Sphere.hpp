@@ -11,15 +11,15 @@
 #include <iostream>
 #include <libconfig.h++>
 
-#include "plugins/AShape.hpp"
-#include "plugins/IShape.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/AShape.hpp"
+#include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
 class Sphere : public AShape {
-    public:
+   public:
     Sphere();
     Sphere(Math::Vector3D pos, double radius);
     Sphere(const libconfig::Setting &);
@@ -36,7 +36,5 @@ class Sphere : public AShape {
 std::ostream &operator<<(std::ostream &out, const Sphere &ray);
 
 }  // namespace RayTracer
-
-
 
 #endif

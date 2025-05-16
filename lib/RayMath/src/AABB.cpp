@@ -7,6 +7,10 @@
 
 #include "AABB.hpp"
 
+#include <memory>
+
+#include "plugins/Material.hpp"
+
 #define DEBUG_COLOR Math::Vector3D(1, 0, 1)
 #define DEBUG false
 
@@ -26,6 +30,10 @@ bool LambertianDebug::scatter(const Ray &, const HitRecord &rec,
     scattered = Ray(rec.p, scatter_direction);
     attenuation = this->albedo;
     return true;
+}
+
+std::unique_ptr<Material> LambertianDebug::duplicate() {
+    return std::make_unique<LambertianDebug>(*this);
 }
 
 AABB::AABB() {

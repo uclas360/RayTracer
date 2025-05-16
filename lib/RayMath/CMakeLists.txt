@@ -7,6 +7,7 @@ add_library(${LIB_NAME} STATIC
     src/Color.cpp
     src/Ray.cpp
     src/HitRecord.cpp
+    src/Texture.cpp
     src/AShape.cpp
     src/MaterialUtils.cpp
     src/AABB.cpp
