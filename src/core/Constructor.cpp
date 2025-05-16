@@ -168,9 +168,7 @@ void RaytracerCore::initPlugins(const std::string &file,
                               << "\": " << exc.what() << std::endl;
                 }
             }
-            // printf("[DEBUG 8]\n");
-            scene.bvh = std::make_unique<BVHNode>(scene.shapes_, 0, scene.shapes_.size(), 3);
-            // printf("[DEBUG 9]\n");
+            scene.bvh = std::make_unique<BVHNode>(scene.shapes_, 0, scene.shapes_.size());
             this->mainScene_.addShape(
                 std::make_unique<RayTracer::Scene>(std::move(scene)));
         }
@@ -217,7 +215,7 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
             config.readFile(file);
             this->initCamera(file, config, camera);
             this->initPlugins(file, config);
-            this->mainScene_.bvh = std::make_unique<BVHNode>(this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size(), 4);
+            this->mainScene_.bvh = std::make_unique<BVHNode>(this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size());
         } catch (const libconfig::FileIOException &exc) {
             std::cerr << "error parsing file \"" << file
                       << "\", failed to open file" << std::endl;

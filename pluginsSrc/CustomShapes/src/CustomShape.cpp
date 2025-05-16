@@ -181,7 +181,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     }
     getPos(settings);
     getRotation(settings);
-    this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size(), 3);
+    this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
 }
 
 HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
