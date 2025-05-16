@@ -8,11 +8,11 @@
 #include <cstdint>
 #include <vector>
 
+#include "Interval.hpp"
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
-#include "Interval.hpp"
 
 Math::Vector3D getSkyColor(const RayTracer::Ray &r) {
     Math::Vector3D unit_direction = r.dir.normalized();
@@ -26,8 +26,6 @@ Math::Vector3D trace_ray(const RayTracer::Ray &r, int depth,
     if (depth <= 0) return Math::Vector3D(0, 0, 0);
 
     RayTracer::HitRecord rec = scene.hits(r, Interval(0, DOUBLE_INFINITY));
-    // std::cout << rec << std::endl;
-    // exit(0);
 
     if (rec.missed || rec.t < 1E-10) {
         return getSkyColor(r);
@@ -35,7 +33,7 @@ Math::Vector3D trace_ray(const RayTracer::Ray &r, int depth,
 
     RayTracer::Ray scattered;
     Math::Vector3D attenuation;
-    if (rec.mat->get()->scatter(r, rec, attenuation, scattered)){
+    if (rec.mat->scatter(r, rec, attenuation, scattered)) {
         return attenuation * trace_ray(scattered, depth - 1, scene);
     }
     return Math::Vector3D(0, 0, 0);

@@ -22,8 +22,6 @@ class AABB;
 
 class IShape : public IObject {
    public:
-    int depth = 0;
-
     virtual void setMaterial(std::unique_ptr<Material> &) = 0;
     virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
     virtual const AABB &boundingBox() const = 0;
@@ -42,8 +40,8 @@ class HitRecord {
     double t = 0;
     bool frontFace = false;
     bool missed = true;
-    std::optional<std::reference_wrapper<const IShape>> shapeHit;
-    std::optional<std::reference_wrapper<const std::unique_ptr<Material>>> mat;
+    const IShape *shapeHit;
+    const Material *mat;
 
     HitRecord() = default;
     HitRecord(const double t, const Ray &ray, const IShape &shape,

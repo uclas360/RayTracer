@@ -17,8 +17,8 @@ HitRecord::HitRecord(const double t, const Ray &ray, const IShape &shape,
     this->frontFace = ray.dir.dot(normal) < 0;
     this->normal = this->frontFace ? normal : -normal;
     this->p = ray.at(t) + this->normal * 1E-4;
-    this->shapeHit = shape;
-    this->mat = mat;
+    this->shapeHit = &shape;
+    this->mat = mat.get();
 }
 
 std::ostream &operator<<(std::ostream &out, const HitRecord &vec) {

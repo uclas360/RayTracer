@@ -20,9 +20,7 @@
 class BVHNode : public RayTracer::AShape {
    public:
     BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
-            size_t end, int depth) {
-        this->depth = depth;
-        // std::cout << this->depth << std::endl;
+            size_t end) {
         this->bbox =
             RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
                             Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
@@ -37,7 +35,6 @@ class BVHNode : public RayTracer::AShape {
             this->comp[axis];
 
         size_t object_span = end - start;
-        // std::cout << object_span << std::endl;
 
         if (object_span == 1) {
             this->left = objects[start].get();
@@ -49,48 +46,28 @@ class BVHNode : public RayTracer::AShape {
             std::sort(std::begin(objects) + start, std::begin(objects) + end,
             comparator);
 
-            auto mid = start + object_span / 2;
-            // printf("[DEBUG 11]\n");
+            double mid = start + object_span / 2;
+
             this->bLeft =
-            std::make_unique<BVHNode>(objects, start, mid, depth - 1);
+            std::make_unique<BVHNode>(objects, start, mid);
             this->left = this->bLeft.get();
             
-            // printf("[DEBUG 12]\n");
             this->bRight =
-            std::make_unique<BVHNode>(objects, mid, end, depth - 1);
+            std::make_unique<BVHNode>(objects, mid, end);
             this->right = this->bRight.get();
-            // printf("[DEBUG 13]\n");
         }
-
-        // printf("[DEBUG 14]\n");
-
         
         this->bbox = RayTracer::AABB(this->left->boundingBox(),
         this->right->boundingBox());
-        // printf("[DEBUG 15]\n");
-        // std::cout << this->left << std::endl;
-        // std::cout << this->right << std::endl;
-        // std::cout << this->bbox << std::endl;
     }
 
     RayTracer::HitRecord hits(const RayTracer::Ray &r,
                               Interval ray_t) const override {
-        // if (this->depth <= 0) {
-        //     // printf("[DEBUG]\n");
-        //     return this->bbox.hits(r, ray_t);
-        // }
         if (bbox.hits(r, ray_t).missed) return RayTracer::HitRecord();
 
-        // return bbox.hits(r, ray_t);
-        // printf("[DEBUG]\n");
-        // std::cout << this->left << std::endl;
-        // std::cout << this->right << std::endl;
-        // std::cout << printf("[DEBUG 2]\n");
         RayTracer::HitRecord hit_left = this->left->hits(r, ray_t);
-        // std::cout << printf("[DEBUG 3]\n");
         RayTracer::HitRecord hit_right = this->right->hits(
             r, Interval(ray_t.min, hit_left.missed ? ray_t.max : hit_left.t));
-        // std::cout << printf("[DEBUG 4]\n");
 
         return hit_right.missed ? hit_left : hit_right;
     }

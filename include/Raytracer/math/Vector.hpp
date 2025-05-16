@@ -74,9 +74,7 @@ class Vector3D {
             double lensq = p.lengthSquared();
 
             if (1e-160 < lensq &&
-                lensq <= 1)  // deal with small sized vector, because they
-                             // lenght squared will be so small it will cause
-                             // error or rounding to infinity
+                lensq <= 1)
                 return p / sqrt(lensq);
         }
     }

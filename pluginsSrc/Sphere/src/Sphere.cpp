@@ -47,7 +47,6 @@ Sphere::Sphere(const libconfig::Setting &settings) {
 }
 
 HitRecord Sphere::hits(const Ray &ray, Interval interval) const {
-    // return this->bbox.hit(ray, interval);
     Math::Vector3D oc = this->pos - ray.pos;
     double a = ray.dir.lengthSquared();
     double h = ray.dir.dot(oc);
@@ -58,7 +57,6 @@ HitRecord Sphere::hits(const Ray &ray, Interval interval) const {
 
     double sqrtd = std::sqrt(discriminant);
 
-    // Find the nearest root that lies in the acceptable range.
     double root = (h - sqrtd) / a;
     if (!interval.contains(root)) {
         root = (h + sqrtd) / a;
