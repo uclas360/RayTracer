@@ -57,13 +57,8 @@ class AABB : public IShape {
     void padToMinimums();
 };
 
-// AABB operator+(const AABB &bbox, const Math::Vector3D &offset) {
-//     return AABB(bbox.x + offset.x, bbox.y + offset.y, bbox.z + offset.z);
-// }
+std::ostream &operator<<(std::ostream &out, const AABB &aabb);
 
-// AABB operator+(const Math::Vector3D &offset, const AABB &bbox) {
-//     return bbox + offset;
-// }
 }  // namespace RayTracer
 
 #endif

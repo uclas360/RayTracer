@@ -21,7 +21,6 @@ class AShape : public IShape {
     const AABB &boundingBox() const override;
 
    protected:
-    int depth = 0;
     AABB bbox;
     std::unique_ptr<Material> material_;
 };

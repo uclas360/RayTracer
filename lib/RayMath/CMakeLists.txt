@@ -11,6 +11,7 @@ add_library(${LIB_NAME} STATIC
     src/AShape.cpp
     src/MaterialUtils.cpp
     src/AABB.cpp
+    src/Interval.cpp
 )
 
 target_include_directories(${LIB_NAME}

@@ -11,16 +11,17 @@
 #include <memory>
 #include <vector>
 
+#include "BVHNode.hpp"
 #include "plugins/AShape.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
-
-// TODO : a Scene class
 
 namespace RayTracer {
 
 class Scene : public AShape {
    public:
+    Scene() = default;
+    Scene(std::unique_ptr<IShape> shape);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
     void rotate(const Math::Vector3D &angles) override;
@@ -32,6 +33,7 @@ class Scene : public AShape {
 
     std::vector<std::unique_ptr<IShape>> shapes_;
     std::vector<std::unique_ptr<ILight>> lights_;
+    std::unique_ptr<BVHNode> bvh;
 };
 
 };  // namespace RayTracer

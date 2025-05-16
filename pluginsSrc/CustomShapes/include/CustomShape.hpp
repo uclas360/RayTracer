@@ -16,6 +16,7 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "BVHNode.hpp"
 #include "libLoaders/LDLoader.hpp"
 #include "plugins/AShape.hpp"
 #include "plugins/Material.hpp"
@@ -51,6 +52,7 @@ class CustomShape : public AShape {
     Math::Vector3D rotation_;
 
     std::unique_ptr<DlLoader<IShape>> _triangleLoader;
+    std::unique_ptr<BVHNode> bvh;
 
     std::vector<std::unique_ptr<IShape>> _faces;
     const std::map<std::string,

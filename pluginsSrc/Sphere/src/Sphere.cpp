@@ -17,8 +17,14 @@
 
 namespace RayTracer {
 
-Sphere::Sphere() : radius(0) {};
-Sphere::Sphere(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {};
+Sphere::Sphere() : radius(0) {
+    Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+    this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
+};
+Sphere::Sphere(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {
+    Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+    this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
+};
 
 Sphere::Sphere(const libconfig::Setting &settings) {
     try {
@@ -31,6 +37,8 @@ Sphere::Sphere(const libconfig::Setting &settings) {
             throw ParsingException(
                 "error parsing sphere object, wrong \"radius\" field");
         }
+        Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+        this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
     } catch (const ParsingException &e) {
         throw e;
     } catch (const libconfig::SettingNotFoundException &e) {
@@ -39,7 +47,6 @@ Sphere::Sphere(const libconfig::Setting &settings) {
 }
 
 HitRecord Sphere::hits(const Ray &ray, Interval interval) const {
-    // return this->bbox.hit(ray, interval);
     Math::Vector3D oc = this->pos - ray.pos;
     double a = ray.dir.lengthSquared();
     double h = ray.dir.dot(oc);
@@ -50,7 +57,6 @@ HitRecord Sphere::hits(const Ray &ray, Interval interval) const {
 
     double sqrtd = std::sqrt(discriminant);
 
-    // Find the nearest root that lies in the acceptable range.
     double root = (h - sqrtd) / a;
     if (!interval.contains(root)) {
         root = (h + sqrtd) / a;

@@ -26,7 +26,9 @@ class Triangle : public AShape {
     Triangle() = default;
     ~Triangle() = default;
     Triangle(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c)
-        : a(a), b(b), c(c) {};
+        : a(a), b(b), c(c) {
+        this->bbox = AABB(AABB(this->a, this->b), AABB(this->c, this->c));
+    };
     Triangle(const libconfig::Setting &settings);
     HitRecord hits(const Ray &, Interval ray_t) const override;
     void move(const Math::Vector3D &pos);
@@ -35,7 +37,8 @@ class Triangle : public AShape {
     void setPosition(const Math::Vector3D &pos);
 
    protected:
-   private:
+    std::unique_ptr<Material> material_ =
+        std::make_unique<LambertianDebug>(Math::Vector3D(0.8, 0.8, 0.8));
 };
 }  // namespace RayTracer
 

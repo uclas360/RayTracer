@@ -32,7 +32,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
 }
 
 void CustomShape::parseTexture(const std::vector<std::string> &args) {
-    if (args.size() != 2) throw ParsingException("vt: NOT ENOUGH COORDS");
+    if (args.size() < 2) throw ParsingException("vt: NOT ENOUGH COORDS");
     try {
         _textureVertices.push_back(
             Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
@@ -74,11 +74,13 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
         _triangleLoader
             ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
                 "value_entry_point", points[0], points[1], points[2]));
+    this->bbox = AABB(this->bbox, _faces[_faces.size() - 1]->boundingBox());
     if (points.size() == 4) {
         _faces.push_back(
             _triangleLoader
                 ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
                     "value_entry_point", points[0], points[2], points[3]));
+        this->bbox = AABB(this->bbox, _faces[_faces.size() - 1]->boundingBox());
     }
 }
 
@@ -115,6 +117,7 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
 }
 
 void CustomShape::setPosition(const Math::Vector3D &pos) {
+    this->bbox.move(pos);
     for (size_t i = 0; i < _faces.size(); ++i) {
         _faces[i]->move(pos);
     }
@@ -182,19 +185,18 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     }
     getPos(settings);
     getRotation(settings);
-}
-
-void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
-    for (auto &it : this->_faces) {
-        std::unique_ptr<Material> tmp = material->duplicate();
-        it->setMaterial(tmp);
-    }
+    this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
 }
 
 HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
     HitRecord record;
     double closest_t = INFINITY;
 
+    if (this->bvh == nullptr) {
+        std::cout << "custom shape null bvh" << std::endl;
+        exit(1);
+    }
+    return this->bvh->hits(ray, ray_t);
     for (const auto &face : _faces) {
         HitRecord temp = face->hits(ray, ray_t);
         if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
@@ -204,6 +206,14 @@ HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
     }
     return record;
 }
+
+void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
+    for (auto &it : this->_faces) {
+        std::unique_ptr<Material> tmp = material->duplicate();
+        it->setMaterial(tmp);
+    }
+}
+
 
 CustomShape::~CustomShape() {
 }

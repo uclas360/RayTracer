@@ -12,6 +12,7 @@
 #include "plugins/Material.hpp"
 
 #define DEBUG_COLOR Math::Vector3D(1, 0, 1)
+#define DEBUG false
 
 namespace RayTracer {
 
@@ -89,34 +90,10 @@ bool AABB::trueHit(const Ray &r, Interval ray_t) const {
 }
 
 HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
-    // for (int axis = 0; axis < 3; axis++) {
-    //     const Interval& ax = axisInterval(axis);
-    //     const double adinv = 1.0 / *r.dir.arr[axis];
-
-    //     auto t0 = (ax.min - *r.pos.arr[axis]) * adinv;
-    //     auto t1 = (ax.max - *r.pos.arr[axis]) * adinv;
-
-    //     if (t0 < t1) {
-    //         if (t0 > ray_t.min) ray_t.min = t0;
-    //         if (t1 < ray_t.max) ray_t.max = t1;
-    //     } else {
-    //         if (t1 > ray_t.min) ray_t.min = t1;
-    //         if (t0 < ray_t.max) ray_t.max = t0;
-    //     }
-
-    //     if (ray_t.max <= ray_t.min)
-    //         return HitRecord();
-    // }
-    // return true;
-
-    double t_min = ray_t.min;
-    double t_max = ray_t.max;
     Math::Vector3D v_min(this->x.min, this->y.min, this->z.min);
     Math::Vector3D v_max(this->x.max, this->y.max, this->z.max);
-
-    HitRecord info;
-    double t_near = t_min;
-    double t_far = t_max;
+    double t_near = ray_t.min;
+    double t_far = ray_t.max;
     int entry_axis = -1;
     int exit_axis = -1;
     double entry_sign = 0.0;
@@ -126,11 +103,27 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
                   r.pos.y >= v_min.y && r.pos.y <= v_max.y &&
                   r.pos.z >= v_min.z && r.pos.z <= v_max.z;
 
+#if DEBUG
+    std::cout << v_min << std::endl;
+    std::cout << v_max << std::endl;
+    std::cout << "dir: " << r.dir << std::endl;
+    std::cout << r.dir.getAxis(0) << std::endl;
+    std::cout << r.dir.getAxis(1) << std::endl;
+    std::cout << r.dir.getAxis(2) << std::endl;
+    std::cout << (v_min.getAxis(0) - r.pos.getAxis(0)) << std::endl;
+#endif
     for (int axis = 0; axis < 3; axis++) {
-        double invD = 1.0 / *r.dir.arr[axis];
-        double t0 = (*v_min.arr[axis] - *r.pos.arr[axis]) * invD;
-        double t1 = (*v_max.arr[axis] - *r.pos.arr[axis]) * invD;
+        double invD = 1.0 / r.dir.getAxis(axis);
+        #if DEBUG
+        std::cout << "invD: " << invD << std::endl;
+        #endif
+        double t0 = (v_min.getAxis(axis) - r.pos.getAxis(axis)) * invD;
+        double t1 = (v_max.getAxis(axis) - r.pos.getAxis(axis)) * invD;
 
+        #if DEBUG
+        std::cout << t0 << std::endl;
+        std::cout << t1 << std::endl;
+        #endif
         double sign = invD < 0 ? -1.0 : 1.0;
 
         if (invD < 0.0) std::swap(t0, t1);
@@ -148,8 +141,20 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
         }
 
         if (t_far <= t_near) {
+
+#if DEBUG
+std::cout << "return" << std::endl;
+#endif
             return HitRecord();
         }
+    }
+
+    if (inside) {
+        if (!ray_t.surrounds(t_far))
+            return HitRecord();
+    } else {
+        if (!ray_t.surrounds(t_near))
+            return HitRecord();
     }
 
     Math::Vector3D normal;
@@ -158,140 +163,12 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
         if (exit_axis == 1) normal.y = exit_sign;
         if (exit_axis == 2) normal.z = exit_sign;
     } else {
-        if (entry_axis == 0) normal.x = -entry_sign;
-        if (entry_axis == 1) normal.y = -entry_sign;
-        if (entry_axis == 2) normal.z = -entry_sign;
+        if (entry_axis == 0) normal.x = entry_sign;
+        if (entry_axis == 1) normal.y = entry_sign;
+        if (entry_axis == 2) normal.z = entry_sign;
     }
-
-    return HitRecord(inside ? t_far : t_near, r, *this, normal,
-                     this->material_);
+    return HitRecord(inside ? t_far : t_near, r, *this, normal, this->material_);
 }
-
-// HitRecord AABB::hit(const Ray &r, Interval ray_t) const {
-//     double t_min = ray_t.min;
-//     double t_max = ray_t.max;
-//     Math::Vector3D v_min(this->x.min, this->y.min, this->z.min);
-//     Math::Vector3D v_max(this->x.max, this->y.max, this->z.max);
-//     std::cout << "vmin: " << v_min << std::endl;
-//     std::cout << "vmax: " << v_max<< std::endl;
-
-//     HitRecord info;
-//     double t_near = t_min;
-//     double t_far = t_max;
-//     int entry_axis = -1;
-//     int exit_axis = -1;
-//     double entry_sign = 0.0;
-//     double exit_sign = 0.0;
-
-//     bool inside =
-//         r.pos.x >= v_min.x && r.pos.x <= v_max.x &&
-//         r.pos.y >= v_min.y && r.pos.y <= v_max.y &&
-//         r.pos.z >= v_min.z && r.pos.z <= v_max.z;
-
-//     std::cout << std::endl;
-
-//     for (int axis = 0; axis < 3; axis++) {
-//         double invD = 1.0 / *r.dir.arr[axis];
-//         double t0 = (*v_min.arr[axis] - *r.pos.arr[axis]) * invD;
-//         double t1 = (*v_max.arr[axis] - *r.pos.arr[axis]) * invD;
-
-//         double sign = invD < 0 ? -1.0 : 1.0;
-
-//         if (invD < 0.0)
-//             std::swap(t0, t1);
-
-//         if (t0 > t_near) {
-//             t_near = t0;
-//             entry_axis = axis;
-//             entry_sign = sign;
-//         }
-
-//         if (t1 < t_far) {
-//             t_far = t1;
-//             exit_axis = axis;
-//             exit_sign = sign;
-//         }
-
-//         if (t_far <= t_near) {
-//             return HitRecord();
-//         }
-//         std::cout << std::endl;
-//         std::cout << t_min << std::endl;
-//         std::cout << t_max << std::endl;
-//         std::cout << t_near << std::endl;
-//         std::cout << t_far << std::endl;
-//         std::cout << t0 << std::endl;
-//         std::cout << t1 << std::endl;
-//     }
-
-//     Math::Vector3D normal;
-//     if (inside) {
-//         if (exit_axis == 0) normal.x = exit_sign;
-//         if (exit_axis == 1) normal.y = exit_sign;
-//         if (exit_axis == 2) normal.z = exit_sign;
-//     } else {
-//         if (entry_axis == 0) normal.x = -entry_sign;
-//         if (entry_axis == 1) normal.y = -entry_sign;
-//         if (entry_axis == 2) normal.z = -entry_sign;
-//     }
-//     // std::cout << normal << std::endl;
-//     bool frontFace = r.dir.dot(normal) < 0;
-//     // std::cout << frontFace << std::endl;
-//     info = HitRecord(inside ? t_far : t_near, r, *this, normal);
-//     info.mat = this->mat;
-//     return info;
-// }
-
-// HitRecord AABB::hit(const Ray &r, Interval ray_t) const {
-//     double tmin = DOUBLE_INFINITY / 2;
-//     Math::Vector3D nList[3] = {Math::Vector3D(-1, 0, 0), Math::Vector3D(0,
-//     -1, 0),
-//                                Math::Vector3D(0, 0, -1)};
-//     Math::Vector3D n;
-
-//     for (int axis = 0; axis < 3; axis++) {
-//         const Interval &ax = axisInterval(axis);
-//         const double adinv = 1.0 / *r.dir.arr[axis];
-
-//         double t0 = (ax.min - *r.pos.arr[axis]) * adinv;
-//         double t1 = (ax.max - *r.pos.arr[axis]) * adinv;
-//         Math::Vector3D faceNormalMin = Math::Vector3D(0, 0, 0);
-//         Math::Vector3D faceNormalMax = Math::Vector3D(0, 0, 0);
-//         *faceNormalMin.arr[axis] = 1;
-//         *faceNormalMax.arr[axis] = -1;
-
-//         if (t0 > t1) {
-//             // std::swap(t0, t1);
-//             std::swap(faceNormalMin, faceNormalMax);
-//         }
-
-//         if (t0 < t1) {
-//             if (t0 > ray_t.min) {
-//                 ray_t.min = t0;
-//                 if (t0 > 0 && t0 < tmin) {
-//                     tmin = t0;
-//                     n = faceNormalMin;
-//                 }
-//             }
-//             if (t1 < ray_t.max) ray_t.max = t1;
-//         } else {
-//             if (t1 > ray_t.min) {
-//                 ray_t.min = t1;
-//                 if (t1 > 0 && t1 < tmin) {
-//                     tmin = t1;
-//                     n = faceNormalMax;
-//                 }
-//             }
-//             if (t0 < ray_t.max) ray_t.max = t0;
-//         }
-
-//         if (ray_t.max <= ray_t.min) return HitRecord();
-//     }
-//     HitRecord rec(tmin, r, *this, n);
-//     rec.mat = this->mat;
-
-//     return rec;
-// }
 
 int AABB::longestAxis() const {
     if (x.size() > y.size())
@@ -342,6 +219,13 @@ void AABB::setMaterial(std::unique_ptr<Material> &newMaterial) {
 
 const AABB &AABB::boundingBox() const {
     return *this;
+}
+
+std::ostream &operator<<(std::ostream &out, const AABB &aabb) {
+    std::cout << aabb.axisInterval(0) << std::endl;
+    std::cout << aabb.axisInterval(1) << std::endl;
+    std::cout << aabb.axisInterval(2) << std::endl;
+    return out;
 }
 
 }  // namespace RayTracer

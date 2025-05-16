@@ -49,6 +49,8 @@ class HitRecord {
               const std::unique_ptr<Material> &mat);
 };
 
+std::ostream &operator<<(std::ostream &out, const HitRecord &vec);
+
 };  // namespace RayTracer
 
 #endif
