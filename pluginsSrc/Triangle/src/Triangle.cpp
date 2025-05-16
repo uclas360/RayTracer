@@ -5,10 +5,12 @@
 ** Triangle
 */
 
-#include "Triangle.hpp"
+#include "../include/Triangle.hpp"
 
+#include <cmath>
 #include <libconfig.h++>
 
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 
 namespace RayTracer {
@@ -27,6 +29,10 @@ Triangle::Triangle(const libconfig::Setting &settings) {
         if (!Math::lookUpVector(c, this->c))
             throw ParsingException(
                 "error parsing triangle object, wrong \"c\" field");
+        std::string texture;
+        if (settings.lookupValue("texture", texture)) {
+            this->texture_ = texture;
+        }
     } catch (const libconfig::SettingNotFoundException &e) {
         throw ParsingException(e.what());
     } catch (const ParsingException &e) {
@@ -99,6 +105,15 @@ HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
 
     return HitRecord(t, ray, *this, n.normalized(), this->material_);
 }
+
+Math::Vector3D Triangle::getPointColor(const Math::Vector3D &point) const {
+    double zLenght = Math::Vector3D(this->a.x, this->b.y, this->c.z).length();
+    double yBase = std::min(this->a.y, std::min(this->b.y, this->c.y));
+    double v = (point.z - yBase) / zLenght;
+
+    return this->texture_.getColor(point.length(), v);
+}
+
 }  // namespace RayTracer
 
 extern "C" {

@@ -33,8 +33,13 @@ Math::Vector3D trace_ray(const RayTracer::Ray &r, int depth,
 
     RayTracer::Ray scattered;
     Math::Vector3D attenuation;
+<<<<<<< HEAD
     if (rec.mat->get()->scatter(r, rec, attenuation, scattered)) {
         return (attenuation * rec.shapeHit->get().getPointColor(rec.p)) * trace_ray(scattered, depth - 1, scene);
+=======
+    if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+        return attenuation * trace_ray(scattered, depth - 1, scene);
+>>>>>>> 181b9fe88a5ba201733f60d883f1a3a057908edb
     }
     return Math::Vector3D(0, 0, 0);
 }

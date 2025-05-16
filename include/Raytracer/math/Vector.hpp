@@ -57,6 +57,7 @@ class Vector3D {
     bool operator==(const Vector3D other);
     bool near_zero() const;
     void setRange(double range, double newRange);
+    Vector3D flated(void) const;
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());

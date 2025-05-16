@@ -33,7 +33,7 @@ class Triangle : public AShape {
     void rotate(const Math::Vector3D &) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &pos) override;
-    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override;
 
    protected:
    private:

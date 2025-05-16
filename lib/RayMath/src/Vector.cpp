@@ -8,6 +8,7 @@
 #include "Raytracer/math/Vector.hpp"
 
 #include <cmath>
+#include <iostream>
 
 namespace Math {
 

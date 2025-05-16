@@ -13,7 +13,6 @@
 
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
-#include "Utils.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
