@@ -12,6 +12,7 @@ add_library(${LIB_NAME} STATIC
     src/MaterialUtils.cpp
     src/AABB.cpp
     src/Interval.cpp
+    src/BVHNode.cpp
 )
 
 target_include_directories(${LIB_NAME}

@@ -8,107 +8,51 @@
 #ifndef BVH_HPP
 #define BVH_HPP
 
-#include <algorithm>
+#include <array>
 #include <functional>
-#include <variant>
-
+#include <vector>
 #include "AABB.hpp"
 #include "FixCrossInclude.hpp"
 #include "Raytracer/Ray.hpp"
 #include "plugins/AShape.hpp"
 
-class BVHNode : public RayTracer::AShape {
+namespace RayTracer {
+
+static bool box_compare(const std::unique_ptr<IShape> &a,
+                            const std::unique_ptr<IShape> &b,
+                            int axis_index) {
+    Interval a_axis_interval = a->boundingBox().axisInterval(axis_index);
+    Interval b_axis_interval = b->boundingBox().axisInterval(axis_index);
+    return a_axis_interval.min < b_axis_interval.min;
+}
+
+class BVHNode : public AShape {
    public:
-    BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
-            size_t end) {
-        this->bbox =
-            RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                            Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                            Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY));
-        for (size_t object_index = start; object_index < end; object_index++)
-            this->bbox = RayTracer::AABB(this->bbox,
-                                         objects[object_index]->boundingBox());
-
-        int axis = this->bbox.longestAxis();
-        bool (*comparator)(const std::unique_ptr<RayTracer::IShape> &a,
-                           const std::unique_ptr<RayTracer::IShape> &b) =
-            this->comp[axis];
-
-        size_t object_span = end - start;
-
-        if (object_span == 1) {
-            this->left = objects[start].get();
-            this->right = objects[start].get();
-        } else if (object_span == 2) {
-            this->left = objects[start].get();
-            this->right = objects[start + 1].get();
-        } else {
-            std::sort(std::begin(objects) + start, std::begin(objects) + end,
-            comparator);
-
-            double mid = start + object_span / 2;
-
-            this->bLeft =
-            std::make_unique<BVHNode>(objects, start, mid);
-            this->left = this->bLeft.get();
-            
-            this->bRight =
-            std::make_unique<BVHNode>(objects, mid, end);
-            this->right = this->bRight.get();
-        }
-        
-        this->bbox = RayTracer::AABB(this->left->boundingBox(),
-        this->right->boundingBox());
-    }
+    BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start, size_t end);
 
     RayTracer::HitRecord hits(const RayTracer::Ray &r,
-                              Interval ray_t) const override {
-        if (bbox.hits(r, ray_t).missed) return RayTracer::HitRecord();
+                              Interval ray_t) const override;
 
-        RayTracer::HitRecord hit_left = this->left->hits(r, ray_t);
-        RayTracer::HitRecord hit_right = this->right->hits(
-            r, Interval(ray_t.min, hit_left.missed ? ray_t.max : hit_left.t));
-
-        return hit_right.missed ? hit_left : hit_right;
-    }
-
-    static bool box_compare(const std::unique_ptr<RayTracer::IShape> &a,
-                            const std::unique_ptr<RayTracer::IShape> &b,
-                            int axis_index) {
-        Interval a_axis_interval = a->boundingBox().axisInterval(axis_index);
-        Interval b_axis_interval = b->boundingBox().axisInterval(axis_index);
-        return a_axis_interval.min < b_axis_interval.min;
-    }
-
-    static bool box_x_compare(const std::unique_ptr<RayTracer::IShape> &a,
-                              const std::unique_ptr<RayTracer::IShape> &b) {
-        return box_compare(a, b, 0);
-    }
-
-    static bool box_y_compare(const std::unique_ptr<RayTracer::IShape> &a,
-                              const std::unique_ptr<RayTracer::IShape> &b) {
-        return box_compare(a, b, 1);
-    }
-
-    static bool box_z_compare(const std::unique_ptr<RayTracer::IShape> &a,
-                              const std::unique_ptr<RayTracer::IShape> &b) {
-        return box_compare(a, b, 2);
-    }
-
-    void move(const Math::Vector3D &) {};
-    void rotate(const Math::Vector3D &) {};
-    void scale(size_t) {};
-    void setPosition(const Math::Vector3D &) {};
+    void move(const Math::Vector3D &) override {};
+    void rotate(const Math::Vector3D &) override {};
+    void scale(size_t) override {};
+    void setPosition(const Math::Vector3D &) override {};
 
    private:
-    std::vector<std::unique_ptr<IShape>> *objects = nullptr;
     std::unique_ptr<BVHNode> bLeft;
     std::unique_ptr<BVHNode> bRight;
     IShape *left;
     IShape *right;
-    bool (*comp[3])(const std::unique_ptr<RayTracer::IShape> &a,
-                    const std::unique_ptr<RayTracer::IShape> &b) = {
-        box_x_compare, box_y_compare, box_z_compare};
+    std::array<std::function<bool(const std::unique_ptr<IShape> &a,
+                    const std::unique_ptr<IShape> &b)>, 3> comp{
+        [](const std::unique_ptr<IShape> &a,
+                        const std::unique_ptr<IShape> &b) {return box_compare(a, b, 0);},
+        [](const std::unique_ptr<IShape> &a,
+                        const std::unique_ptr<IShape> &b) {return box_compare(a, b, 1);},
+        [](const std::unique_ptr<IShape> &a,
+                        const std::unique_ptr<IShape> &b) {return box_compare(a, b, 2);},
+    };
+};
 };
 
 #endif

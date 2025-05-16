@@ -12,7 +12,6 @@
 #include "plugins/Material.hpp"
 
 #define DEBUG_COLOR Math::Vector3D(1, 0, 1)
-#define DEBUG false
 
 namespace RayTracer {
 
@@ -114,16 +113,9 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
 #endif
     for (int axis = 0; axis < 3; axis++) {
         double invD = 1.0 / r.dir.getAxis(axis);
-        #if DEBUG
-        std::cout << "invD: " << invD << std::endl;
-        #endif
         double t0 = (v_min.getAxis(axis) - r.pos.getAxis(axis)) * invD;
         double t1 = (v_max.getAxis(axis) - r.pos.getAxis(axis)) * invD;
 
-        #if DEBUG
-        std::cout << t0 << std::endl;
-        std::cout << t1 << std::endl;
-        #endif
         double sign = invD < 0 ? -1.0 : 1.0;
 
         if (invD < 0.0) std::swap(t0, t1);
@@ -141,10 +133,6 @@ HitRecord AABB::hits(const Ray &r, Interval ray_t) const {
         }
 
         if (t_far <= t_near) {
-
-#if DEBUG
-std::cout << "return" << std::endl;
-#endif
             return HitRecord();
         }
     }
