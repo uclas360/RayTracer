@@ -6,6 +6,7 @@
 */
 
 #include "Raytracer/Scene.hpp"
+
 #include <cstdio>
 #include <memory>
 
@@ -14,7 +15,16 @@
 
 namespace RayTracer {
 
+Scene::Scene(std::unique_ptr<IShape> shape) {
+    this->addShape(std::move(shape));
+}
+
 HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {
+    if (!this->bvh) {
+        std::cout << "scene bvh null" << std::endl;
+        exit(1);
+    }
+    return this->bvh->hits(ray, ray_t);
     HitRecord closest;
     float closestDistance = DOUBLE_INFINITY;
 
@@ -29,6 +39,7 @@ HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {
 }
 
 void Scene::addShape(std::unique_ptr<IShape> shape) {
+    this->bbox = AABB(bbox, shape->boundingBox());
     this->shapes_.emplace_back(std::move(shape));
 }
 
@@ -44,7 +55,6 @@ void Scene::move(const Math::Vector3D &offset) {
         it->move(offset);
     }
 }
-
 
 void Scene::rotate(const Math::Vector3D &angles) {
     for (auto &it : this->shapes_) {

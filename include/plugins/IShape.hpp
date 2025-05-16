@@ -22,6 +22,8 @@ class AABB;
 
 class IShape : public IObject {
    public:
+    int depth = 0;
+
     virtual void setMaterial(std::unique_ptr<Material> &) = 0;
     virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
     virtual const AABB &boundingBox() const = 0;
@@ -48,6 +50,8 @@ class HitRecord {
               const Math::Vector3D &normal,
               const std::unique_ptr<Material> &mat);
 };
+
+std::ostream &operator<<(std::ostream &out, const HitRecord &vec);
 
 };  // namespace RayTracer
 

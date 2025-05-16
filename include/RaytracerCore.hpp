@@ -14,7 +14,6 @@
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/Material.hpp"
 #define CAM_SPEED 0.03
-#define LIGHT_REFLEXION 0.6
 #define MAX_RAY_BOUNCE 10
 
 #include <cstdint>
@@ -25,10 +24,10 @@
 #include <vector>
 #include <thread>
 
+#include "Raytracer/Scene.hpp"
 #include "ArgsManager.hpp"
 #include "CustomException.hpp"
 #include "Raytracer/Camera.hpp"
-#include "Raytracer/Scene.hpp"
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
@@ -57,6 +56,7 @@ class RaytracerCore {
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>> materials_;
 
+    RayTracer::Scene secondScene_;
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);

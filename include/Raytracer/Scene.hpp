@@ -11,27 +11,29 @@
 #include <memory>
 #include <vector>
 
+#include "BVHNode.hpp"
 #include "plugins/AShape.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
 
-// TODO : a Scene class
-
 namespace RayTracer {
 
 class Scene : public AShape {
- public:
-  HitRecord hits(const Ray &ray, Interval ray_t) const override;
-  void move(const Math::Vector3D &offset) override;
-  void rotate(const Math::Vector3D &angles) override;
-  void scale(size_t scale) override;
-  void setPosition(const Math::Vector3D &newPos) override;
+   public:
+    Scene() = default;
+    Scene(std::unique_ptr<IShape> shape);
+    HitRecord hits(const Ray &ray, Interval ray_t) const override;
+    void move(const Math::Vector3D &offset) override;
+    void rotate(const Math::Vector3D &angles) override;
+    void scale(size_t scale) override;
+    void setPosition(const Math::Vector3D &newPos) override;
 
-  void addShape(std::unique_ptr<IShape> shape);
-  void addLight(std::unique_ptr<ILight> light);
+    void addShape(std::unique_ptr<IShape> shape);
+    void addLight(std::unique_ptr<ILight> light);
 
-  std::vector<std::unique_ptr<IShape>> shapes_;
-  std::vector<std::unique_ptr<ILight>> lights_;
+    std::vector<std::unique_ptr<IShape>> shapes_;
+    std::vector<std::unique_ptr<ILight>> lights_;
+    std::unique_ptr<BVHNode> bvh;
 };
 
 };  // namespace RayTracer

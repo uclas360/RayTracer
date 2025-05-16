@@ -54,8 +54,10 @@ class Vector3D {
     Vector3D &operator*=(const double &other);
     Vector3D &operator/=(const double &other);
     bool operator==(const Vector3D other);
+    bool operator<(const Vector3D &other) const;
     bool near_zero() const;
     void setRange(double range, double newRange);
+    double getAxis(int axis) const;
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());

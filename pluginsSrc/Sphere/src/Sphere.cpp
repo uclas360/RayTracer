@@ -17,8 +17,14 @@
 
 namespace RayTracer {
 
-Sphere::Sphere() : radius(0) {};
-Sphere::Sphere(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {};
+Sphere::Sphere() : radius(0) {
+    Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+    this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
+};
+Sphere::Sphere(Math::Vector3D pos, double radius) : pos(pos), radius(radius) {
+    Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+    this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
+};
 
 Sphere::Sphere(const libconfig::Setting &settings) {
     try {
@@ -31,6 +37,8 @@ Sphere::Sphere(const libconfig::Setting &settings) {
             throw ParsingException(
                 "error parsing sphere object, wrong \"radius\" field");
         }
+        Math::Vector3D rvec = Math::Vector3D(radius, radius, radius);
+        this->bbox = AABB(this->pos - (rvec), this->pos + (rvec));
     } catch (const ParsingException &e) {
         throw e;
     } catch (const libconfig::SettingNotFoundException &e) {

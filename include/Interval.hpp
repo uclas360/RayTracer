@@ -9,6 +9,7 @@
 #define INTERVAL_HPP
 
 #include "Utils.hpp"
+#include <iostream>
 
 class Interval {
    public:
@@ -62,7 +63,9 @@ class Interval {
         return *this;
     }
 
+    
 };
 
+std::ostream &operator<<(std::ostream &out, const Interval &ival);
 
 #endif

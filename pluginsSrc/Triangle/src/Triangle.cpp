@@ -10,6 +10,7 @@
 #include <libconfig.h++>
 
 #include "RaytracerCore.hpp"
+#include "AABB.hpp"
 
 namespace RayTracer {
 
@@ -24,6 +25,8 @@ Triangle::Triangle(const libconfig::Setting &settings) {
       throw ParsingException("error parsing triangle object, wrong \"b\" field");
     if (!Math::lookUpVector(c, this->c))
       throw ParsingException("error parsing triangle object, wrong \"c\" field");
+
+    this->bbox = AABB(AABB(this->a, this->b), AABB(this->c, this->c));
   } catch (const libconfig::SettingNotFoundException &e) {
     throw ParsingException(e.what());
   } catch (const ParsingException &e) {
@@ -45,6 +48,7 @@ void Triangle::move(const Math::Vector3D &pos) {
   a += pos;
   b += pos;
   c += pos;
+  this->bbox.move(pos);
 }
 
 void Triangle::rotate(const Math::Vector3D &angles) {
@@ -64,6 +68,7 @@ void Triangle::rotate(const Math::Vector3D &angles) {
 }
 
 HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {
+  // return this->bbox.hits(ray, ray_t);
   Math::Vector3D ab = b - a;
   Math::Vector3D ac = c - a;
   Math::Vector3D n = ab.cross(ac);

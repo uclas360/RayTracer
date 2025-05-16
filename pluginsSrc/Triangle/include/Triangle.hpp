@@ -18,24 +18,29 @@
 namespace RayTracer {
 
 class Triangle : public AShape {
- public:
-  Math::Vector3D a;
-  Math::Vector3D b;
-  Math::Vector3D c;
+   public:
+    Math::Vector3D a;
+    Math::Vector3D b;
+    Math::Vector3D c;
 
-  Triangle() = default;
-  ~Triangle() = default;
-  Triangle(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c)
-      : a(a), b(b), c(c) {};
-  Triangle(const libconfig::Setting &settings);
-  HitRecord hits(const Ray &, Interval ray_t) const override;
-  void move(const Math::Vector3D &pos);
-  void rotate(const Math::Vector3D &);
-  void scale(size_t scale);
-  void setPosition(const Math::Vector3D &pos);
+    Triangle() = default;
+    ~Triangle() = default;
+    Triangle(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c)
+        : a(a), b(b), c(c) {
+        this->bbox = AABB(AABB(this->a, this->b), AABB(this->c, this->c));
+    };
+    Triangle(const libconfig::Setting &settings);
+    HitRecord hits(const Ray &, Interval ray_t) const override;
+    void move(const Math::Vector3D &pos);
+    void rotate(const Math::Vector3D &);
+    void scale(size_t scale);
+    void setPosition(const Math::Vector3D &pos);
 
- protected:
- private:
+   protected:
+    std::unique_ptr<Material> material_ =
+        std::make_unique<LambertianDebug>(Math::Vector3D(0.8, 0.8, 0.8));
+
+   private:
 };
 }  // namespace RayTracer
 
