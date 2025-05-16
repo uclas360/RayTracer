@@ -46,7 +46,7 @@ class CustomShape : public IShape {
 
   std::string path_;
 
-    double scale_ = 100;
+    double scale_ = 1;
     Math::Vector3D pos_;
     Math::Vector3D rotation_;
 

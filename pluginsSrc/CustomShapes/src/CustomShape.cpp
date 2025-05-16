@@ -19,7 +19,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
   if (args.size() != 3) throw ParsingException("v: NOT ENOUGH COORDS");
   try {
     this->vertices_.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
-                                       std::stof(args[2])));
+                                       std::stof(args[2])) * scale_);
   } catch (const std::invalid_argument &e) {
     throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
@@ -53,7 +53,8 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
   std::stringstream stream;
   std::vector<Math::Vector3D> points;
   std::vector<Math::Vector3D> normals;
-
+  std::vector<Math::Vector3D> textures;
+  
   for (std::string vertex : args) {
     stream = std::stringstream(vertex);
     vectors.clear();
@@ -61,8 +62,9 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
       vectors.push_back(tmp);
     }
     points.push_back((vertices_[std::stoi(vectors[0]) - 1]));
+    textures.push_back((textureVertices_[std::stoi(vectors[1]) - 1]));
     if (vectors.size() == 3)
-      this->normals_.push_back((normals_[std::stoi(vectors[2]) - 1]));
+      normals.push_back((normals_[std::stoi(vectors[2]) - 1]));
   }
   faces_.push_back(
       triangleLoader_
@@ -147,17 +149,33 @@ void CustomShape::getRotation(const libconfig::Setting &settings) {
   rotate(rotation);
 }
 
-void CustomShape::scale(size_t) {}
+void CustomShape::scale(size_t) {
+  return;
+  // Math::Vector3D pos = this->pos_;
+  // for (size_t i = 0; i < faces_.size(); ++i) {
+  //   faces_[i].release();
+  // }
+  // faces_.clear();
+  // this->normals_.clear();
+
+  // this->setPosition(Math::Vector3D());
+  // for (size_t i = 0; i < vertices_.size(); ++i) {
+  //   vertices_[i] *= (scale / 100);
+  // }
+  // for (const std::vector<std::string> &args : facesLines_) {
+  //   this->parseFace(args);
+  // }
+  // this->setPosition(pos);
+}
 
 void CustomShape::getScale(const libconfig::Setting &settings) {
   double newscale = 0;
 
   if (!settings.lookupValue("scale", newscale)) {
-    throw ParsingException(
-        "error parsing custom shape, missing \"scale\" field");
+    return;
   }
   scale_ = newscale;
-  scale(scale_);
+  // scale(scale_);
 }
 
 CustomShape::CustomShape(const libconfig::Setting &settings) {
@@ -171,6 +189,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
   if (!file.is_open()) {
     throw ParsingException("error parsing custom shape, file not openned");
   }
+  getScale(settings);
   while (getline(file, line)) {
     parseLine(line);
   }
