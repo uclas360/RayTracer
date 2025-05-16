@@ -57,6 +57,7 @@ class Shell {
   const sf::Color bgcolor_ = {10, 10, 10, 40};
   int selectedId_;
   std::vector<std::string> history_;
+  std::string output_;
   std::reference_wrapper<RaytracerCore> core_;
 
   std::map<std::string,

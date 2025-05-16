@@ -7,6 +7,7 @@
 
 #include "UI/Shell/Shell.hpp"
 
+#include <format>
 #include <fstream>
 #include <iostream>
 
@@ -65,7 +66,6 @@ void Shell::update(const sf::Event &events) {
   updateStr(events);
   core_.get().setMoving(false);
   std::vector<std::string> args;
-  text_.setFillColor(sf::Color::White);
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && str_ != "") {
     history_.push_back(str_);
     args = parseArgs(str_);
@@ -88,6 +88,11 @@ void Shell::update(const sf::Event &events) {
     text_.setPosition(0, i * size_.y / 20);
     texture_.draw(text_);
   }
+  text_.setString(output_);
+  text_.setPosition({0, size_.y - size_.y / 20 * 2});
+  text_.setFillColor(sf::Color::Green);
+  texture_.draw(text_);
+  text_.setFillColor(sf::Color::White);
   if (functions_.find(str_) != functions_.end())
     text_.setFillColor(sf::Color::Green);
   text_.setString(str_);
@@ -114,6 +119,7 @@ void Shell::select(const std::vector<std::string> &args) {
       selectedId_ = std::stoi(args[0]);
       if (selectedId_ >= (int)scene.get().shapes_.size()) {
         selectedId_ = 0;
+        output_ = "Selected Shape n°" + std::to_string(selectedId_);
       }
       return;
     } catch (const std::invalid_argument &) {
@@ -128,6 +134,7 @@ void Shell::select(const std::vector<std::string> &args) {
       selectedId_ = i;
     }
   }
+  output_ = "Selected Shape n°" + std::to_string(selectedId_);
 }
 
 void Shell::move(const std::vector<std::string> &args) {
@@ -141,6 +148,11 @@ void Shell::move(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   scene.get().shapes_[selectedId_]->move(vector);
+  std::stringstream ss;
+  output_ = "Moved Shape n° " + std::to_string(selectedId_) + "to " +
+            std::format("{:.2f}", vector.x) + " " +
+            std::format("{:.2f}", vector.y) + " " +
+            std::format("{:.2f}", vector.z);
 }
 
 void Shell::setPos(const std::vector<std::string> &args) {
@@ -154,6 +166,10 @@ void Shell::setPos(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   scene.get().shapes_[selectedId_]->setPosition(vector);
+  output_ = "Set Shape n° " + std::to_string(selectedId_) + "position to " +
+            std::format("{:.2f}", vector.x) + " " +
+            std::format("{:.2f}", vector.y) + " " +
+            std::format("{:.2f}", vector.z);
 }
 
 void Shell::rotate(const std::vector<std::string> &args) {
@@ -167,6 +183,10 @@ void Shell::rotate(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   scene.get().shapes_[selectedId_]->rotate(vector);
+  output_ = "Rotated Shape n° " + std::to_string(selectedId_) + "by " +
+            std::format("{:.2f}", vector.x) + " " +
+            std::format("{:.2f}", vector.y) + " " +
+            std::format("{:.2f}", vector.z);
 }
 
 void Shell::scale(const std::vector<std::string> &args) {
@@ -180,6 +200,8 @@ void Shell::scale(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   scene.get().shapes_[selectedId_]->scale(scale);
+  output_ = "Scaled Shape n° " + std::to_string(selectedId_) + "by " +
+            std::format("{:.2f}", scale);
 }
 
 void Shell::save(const std::vector<std::string> &args) {
@@ -201,6 +223,7 @@ void Shell::save(const std::vector<std::string> &args) {
     scene.get().shapes_[i].get()->save(objects);
   }
   config.writeFile(args[0].c_str());
+  output_ = "Saved Scene to" + args[0];
 }
 
 void Shell::goTo(const std::vector<std::string> &args) {
@@ -214,6 +237,10 @@ void Shell::goTo(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   cam.get().setPosition(vector);
+  output_ = "Moved cam to " +
+            std::format("{:.2f}", vector.x) + " " +
+            std::format("{:.2f}", vector.y) + " " +
+            std::format("{:.2f}", vector.z);
 }
 
 }  // namespace Graphics
