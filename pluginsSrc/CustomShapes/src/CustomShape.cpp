@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "BVHNode.hpp"
 #include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "plugins/IShape.hpp"
@@ -223,8 +224,7 @@ HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
     double closest_t = INFINITY;
 
     if (this->bvh == nullptr) {
-        std::cout << "custom shape null bvh" << std::endl;
-        exit(1);
+        throw BVHException("custom shape null bvh");
     }
     return this->bvh->hits(ray, ray_t);
     for (const auto &face : _faces) {

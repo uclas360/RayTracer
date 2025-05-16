@@ -12,12 +12,18 @@
 #include <functional>
 #include <vector>
 #include "AABB.hpp"
+#include "CustomException.hpp"
 #include "FixCrossInclude.hpp"
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/AShape.hpp"
 
 namespace RayTracer {
+
+class BVHException: public CustomException {
+    public:
+    BVHException(std::string message): CustomException(message) {};
+};
 
 static bool box_compare(const std::unique_ptr<IShape> &a,
                             const std::unique_ptr<IShape> &b,

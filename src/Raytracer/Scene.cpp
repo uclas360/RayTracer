@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <memory>
 
+#include "BVHNode.hpp"
 #include "Utils.hpp"
 #include "plugins/ILight.hpp"
 
@@ -21,8 +22,7 @@ Scene::Scene(std::unique_ptr<IShape> shape) {
 
 HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {
     if (!this->bvh) {
-        std::cout << "scene bvh null" << std::endl;
-        exit(1);
+        throw BVHException("scene bvh null");
     }
     return this->bvh->hits(ray, ray_t);
     HitRecord closest;
