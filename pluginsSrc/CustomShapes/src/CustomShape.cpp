@@ -5,14 +5,18 @@
 ** CustomShape
 */
 
-#include "CustomShape.hpp"
+#include "../include/CustomShape.hpp"
 
-#include <iostream>
-#include <regex>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
+#include "BVHNode.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
+#include "plugins/IShape.hpp"
+#include "plugins/Material.hpp"
 
 namespace RayTracer {
 
@@ -22,13 +26,12 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
     _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
                                        std::stof(args[2])));
   } catch (const std::invalid_argument &e) {
-    throw ParsingException(
-        "Error parsing custom shape vertex, wrong double");
+    throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
 }
 
 void CustomShape::parseTexture(const std::vector<std::string> &args) {
-  if (args.size() != 2) throw ParsingException("vt: NOT ENOUGH COORDS");
+  if (args.size() < 2) throw ParsingException("vt: NOT ENOUGH COORDS");
   try {
     _textureVertices.push_back(
         Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
@@ -54,6 +57,7 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
   std::string tmp;
   std::stringstream stream;
   std::vector<Math::Vector3D> points;
+  std::vector<Math::Vector3D> textures;
   std::vector<Math::Vector3D> normals;
 
   for (std::string vertex : args) {
@@ -63,18 +67,21 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
       vectors.push_back(tmp);
     }
     points.push_back((_vertices[std::stoi(vectors[0]) - 1]));
+    textures.push_back((this->_textureVertices[std::stoi(vectors[1]) - 1]));
     if (vectors.size() == 3)
       normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
   }
-  _faces.push_back(
-      _triangleLoader
-          ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
-              "value_entry_point", points[0], points[1], points[2]));
-  if (points.size() == 4) {
-    _faces.push_back(
+  this->textCoordinates_.push_back((textures[0] + textures[1] + textures[2]) /
+                                   3);
+  for (size_t i = 1; i < points.size() - 1; i++) {
+    Math::Vector3D avgTexture =
+        (textures[0] + textures[i] + textures[i + 1]) / 3;
+    this->textCoordinates_.push_back(avgTexture);
+    this->_faces.push_back(
         _triangleLoader
             ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
-                "value_entry_point", points[0], points[2], points[3]));
+                "value_entry_point", points[0], points[i], points[i + 1]));
+    this->bbox = AABB(this->bbox, _faces[_faces.size() - 1]->boundingBox());
   }
 }
 
@@ -111,6 +118,7 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
 }
 
 void CustomShape::setPosition(const Math::Vector3D &pos) {
+  this->bbox.move(pos);
   for (size_t i = 0; i < _faces.size(); ++i) {
     _faces[i]->move(pos);
   }
@@ -162,29 +170,57 @@ void CustomShape::getScale(const libconfig::Setting &settings) {
 CustomShape::CustomShape(const libconfig::Setting &settings) {
   std::string path;
 
-  _triangleLoader = getLoader();
-  if (!settings.lookupValue("file", path))
-    throw ParsingException(
-        "Error parsing custom shape, missing \"file\" field");
-  std::ifstream file(path);
-  std::string line;
+  try {
+    _triangleLoader = getLoader();
+    if (!settings.lookupValue("file", path))
+      throw ParsingException(
+          "Error parsing custom shape, missing \"file\" field");
+    std::ifstream file(path);
+    std::string line;
 
-  if (!file.is_open()) {
-    throw ParsingException("error parsing custom shape, file not openned");
+    if (!file.is_open()) {
+      throw ParsingException("error parsing custom shape, file not openned");
+    }
+    while (getline(file, line)) {
+      parseLine(line);
+    }
+    getPos(settings);
+    getRotation(settings);
+    std::string texture;
+    if (settings.lookupValue("texture", texture)) {
+      this->texture_ = texture;
+    }
+  } catch (const ParsingException &e) {
+    throw e;
+  } catch (const libconfig::SettingNotFoundException &e) {
+    throw ParsingException(e.what());
   }
-  while (getline(file, line)) {
-    parseLine(line);
-  }
-  getPos(settings);
-  getRotation(settings);
+  this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
 }
 
-HitRecord CustomShape::hits(const Ray &ray) const {
+void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
+  for (size_t i = 0; i < this->_faces.size(); i++) {
+    std::unique_ptr<Material> tmp = material->duplicate();
+    this->_faces[i]->setMaterial(tmp);
+    if (this->haveTexture()) {
+      const Math::Vector3D &textCoord =
+          this->textCoordinates_[i % this->textCoordinates_.size()];
+      this->_faces[i]->getMaterial()->setColor(
+          this->texture_.getColor(textCoord.x, textCoord.y));
+    }
+  }
+}
+
+HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
   HitRecord record;
   double closest_t = INFINITY;
 
-  for (const auto& face : _faces) {
-    HitRecord temp = face->hits(ray);
+  if (this->bvh == nullptr) {
+    throw BVHException("custom shape null bvh");
+  }
+  return this->bvh->hits(ray, ray_t);
+  for (const auto &face : _faces) {
+    HitRecord temp = face->hits(ray, ray_t);
     if (!temp.missed && temp.t > 0 && temp.t < closest_t) {
       closest_t = temp.t;
       record = temp;

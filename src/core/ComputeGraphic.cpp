@@ -52,8 +52,9 @@ void RaytracerCore::computeGraphic() {
     compressedTexture.create(this->compressedXResolution_,
                              this->compressedYResolution_);
     sf::Sprite compressedSprite(compressedTexture);
-    compressedSprite.setScale((double)this->width_ / this->compressedXResolution_,
-                    (double)this->height_ / this->compressedYResolution_);
+    compressedSprite.setScale(
+        (double)this->width_ / this->compressedXResolution_,
+        (double)this->height_ / this->compressedYResolution_);
 
     while (window.isOpen()) {
         if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;

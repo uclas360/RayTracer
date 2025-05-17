@@ -9,6 +9,7 @@
 #define ARGS_MANAGER_HPP
 
 #include <sys/types.h>
+
 #include <cstdlib>
 #include <functional>
 #include <map>
@@ -41,7 +42,8 @@ class ArgManager {
    private:
     ArgumentStruct arguments_;
     std::map<std::string, std::function<bool(ArgManager &, char *)>> flagMap = {
-        {"-g", [](ArgManager &_this, char *) {
+        {"-g",
+         [](ArgManager &_this, char *) {
              if (!_this.arguments_.graphicMode) {
                  _this.arguments_.graphicMode = true;
              } else {
@@ -49,92 +51,105 @@ class ArgManager {
              }
              return false;
          }},
-        {"-t", [](ArgManager &_this, char *number) {
-            if (number == nullptr) {
-                throw ArgumentException("-t flag must take a positive integer");
-            }
-            if (_this.arguments_.nb_thread != -1) {
-                throw ArgumentException("multiple use of -g flag");
-            }
-            std::stringstream ss(number);
-            size_t nb_thread;
+        {"-t",
+         [](ArgManager &_this, char *number) {
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-t flag must take a positive integer");
+             }
+             if (_this.arguments_.nb_thread != -1) {
+                 throw ArgumentException("multiple use of -g flag");
+             }
+             std::stringstream ss(number);
+             size_t nb_thread;
 
-            ss >> nb_thread;
-            if (ss.fail() || !ss.eof()){
-                throw ArgumentException("-t flag must take a positive integer");
-            }
-            _this.arguments_.nb_thread = nb_thread;
-            return true;
+             ss >> nb_thread;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-t flag must take a positive integer");
+             }
+             _this.arguments_.nb_thread = nb_thread;
+             return true;
          }},
-        {"-W", [](ArgManager &_this, char *number) {
-            if (number == nullptr) {
-                throw ArgumentException("-W flag must take a positive integer");
-            }
-            if (_this.arguments_.width != -1) {
-                throw ArgumentException("multiple use of -W flag");
-            }
-            std::stringstream ss(number);
-            size_t width;
+        {"-W",
+         [](ArgManager &_this, char *number) {
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-W flag must take a positive integer");
+             }
+             if (_this.arguments_.width != -1) {
+                 throw ArgumentException("multiple use of -W flag");
+             }
+             std::stringstream ss(number);
+             size_t width;
 
-            ss >> width;
-            if (ss.fail() || !ss.eof()) {
-                throw ArgumentException("-W flag must take a positive integer");
-            }
-            _this.arguments_.width = width;
-            return true;
+             ss >> width;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-W flag must take a positive integer");
+             }
+             _this.arguments_.width = width;
+             return true;
          }},
-        {"-H", [](ArgManager &_this, char *number) {
-            if (number == nullptr) {
-                throw ArgumentException("-H flag must take a positive integer");
-            }
-            if (_this.arguments_.height != -1) {
-                throw ArgumentException("multiple use of -H flag");
-            }
-            std::stringstream ss(number);
-            size_t height;
+        {"-H",
+         [](ArgManager &_this, char *number) {
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-H flag must take a positive integer");
+             }
+             if (_this.arguments_.height != -1) {
+                 throw ArgumentException("multiple use of -H flag");
+             }
+             std::stringstream ss(number);
+             size_t height;
 
-            ss >> height;
-            if (ss.fail() || !ss.eof()) {
-                throw ArgumentException("-H flag must take a positive integer");
-            }
-            _this.arguments_.height = height;
-            return true;
+             ss >> height;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-H flag must take a positive integer");
+             }
+             _this.arguments_.height = height;
+             return true;
          }},
-        {"-xr", [](ArgManager &_this, char *number) {
-            if (number == nullptr) {
-                throw ArgumentException("-xr flag must take a positive integer");
-            }
-            if (_this.arguments_.xResolution != -1) {
-                throw ArgumentException("multiple use of -xr flag");
-            }
-            std::stringstream ss(number);
-            size_t xRes;
+        {"-xr",
+         [](ArgManager &_this, char *number) {
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-xr flag must take a positive integer");
+             }
+             if (_this.arguments_.xResolution != -1) {
+                 throw ArgumentException("multiple use of -xr flag");
+             }
+             std::stringstream ss(number);
+             size_t xRes;
 
-            ss >> xRes;
-            if (ss.fail() || !ss.eof()) {
-                throw ArgumentException("-xr flag must take a positive integer");
-            }
-            _this.arguments_.xResolution = xRes;
-            return true;
+             ss >> xRes;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-xr flag must take a positive integer");
+             }
+             _this.arguments_.xResolution = xRes;
+             return true;
          }},
         {"-yr", [](ArgManager &_this, char *number) {
-            if (number == nullptr) {
-                throw ArgumentException("-xr flag must take a positive integer");
-            }
-            if (_this.arguments_.yResolution != -1) {
-                throw ArgumentException("multiple use of -xr flag");
-            }
-            std::stringstream ss(number);
-            size_t yRes;
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-xr flag must take a positive integer");
+             }
+             if (_this.arguments_.yResolution != -1) {
+                 throw ArgumentException("multiple use of -xr flag");
+             }
+             std::stringstream ss(number);
+             size_t yRes;
 
-            ss >> yRes;
-            if (ss.fail() || !ss.eof()) {
-                throw ArgumentException("-yr flag must take a positive integer");
-            }
-            _this.arguments_.yResolution = yRes;
-            return true;
-         }}
-    };
+             ss >> yRes;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-yr flag must take a positive integer");
+             }
+             _this.arguments_.yResolution = yRes;
+             return true;
+         }}};
 };
 
 #endif
