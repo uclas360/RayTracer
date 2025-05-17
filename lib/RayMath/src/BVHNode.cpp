@@ -10,15 +10,16 @@
 #include <algorithm>
 #include <functional>
 
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
 BVHNode::BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
-                 size_t end) {
-    this->bbox = RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                                 Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
-                                 Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY));
+                 size_t end)
+    : AShape(RayTracer::AABB(Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
+                             Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY),
+                             Interval(+DOUBLE_INFINITY, -DOUBLE_INFINITY))) {
     for (size_t object_index = start; object_index < end; object_index++)
         this->bbox =
             RayTracer::AABB(this->bbox, objects[object_index]->boundingBox());
@@ -37,7 +38,7 @@ BVHNode::BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
         this->left = objects[start].get();
         this->right = objects[start + 1].get();
     } else {
-        std::sort(std::begin(objects) + start, std::begin(objects) + end,
+        std::sort(objects.begin() + start, objects.begin() + end,
                   comparator);
 
         double mid = (double)start + (double)object_span / 2;

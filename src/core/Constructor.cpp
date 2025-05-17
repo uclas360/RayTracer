@@ -96,6 +96,7 @@ void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
     } catch (const ParsingException &exc) {
         throw ParsingException("failed to init material for object \"" + name +
                                "\": " + exc.what());
+        return;
     }
     scene.addShape(std::move(shape));
 }
@@ -170,6 +171,9 @@ void RaytracerCore::initPlugins(const std::string &file,
                               << "\": " << exc.what() << std::endl;
                 }
             }
+            if (scene.shapes_.empty()) {
+                continue;
+            }
             scene.bvh = std::make_unique<RayTracer::BVHNode>(scene.shapes_, 0, scene.shapes_.size());
             this->mainScene_.addShape(
                 std::make_unique<RayTracer::Scene>(std::move(scene)));
@@ -218,6 +222,9 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
             config.readFile(file);
             this->initCamera(file, config, camera);
             this->initPlugins(file, config);
+            if (this->mainScene_.shapes_.empty()) {
+                throw ParsingException("empty scene");
+            }
             this->mainScene_.bvh = std::make_unique<RayTracer::BVHNode>(this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size());
         } catch (const libconfig::FileIOException &exc) {
             std::cerr << "error parsing file \"" << file

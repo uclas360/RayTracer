@@ -35,30 +35,26 @@ std::unique_ptr<Material> LambertianDebug::duplicate() {
     return std::make_unique<LambertianDebug>(*this);
 }
 
-AABB::AABB() {
-    this->material_ = std::make_unique<LambertianDebug>(DEBUG_COLOR);
+AABB::AABB(): material_(std::make_unique<LambertianDebug>(DEBUG_COLOR)) {
 }
 
 AABB::AABB(const Interval &x, const Interval &y, const Interval &z)
-    : x(x), y(y), z(z) {
+    : x(x), y(y), z(z), material_(std::make_unique<LambertianDebug>(DEBUG_COLOR)) {
     padToMinimums();
-    this->material_ = std::make_unique<LambertianDebug>(DEBUG_COLOR);
 }
 
-AABB::AABB(const Math::Vector3D &a, const Math::Vector3D &b) {
+AABB::AABB(const Math::Vector3D &a, const Math::Vector3D &b): material_(std::make_unique<LambertianDebug>(DEBUG_COLOR)) {
     x = (a.x <= b.x) ? Interval(a.x, b.x) : Interval(b.x, a.x);
     y = (a.y <= b.y) ? Interval(a.y, b.y) : Interval(b.y, a.y);
     z = (a.z <= b.z) ? Interval(a.z, b.z) : Interval(b.z, a.z);
 
     padToMinimums();
-    this->material_ = std::make_unique<LambertianDebug>(DEBUG_COLOR);
 }
 
-AABB::AABB(const AABB &box0, const AABB &box1) {
+AABB::AABB(const AABB &box0, const AABB &box1): material_(std::make_unique<LambertianDebug>(DEBUG_COLOR)) {
     x = Interval(box0.x, box1.x);
     y = Interval(box0.y, box1.y);
     z = Interval(box0.z, box1.z);
-    this->material_ = std::make_unique<LambertianDebug>(DEBUG_COLOR);
 }
 
 const Interval &AABB::axisInterval(int n) const {
@@ -70,10 +66,10 @@ const Interval &AABB::axisInterval(int n) const {
 bool AABB::trueHit(const Ray &r, Interval ray_t) const {
     for (int axis = 0; axis < 3; axis++) {
         const Interval &ax = axisInterval(axis);
-        const double adinv = 1.0 / *r.dir.arr[axis];
+        const double adinv = 1.0 / r.dir.arr[axis];
 
-        const double t0 = (ax.min - *r.pos.arr[axis]) * adinv;
-        const double t1 = (ax.max - *r.pos.arr[axis]) * adinv;
+        const double t0 = (ax.min - r.pos.arr[axis]) * adinv;
+        const double t1 = (ax.max - r.pos.arr[axis]) * adinv;
 
         if (t0 < t1) {
             if (t0 > ray_t.min) ray_t.min = t0;

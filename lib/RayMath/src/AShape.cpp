@@ -7,9 +7,13 @@
 
 #include "plugins/AShape.hpp"
 #include <memory>
+#include "AABB.hpp"
 #include "plugins/Material.hpp"
 
 namespace RayTracer {
+
+AShape::AShape(AABB box): bbox(std::move(box)) {
+}
 
 void AShape::setMaterial(std::unique_ptr<Material> &newMaterial) {
     this->material_.swap(newMaterial);
