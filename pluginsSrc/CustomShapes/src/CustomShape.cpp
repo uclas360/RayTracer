@@ -132,7 +132,7 @@ void CustomShape::rotate(const Math::Vector3D &angles) {
 }
 
 void CustomShape::setPosition(const Math::Vector3D &pos) {
-  this->bbox.setPosition(pos);
+  this->bbox.move(pos - this->pos_);
   Math::Vector3D toPos = pos - this->pos_;
   this->move(toPos);
   this->pos_ = pos;
