@@ -114,11 +114,11 @@ class RaytracerCore {
              }},
             {sf::Keyboard::Z,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, -CAM_SPEED, 0});
+                 this_.camera_.move({0, CAM_SPEED, 0});
              }},
             {sf::Keyboard::S,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, CAM_SPEED, 0});
+                 this_.camera_.move({0, -CAM_SPEED, 0});
              }},
             {sf::Keyboard::E,
              [](RaytracerCore &this_, Math::Vector3D &) {

@@ -56,6 +56,9 @@ void RaytracerCore::computeGraphic() {
         (double)this->width_ / this->compressedXResolution_,
         (double)this->height_ / this->compressedYResolution_);
 
+    sf::View view = window.getDefaultView();
+    view.setSize(this->width_, -static_cast<double>(this->height_));
+    window.setView(view);
     while (window.isOpen()) {
         if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
         clock.restart();

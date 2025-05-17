@@ -186,6 +186,17 @@ double Vector3D::getAxis(int axis) const {
     return this->z;
 }
 
+void Vector3D::clamp(double min, double max) {
+    this->x = std::max(min, std::min(this->x, max));
+    this->y = std::max(min, std::min(this->y, max));
+    this->z = std::max(min, std::min(this->z, max));
+}
+
+Vector3D &Vector3D::clamped(double min, double max) {
+    this->clamp(min, max);
+    return *this;
+}
+
 std::ostream &operator<<(std::ostream &out, const Math::Vector3D &vec) {
     out << "Vector3D(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
     return out;

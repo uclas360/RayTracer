@@ -34,6 +34,7 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
         if (settings.lookupValue("texture", texture)) {
             this->texture_ = texture;
         }
+        this->bbox = AABB(Math::Vector3D(-20, -20, -20), Math::Vector3D(20, 20, 20));
     } catch (const ParsingException &e) {
         throw e;
     } catch (const libconfig::SettingNotFoundException &e) {
@@ -71,7 +72,6 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
 
     if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
         return capRecord;
-
     return HitRecord(t, ray, *this, normal, this->material_);
 }
 
