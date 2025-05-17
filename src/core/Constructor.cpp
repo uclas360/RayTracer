@@ -11,10 +11,19 @@
 #include <libconfig.h++>
 #include <memory>
 #include <optional>
+#include <stdexcept>
+#include <string>
 #include <thread>
+#include <utility>
 
 #include "Raytracer/Camera.hpp"
+#include "Raytracer/Scene.hpp"
+#include "Raytracer/Texture.hpp"
 #include "RaytracerCore.hpp"
+#include "libLoaders/ILibLoader.hpp"
+#include "plugins/IShape.hpp"
+#include "plugins/Material.hpp"
+#include "../../include/BVHNode.hpp"
 
 #if defined __linux__
 #include "libLoaders/LDLoader.hpp"
@@ -24,6 +33,32 @@
 #endif
 
 #include "plugins/ILight.hpp"
+
+template <typename Plugin>
+static void initInMap(
+    std::map<std::string, std::unique_ptr<LibLoader<Plugin>>> &map,
+    const std::string &name) {
+    if (map.contains(name)) {
+        return;
+    }
+    try {
+// LINUX
+#if defined __linux__
+        map.insert(
+            {name, std::make_unique<DlLoader<Plugin>>("plugin/" + name)});
+#endif
+//
+// WINDOWS
+#if defined _WIN32
+        map.insert(
+            {name, std::make_unique<WindowsLoader<Plugin>>("plugin/" + name)});
+#endif
+        //
+    } catch (const LoaderException &ex) {
+        throw ParsingException("error loading pluggin :" +
+                               std::string(ex.what()));
+    }
+}
 
 void RaytracerCore::initCamera(const std::string &file,
                                const libconfig::Config &config,
@@ -42,27 +77,66 @@ void RaytracerCore::initCamera(const std::string &file,
     }
 }
 
-template <typename Plugin>
-static void initInMap(
-    std::map<std::string, std::unique_ptr<LibLoader<Plugin>>> &map,
-    const std::string &name, const std::string &file) {
-    if (map.contains(name)) {
-        return;
+void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
+                              const libconfig::SettingIterator &iterator) {
+    initInMap<RayTracer::IShape>(this->shapesPlugins_, name);
+    std::unique_ptr<RayTracer::IShape> shape;
+
+    try {
+        shape = this->shapesPlugins_.at(name)->getInstance(
+            "entry_point", iterator->lookup("data"));
+    } catch (const std::out_of_range &exp) {
+        throw ParsingException("shape \"" + name + "\" does not exist");
+    } catch (const LoaderException &exc) {
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
     }
     try {
-// LINUX
-#if defined __linux__
-        map.insert({name, std::make_unique<DlLoader<Plugin>>(name)});
-#endif
-//
-// WINDOWS
-#if defined _WIN32
-        map.insert({name, std::make_unique<WindowsLoader<Plugin>>(name)});
-#endif
-//
-    } catch (const NotExistingLib &ex) {
-        std::cerr << "error parsing object in file \"" << file
-                  << "\", error loading pluggin :" << ex.what() << std::endl;
+        this->initMaterials(shape, iterator);
+    } catch (const ParsingException &exc) {
+        throw ParsingException("failed to init material for object \"" + name +
+                               "\": " + exc.what());
+        return;
+    }
+    scene.addShape(std::move(shape));
+}
+
+void RaytracerCore::initLight(const std::string &name, RayTracer::Scene &scene,
+                              const libconfig::SettingIterator &iterator) {
+    initInMap<RayTracer::ILight>(this->lightsPlugins_, name);
+    try {
+        scene.addLight(this->lightsPlugins_.at(name)->getInstance(
+            "entry_point", iterator->lookup("data")));
+    } catch (const std::out_of_range &) {
+        throw ParsingException("light \"" + name + "\" does not exist");
+    } catch (const libconfig::SettingNotFoundException &) {
+        throw ParsingException("missing or invalid \"data\" field");
+    } catch (const LoaderException &exc) {
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
+    }
+}
+
+void RaytracerCore::initMaterials(
+    std::unique_ptr<RayTracer::IShape> &shape,
+    const libconfig::SettingIterator &shapeSetting) {
+    libconfig::Setting &material = shapeSetting->lookup("material");
+    std::string materialType;
+    if (!material.lookupValue("type", materialType)) {
+        throw ParsingException("missing or invalid type field");
+    }
+    initInMap(this->materials_, materialType);
+    try {
+        std::unique_ptr<RayTracer::Material> tmp =
+            this->materials_.at(materialType)
+                ->getInstance("entry_point", material.lookup("data"));
+        shape->setMaterial(tmp);
+    } catch (const std::out_of_range &) {
+        throw ParsingException("material \"" + materialType +
+                               "\" does not exist");
+    } catch (const LoaderException &exc) {
+        throw ParsingException("error loading plugin: " +
+                               std::string(exc.what()));
     }
 }
 
@@ -70,51 +144,39 @@ void RaytracerCore::initPlugins(const std::string &file,
                                 const libconfig::Config &config) {
     try {
         libconfig::Setting &objects = config.lookup("objects");
-        for (auto it = objects.begin(); it != objects.end(); it++) {
-            std::string type;
-            std::string name;
-            if (!it->lookupValue("type", type)) {
-                std::cerr << "error parsing object in file \"" << file
-                          << "\", missing or invalid \"type\" field"
-                          << std::endl;
-                return;
-            }
-            if (!it->lookupValue("name", name)) {
-                std::cerr << "error parsing object in file \"" << file
-                          << "\", missing or invalid \"name\" field"
-                          << std::endl;
-                return;
-            }
-            name = "plugin/" + name;
-            if (type == "shape") {
-                initInMap<RayTracer::IShape>(this->shapesPlugins_, name, file);
-                if (this->shapesPlugins_.find(name) !=
-                    this->shapesPlugins_.end()) {
-                    try {
-                        this->mainScene_.addShape(
-                            this->shapesPlugins_.at(name)->getInstance(
-                                "entry_point", it->lookup("data")));
-                    } catch (const ParsingException &exp) {
-                        std::cerr << exp.what() << std::endl;
+        for (auto i = objects.begin(); i != objects.end(); i++) {
+            RayTracer::Scene scene;
+            for (auto it = i->begin(); it != i->end(); it++) {
+                try {
+                    std::string type;
+                    std::string name;
+                    if (!it->lookupValue("type", type)) {
+                        throw ParsingException(
+                            "missing or invalid \"type\" field");
                     }
-                }
-            } else if (type == "light") {
-                initInMap<RayTracer::ILight>(this->lightsPlugins_, name, file);
-                if (this->shapesPlugins_.find(name) !=
-                    this->shapesPlugins_.end()) {
-                    try {
-                        this->mainScene_.addLight(
-                            this->lightsPlugins_.at(name)->getInstance(
-                                "entry_point", it->lookup("data")));
-                    } catch (const ParsingException &exp) {
-                        std::cerr << exp.what() << std::endl;
+                    if (!it->lookupValue("name", name)) {
+                        throw ParsingException(
+                            "missing or invalid \"name\" field");
                     }
+                    if (type == "shape") {
+                        this->initShape(name, scene, it);
+                    } else if (type == "light") {
+                        this->initLight(name, scene, it);
+                    } else {
+                        throw ParsingException("object type \"" + type +
+                                               "\" does not exist");
+                    }
+                } catch (const ParsingException &exc) {
+                    std::cerr << "error initializing object in file \"" << file
+                              << "\": " << exc.what() << std::endl;
                 }
-            } else {
-                std::cerr << "error parsing object in file \"" << file
-                          << "\", object type \"" << type << "\" does not exist"
-                          << std::endl;
             }
+            if (scene.shapes_.empty()) {
+                continue;
+            }
+            scene.bvh = std::make_unique<RayTracer::BVHNode>(scene.shapes_, 0, scene.shapes_.size());
+            this->mainScene_.addShape(
+                std::make_unique<RayTracer::Scene>(std::move(scene)));
         }
     } catch (const libconfig::SettingNotFoundException &) {
     }
@@ -122,15 +184,16 @@ void RaytracerCore::initPlugins(const std::string &file,
 
 void RaytracerCore::startThreads(size_t nbThreads) {
     size_t start = 0;
-    size_t nbPixelPerThread = (this->compressedXResolution_ * this->compressedYResolution_) / nbThreads;
+    size_t nbPixelPerThread =
+        (this->compressedXResolution_ * this->compressedYResolution_) /
+        nbThreads;
     size_t end = nbPixelPerThread;
     for (size_t i = 0; i < nbThreads; i++) {
         if (i + 1 == nbThreads) {
             end = this->compressedXResolution_ * this->compressedYResolution_;
         }
         this->threads_.push_back(
-            std::thread(&RaytracerCore::computeImage, this, start, end)
-        );
+            std::thread(&RaytracerCore::computeImage, this, start, end));
         start += nbPixelPerThread;
         end += nbPixelPerThread;
     }
@@ -138,6 +201,8 @@ void RaytracerCore::startThreads(size_t nbThreads) {
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
     : graphic_(args.graphicMode),
+      nbImage_(0),
+      image_(args.xResolution * args.yResolution * 4, 0),
       imageMean_(args.xResolution * args.yResolution * 4, 0),
       width_(args.width),
       height_(args.height),
@@ -145,7 +210,8 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
       yResolution_(args.yResolution),
       compressedXResolution_(std::max((int)(args.xResolution / 10), 20)),
       compressedYResolution_(std::max((int)args.yResolution / 10, 20)),
-      compressedImage_(this->compressedXResolution_ * this->compressedYResolution_ * 4, 0){
+      compressedImage_(
+          this->compressedXResolution_ * this->compressedYResolution_ * 4, 0) {
     std::optional<RayTracer::Camera> camera = std::nullopt;
     libconfig::Config config;
 
@@ -155,8 +221,11 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
         try {
             config.readFile(file);
             this->initCamera(file, config, camera);
-
             this->initPlugins(file, config);
+            if (this->mainScene_.shapes_.empty()) {
+                throw ParsingException("empty scene");
+            }
+            this->mainScene_.bvh = std::make_unique<RayTracer::BVHNode>(this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size());
         } catch (const libconfig::FileIOException &exc) {
             std::cerr << "error parsing file \"" << file
                       << "\", failed to open file" << std::endl;

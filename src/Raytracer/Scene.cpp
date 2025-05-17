@@ -6,20 +6,30 @@
 */
 
 #include "Raytracer/Scene.hpp"
+
 #include <cstdio>
 #include <memory>
 
+#include "BVHNode.hpp"
 #include "Utils.hpp"
 #include "plugins/ILight.hpp"
 
 namespace RayTracer {
 
-HitRecord RayTracer::Scene::hits(const Ray &ray) const {
+Scene::Scene(std::unique_ptr<IShape> shape) {
+    this->addShape(std::move(shape));
+}
+
+HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {
+    if (!this->bvh) {
+        throw BVHException("scene bvh null");
+    }
+    return this->bvh->hits(ray, ray_t);
     HitRecord closest;
     float closestDistance = DOUBLE_INFINITY;
 
     for (const auto &shape : this->shapes_) {
-        const HitRecord hit = shape->hits(ray);
+        const HitRecord hit = shape->hits(ray, ray_t);
         if (!hit.missed && hit.t < closestDistance) {
             closestDistance = hit.t;
             closest = hit;
@@ -29,6 +39,7 @@ HitRecord RayTracer::Scene::hits(const Ray &ray) const {
 }
 
 void Scene::addShape(std::unique_ptr<IShape> shape) {
+    this->bbox = AABB(bbox, shape->boundingBox());
     this->shapes_.emplace_back(std::move(shape));
 }
 
@@ -44,7 +55,6 @@ void Scene::move(const Math::Vector3D &offset) {
         it->move(offset);
     }
 }
-
 
 void Scene::rotate(const Math::Vector3D &angles) {
     for (auto &it : this->shapes_) {

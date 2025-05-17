@@ -5,30 +5,37 @@
 ** core compute
 */
 
-#include <iostream>
 #include "RaytracerCore.hpp"
 
 void RaytracerCore::computeMoving(size_t start, size_t end) {
     for (size_t i = start; i < end; i++) {
-        this->computePixel(this->compressedImage_, i, this->compressedXResolution_, this->compressedYResolution_);
+        this->computePixel(this->compressedImage_, i,
+                           this->compressedXResolution_,
+                           this->compressedYResolution_);
     }
-    this->imageMutex_.lock();
-    this->nbImage_ = 0;
-    this->imageMutex_.unlock();
 }
 
 void RaytracerCore::computePrecision() {
-    std::vector<std::uint8_t> image(this->xResolution_ * this->yResolution_ * 4, 0);
+    std::vector<std::uint8_t> image(this->xResolution_ * this->yResolution_ * 4,
+                                    0);
 
-    for (size_t i = 0; i < (this->xResolution_ * this->yResolution_); i++) {
+    for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
+                       !this->moving_ && !this->killThreads_;
+         i++) {
         this->computePixel(image, i, this->xResolution_, this->yResolution_);
     }
     this->imageMutex_.lock();
     if (this->nbImage_ == 0) {
+        for (size_t i = 0; i < this->image_.size(); i++) {
+            this->image_[i] = image[i];
+        }
         this->imageMean_ = image;
     } else {
-        for (size_t i = 0; i < this->imageMean_.size(); i++) {
-            this->imageMean_[i] = (this->imageMean_[i] * this->nbImage_ + image[i]) / (this->nbImage_ + 1);
+        for (size_t i = 0; (i < this->imageMean_.size()) && !this->moving_ &&
+                           !this->killThreads_;
+             i++) {
+            this->image_[i] += image[i];
+            this->imageMean_[i] = this->image_[i] / (this->nbImage_ + 1);
         }
     }
     this->nbImage_ += 1;

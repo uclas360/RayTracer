@@ -16,5 +16,4 @@ target_include_directories(${LIB_NAME}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         include
-
 )

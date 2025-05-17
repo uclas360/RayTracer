@@ -8,9 +8,9 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <string>
 #include <limits>
 #include <random>
+#include <string>
 
 static const std::string HELP_MESSAGE =
     "USAGE: ./raytracer <SCENE_FILE> [-g]\n"

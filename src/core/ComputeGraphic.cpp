@@ -29,6 +29,11 @@ void RaytracerCore::handleKeys() {
         }
     }
     this->moving_ = moving;
+    if (this->moving_) {
+        this->imageMutex_.lock();
+        this->nbImage_ = 0;
+        this->imageMutex_.unlock();
+    }
     this->camera_.rotate(camRotation);
 }
 
@@ -47,8 +52,9 @@ void RaytracerCore::computeGraphic() {
     compressedTexture.create(this->compressedXResolution_,
                              this->compressedYResolution_);
     sf::Sprite compressedSprite(compressedTexture);
-    compressedSprite.setScale((double)this->width_ / this->compressedXResolution_,
-                    (double)this->height_ / this->compressedYResolution_);
+    compressedSprite.setScale(
+        (double)this->width_ / this->compressedXResolution_,
+        (double)this->height_ / this->compressedYResolution_);
 
     while (window.isOpen()) {
         if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
@@ -60,7 +66,7 @@ void RaytracerCore::computeGraphic() {
 
         this->handleKeys();
         window.clear();
-        if (!this->moving_) {
+        if (!this->moving_ && this->nbImage_ != 0) {
             texture.update(this->imageMean_.data());
             window.draw(sprite);
         } else {
