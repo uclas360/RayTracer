@@ -27,6 +27,7 @@ class IShape : public IObject {
   virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
   virtual Math::Vector3D getPointColor(const Math::Vector3D &point) const = 0;
   virtual const AABB &boundingBox() const = 0;
+  virtual void setBoundingBox(const AABB &bbox) = 0;
   virtual std::unique_ptr<Material> &getMaterial() = 0;
   virtual void save(libconfig::Setting &parent) const = 0;
 };

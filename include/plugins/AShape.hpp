@@ -25,10 +25,10 @@ class AShape : public IShape {
     AShape() = default;
     virtual void setMaterial(std::unique_ptr<Material> &) override;
     const AABB &boundingBox() const override;
+    void setBoundingBox(const AABB &bbox) override;
     virtual std::unique_ptr<Material> &getMaterial() override;
     bool haveTexture() const;
     void save(libconfig::Setting &) const {return;};
-
 
    protected:
     AShape(AABB);

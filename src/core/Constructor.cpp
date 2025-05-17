@@ -97,7 +97,8 @@ void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
         throw ParsingException("failed to init material for object \"" + name +
                                "\": " + exc.what());
         return;
-    }
+    }       
+    shape->setBoundingBox(RayTracer::AABB(Math::Vector3D(-100000, -100000, -100000), Math::Vector3D(100000, 100000, 100000)));
     scene.addShape(std::move(shape));
 }
 

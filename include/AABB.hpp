@@ -36,10 +36,12 @@ class AABB : public IShape {
     Interval x, y, z;
 
     AABB();
+    AABB(const AABB &bbox);
     AABB(const Interval &x, const Interval &y, const Interval &z);
     AABB(const Math::Vector3D &a, const Math::Vector3D &b);
     AABB(const AABB &box0, const AABB &box1);
-
+    
+    AABB &operator=(const RayTracer::AABB &bbox);
     const Interval &axisInterval(int n) const;
     bool trueHit(const Ray &r, Interval ray_t) const;
 
@@ -51,6 +53,7 @@ class AABB : public IShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
     const AABB &boundingBox() const override;
+    void setBoundingBox(const AABB &bbox) override;
     Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
     void setMaterial(std::unique_ptr<Material> &newMaterial) override;
     std::unique_ptr<Material> &getMaterial() override {return this->material_;};
