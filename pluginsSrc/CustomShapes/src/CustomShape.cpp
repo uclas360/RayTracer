@@ -39,13 +39,12 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
 void CustomShape::parseTexture(const std::vector<std::string> &args) {
   if (args.size() < 2) throw ParsingException("vt: NOT ENOUGH COORDS");
   try {
-        std::istringstream os(args[0]);
+    std::istringstream os(args[0]);
     std::istringstream os1(args[1]);
     Math::Vector3D test;
     os >> test.x;
     os1 >> test.y;
-    _textureVertices.push_back(
-        Math::Vector3D(test));
+    _textureVertices.push_back(Math::Vector3D(test));
   } catch (const std::invalid_argument &e) {
     throw ParsingException(
         "Error parsing custom shape texture vertex, wrong double");
@@ -81,11 +80,12 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
     stream = std::stringstream(vertex);
     vectors.clear();
     while (std::getline(stream, tmp, '/')) {
-      vectors.push_back(tmp);
+      if (tmp != "")
+        vectors.push_back(tmp);
     }
+      textures.push_back((this->_textureVertices[(std::stoi(vectors[1]) - 1) %
+      _textureVertices.size()]));
     points.push_back((_vertices[(std::stoi(vectors[0]) - 1)]));
-    textures.push_back((this->_textureVertices[(std::stoi(vectors[1]) - 1) %
-                                               _textureVertices.size()]));
     if (vectors.size() == 3)
       normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
   }
