@@ -7,6 +7,7 @@
 
 #include "../include/Lambertian.hpp"
 
+#include <iostream>
 #include <libconfig.h++>
 
 #include "Raytracer/math/Vector.hpp"

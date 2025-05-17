@@ -38,11 +38,11 @@ namespace RayTracer {
 
 class HitRecord {
    public:
-    Math::Vector3D p;
-    Math::Vector3D normal;
+    bool missed = true;
     double t = 0;
     bool frontFace = false;
-    bool missed = true;
+    Math::Vector3D normal;
+    Math::Vector3D p;
     const IShape *shapeHit;
     const Material *mat;
 

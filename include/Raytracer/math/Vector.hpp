@@ -8,7 +8,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <array>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <libconfig.h++>
 
@@ -21,7 +23,7 @@ class Vector3D {
     double x;
     double y;
     double z;
-    double *arr[3] = {&x, &y, &z};
+    std::vector<std::reference_wrapper<double>>arr = {x, y, z};
 
     Vector3D() : x(0), y(0), z(0) {};
     Vector3D(double x, double y, double z) : x(x), y(y), z(z) {};

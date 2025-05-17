@@ -22,6 +22,7 @@ class AABB;
 
 class AShape : public IShape {
    public:
+    AShape() = default;
     virtual void setMaterial(std::unique_ptr<Material> &) override;
     const AABB &boundingBox() const override;
     virtual std::unique_ptr<Material> &getMaterial() override;
@@ -29,6 +30,7 @@ class AShape : public IShape {
 
 
    protected:
+    AShape(AABB);
     AABB bbox;
     std::unique_ptr<Material> material_;
     Texture texture_;
