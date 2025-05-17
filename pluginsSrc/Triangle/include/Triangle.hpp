@@ -12,11 +12,12 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/AShape.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
-class Triangle : public IShape {
+class Triangle : public AShape {
  public:
   Math::Vector3D a;
   Math::Vector3D b;
@@ -25,17 +26,17 @@ class Triangle : public IShape {
   Triangle() = default;
   ~Triangle() = default;
   Triangle(Math::Vector3D a, Math::Vector3D b, Math::Vector3D c)
-      : a(a), b(b), c(c) {};
+      : a(a), b(b), c(c) {
+    this->bbox = AABB(AABB(this->a, this->b), AABB(this->c, this->c));
+  };
   Triangle(const libconfig::Setting &settings);
-  HitRecord hits(const Ray &) const override;
+  HitRecord hits(const Ray &, Interval ray_t) const override;
   void move(const Math::Vector3D &pos) override;
   void rotate(const Math::Vector3D &) override;
   void scale(size_t scale) override;
   void setPosition(const Math::Vector3D &pos) override;
+  Math::Vector3D getPointColor(const Math::Vector3D &) const override;
   void save(libconfig::Setting &parent) const override;
-
- protected:
- private:
 };
 }  // namespace RayTracer
 

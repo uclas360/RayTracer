@@ -32,7 +32,7 @@ class Camera : public IObject {
   void lookAt(const Math::Vector3D &target);
   void save(libconfig::Setting &parent) const;
 
-  Ray ray(double u, double v);
+  Ray ray(double u, double v, double xResolution, double yResolution);
 
  private:
   void rotateX(double angle);

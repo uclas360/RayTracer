@@ -26,7 +26,7 @@ void RaytracerCore::handleKeys() {
 
   for (const auto &it : this->keyboardEvent) {
     if (sf::Keyboard::isKeyPressed(it.first)) {
-      it.second(camRotation);
+      it.second(*this, camRotation);
       moving = true;
     }
   }
@@ -57,7 +57,8 @@ void RaytracerCore::computeGraphic() {
   compressedSprite.setScale(
       (double)this->width_ / this->compressedXResolution_,
       (double)this->height_ / this->compressedYResolution_);
-  Graphics::Shell shell(std::ref(*this), (double)this->width_ / 3, (double)this->height_ / 2);
+  Graphics::Shell shell(std::ref(*this), (double)this->width_ / 3,
+                        (double)this->height_ / 2);
 
   while (window.isOpen()) {
     if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;

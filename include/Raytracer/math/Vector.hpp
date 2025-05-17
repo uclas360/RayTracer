@@ -8,9 +8,12 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include <array>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <libconfig.h++>
+
 #include "Utils.hpp"
 
 namespace Math {
@@ -20,6 +23,7 @@ class Vector3D {
     double x;
     double y;
     double z;
+    std::vector<std::reference_wrapper<double>>arr = {x, y, z};
 
     Vector3D() : x(0), y(0), z(0) {};
     Vector3D(double x, double y, double z) : x(x), y(y), z(z) {};
@@ -53,6 +57,10 @@ class Vector3D {
     Vector3D &operator*=(const double &other);
     Vector3D &operator/=(const double &other);
     bool operator==(const Vector3D other);
+    bool operator<(const Vector3D &other) const;
+    bool near_zero() const;
+    void setRange(double range, double newRange);
+    double getAxis(int axis) const;
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());
@@ -69,9 +77,7 @@ class Vector3D {
             double lensq = p.lengthSquared();
 
             if (1e-160 < lensq &&
-                lensq <= 1)  // deal with small sized vector, because they
-                             // lenght squared will be so small it will cause
-                             // error or rounding to infinity
+                lensq <= 1)
                 return p / sqrt(lensq);
         }
     }

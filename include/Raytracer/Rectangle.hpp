@@ -18,7 +18,8 @@ class Rectangle {
     Math::Vector3D bottomSide;
     Math::Vector3D leftSide;
     Rectangle() = default;
-    Rectangle(Math::Vector3D pos, Math::Vector3D bottomSide, Math::Vector3D leftSide);
+    Rectangle(Math::Vector3D pos, Math::Vector3D bottomSide,
+              Math::Vector3D leftSide);
     Math::Vector3D pointAt(double u, double v);
 };
 

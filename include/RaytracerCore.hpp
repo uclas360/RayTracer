@@ -9,23 +9,26 @@
 #define RAYTRACER_CORE_HPP
 
 #include <SFML/Window/Keyboard.hpp>
+#include <libconfig.h++>
 #include <mutex>
+
 #include "Raytracer/math/Vector.hpp"
+#include "plugins/Material.hpp"
 #define CAM_SPEED 0.03
-#define LIGHT_REFLEXION 0.6
+#define MAX_RAY_BOUNCE 10
 
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 
+#include "Raytracer/Scene.hpp"
 #include "ArgsManager.hpp"
 #include "CustomException.hpp"
 #include "Raytracer/Camera.hpp"
-#include "Raytracer/Scene.hpp"
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
@@ -43,6 +46,8 @@ class RaytracerCore {
 
     RayTracer::Camera &getCam(void) {return camera_;};
     RayTracer::Scene &getMainScene(void) {return mainScene_;};
+    double getxRes(void) {return xResolution_;};
+    double getyRes(void) {return yResolution_;};
     void setMoving(bool moving) {moving_ = moving;};
 
 
@@ -51,19 +56,32 @@ class RaytracerCore {
     void computeOutput(void);
 
     void computeImage(size_t start, size_t end);
-    void computePixel(std::vector<std::uint8_t> &image, size_t pixel, size_t xResolution, size_t yResolution);
+    void computePixel(std::vector<std::uint8_t> &image, size_t pixel,
+                      size_t xResolution, size_t yResolution);
 
     RayTracer::Camera camera_;
 
-    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>> shapesPlugins_;
-    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>> lightsPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>>
+        shapesPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::ILight>>>
+        lightsPlugins_;
+    std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>>
+        materials_;
 
+    RayTracer::Scene secondScene_;
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
+    void initMaterials(std::unique_ptr<RayTracer::IShape> &shape,
+                       const libconfig::SettingIterator &shapeSetting);
 
     void initCamera(const std::string &file, const libconfig::Config &config,
                     std::optional<RayTracer::Camera> &camera);
+
+    void initShape(const std::string &name, RayTracer::Scene &scene,
+                   const libconfig::SettingIterator &iterator);
+    void initLight(const std::string &name, RayTracer::Scene &scene,
+                   const libconfig::SettingIterator &iterator);
 
     bool graphic_;
 
@@ -76,6 +94,7 @@ class RaytracerCore {
 
     std::mutex imageMutex_;
     size_t nbImage_ = 0;
+    std::vector<int> image_;
     std::vector<std::uint8_t> imageMean_;
     size_t width_;
     size_t height_;
@@ -89,16 +108,41 @@ class RaytracerCore {
     bool moving_ = false;
 
     void handleKeys(void);
-    const std::map<sf::Keyboard::Key, std::function<void(Math::Vector3D &)>> keyboardEvent{
-        {sf::Keyboard::Q, [this](Math::Vector3D &) {this->camera_.move({-CAM_SPEED, 0, 0});}},
-        {sf::Keyboard::D, [this](Math::Vector3D &) {this->camera_.move({CAM_SPEED, 0, 0});}},
-        {sf::Keyboard::Z, [this](Math::Vector3D &) {this->camera_.move({0, -CAM_SPEED, 0});}},
-        {sf::Keyboard::S, [this](Math::Vector3D &) {this->camera_.move({0, CAM_SPEED, 0});}},
-        {sf::Keyboard::E, [this](Math::Vector3D &) {this->camera_.move({0, 0, -CAM_SPEED});}},
-        {sf::Keyboard::A, [this](Math::Vector3D &) {this->camera_.move({0, 0, CAM_SPEED});}},
-        {sf::Keyboard::Left, [](Math::Vector3D &camRotation) {camRotation.y += 0.1;}},
-        {sf::Keyboard::Right, [](Math::Vector3D &camRotation) {camRotation.y -= 0.1;}},
-        {sf::Keyboard::P, [this](Math::Vector3D &) {this->camera_.lookAt({0, 0, -2});}},
+    const std::map<sf::Keyboard::Key,
+                   std::function<void(RaytracerCore &, Math::Vector3D &)>>
+        keyboardEvent = {
+            {sf::Keyboard::Q,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({-CAM_SPEED, 0, 0});
+             }},
+            {sf::Keyboard::D,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({CAM_SPEED, 0, 0});
+             }},
+            {sf::Keyboard::Z,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({0, -CAM_SPEED, 0});
+             }},
+            {sf::Keyboard::S,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({0, CAM_SPEED, 0});
+             }},
+            {sf::Keyboard::E,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({0, 0, -CAM_SPEED});
+             }},
+            {sf::Keyboard::A,
+             [](RaytracerCore &this_, Math::Vector3D &) {
+                 this_.camera_.move({0, 0, CAM_SPEED});
+             }},
+            {sf::Keyboard::Left,
+             [](RaytracerCore &, Math::Vector3D &camRotation) {
+                 camRotation.y += 0.1;
+             }},
+            {sf::Keyboard::Right,
+             [](RaytracerCore &, Math::Vector3D &camRotation) {
+                 camRotation.y -= 0.1;
+             }},
     };
 };
 

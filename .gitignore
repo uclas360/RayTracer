@@ -18,6 +18,14 @@ compile_flags.txt
 build
 test*
 vgcore*
-output.ppm
+*.ppm
 *.obj
 *.conf
+windows*
+data.img
+*.iso
+gprof2dot
+.clang-format
+uftrace
+scene.cfg
+3dmodels

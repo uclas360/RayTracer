@@ -13,20 +13,21 @@
 
 #include "Raytracer/Ray.hpp"
 #include "Raytracer/math/Vector.hpp"
-#include "plugins/IShape.hpp"
+#include "plugins/AShape.hpp"
 
 namespace RayTracer {
 
-class Sphere : public IShape {
+class Sphere : public AShape {
  public:
   Sphere();
   Sphere(Math::Vector3D pos, double radius);
   Sphere(const libconfig::Setting &);
-  HitRecord hits(const Ray &ray) const override;
+  HitRecord hits(const Ray &ray, Interval interval) const override;
   void move(const Math::Vector3D &offset) override;
   void rotate(const Math::Vector3D &angles) override;
   void scale(size_t scale) override;
   void setPosition(const Math::Vector3D &newPos) override;
+  Math::Vector3D getPointColor(const Math::Vector3D &) const override;
   void save(libconfig::Setting &parent) const override;
 
   Math::Vector3D pos;

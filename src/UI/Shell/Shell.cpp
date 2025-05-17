@@ -110,7 +110,7 @@ void Shell::select(const std::vector<std::string> &args) {
       std::ref(core_.get().getCam());
   std::reference_wrapper<RayTracer::Scene> scene =
       std::ref(core_.get().getMainScene());
-  RayTracer::Ray ray = cam.get().ray(0.5, 0.5);
+  RayTracer::Ray ray = cam.get().ray(0.5, 0.5, core_.get().getxRes(), core_.get().getyRes());
   RayTracer::HitRecord record;
   double closest = INFINITY;
 
@@ -127,7 +127,7 @@ void Shell::select(const std::vector<std::string> &args) {
     }
   }
   for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
-    RayTracer::HitRecord temp = scene.get().shapes_[i]->hits(ray);
+    RayTracer::HitRecord temp = scene.get().shapes_[i]->hits(ray, Interval(0, INFINITY));
     if (!temp.missed && temp.t > 0 && temp.t < closest) {
       closest = temp.t;
       record = temp;

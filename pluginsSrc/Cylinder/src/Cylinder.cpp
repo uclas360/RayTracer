@@ -9,6 +9,8 @@
 
 #include <cmath>
 #include <libconfig.h++>
+
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
@@ -24,8 +26,17 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
     }
     if (!settings.lookupValue("radius", this->radius_) ||
         !settings.lookupValue("height", this->height_)) {
-      throw ParsingException("error parsing cylinder object, wrong \"radius / height\" field");
+      throw ParsingException(
+          "error parsing cylinder object, wrong \"radius / height\" "
+          "field");
     }
+    std::string texture;
+    if (settings.lookupValue("texture", texture)) {
+      this->texture_ = texture;
+    }
+    this->bbox = AABB({this->pos_.x - radius_, this->pos_.y, this->pos_.z + radius_},
+                      {this->pos_.x + this->radius_,
+                       this->pos_.y + this->height_, this->pos_.z - this->radius_});
   } catch (const ParsingException &e) {
     throw e;
   } catch (const libconfig::SettingNotFoundException &e) {
@@ -33,16 +44,16 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
   }
 }
 
-HitRecord Cylinder::hits(const Ray &ray) const {
-  Math::Vector3D oc = ray.pos - this->pos_;
+HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
+  Math::Vector3D oc = ray.pos - pos_;
   double a = ray.dir.x * ray.dir.x + ray.dir.z * ray.dir.z;
   double b = 2.0 * (oc.x * ray.dir.x + oc.z * ray.dir.z);
   double c = oc.x * oc.x + oc.z * oc.z - this->radius_ * this->radius_;
 
-  if (fabs(a) < EPSILON) return hitsCapOnly(ray);
+  if (fabs(a) < EPSILON) return hitsCapOnly(ray, ray_t);
   double discriminant = b * b - 4 * a * c;
 
-  if (discriminant < 0) return hitsCapOnly(ray);
+  if (discriminant < 0) return hitsCapOnly(ray, ray_t);
   double sqrtd = sqrt(discriminant);
   double t1 = (-b - sqrtd) / (2 * a);
   double t2 = (-b + sqrtd) / (2 * a);
@@ -53,20 +64,20 @@ HitRecord Cylinder::hits(const Ray &ray) const {
     t = t2;
     double y2 = oc.y + t2 * ray.dir.y;
 
-    if (t2 < EPSILON || y2 < 0 || y2 > this->height_) return hitsCapOnly(ray);
+    if (t2 < EPSILON || y2 < 0 || y2 > height_) return hitsCapOnly(ray, ray_t);
   }
   Math::Vector3D p = ray.pos + ray.dir * t;
   Math::Vector3D normal(p.x - pos_.x, 0, p.z - pos_.z);
   normal = normal.normalized();
-  HitRecord capRecord = hitsCapOnly(ray);
+  HitRecord capRecord = hitsCapOnly(ray, ray_t);
 
   if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
     return capRecord;
 
-  return HitRecord(t, ray, *this, normal);
+  return HitRecord(t, ray, *this, normal, this->material_);
 }
 
-HitRecord Cylinder::hitsCapOnly(const Ray &ray) const {
+HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
   double t_min = INFINITY;
   Math::Vector3D normal;
 
@@ -96,7 +107,8 @@ HitRecord Cylinder::hitsCapOnly(const Ray &ray) const {
     }
   }
 
-  if (t_min < INFINITY) return HitRecord(t_min, ray, *this, normal);
+  if (ray_t.contains(t_min))
+    return HitRecord(t_min, ray, *this, normal, this->material_);
 
   return HitRecord();
 }
@@ -125,6 +137,17 @@ void Cylinder::save(libconfig::Setting &parent) const {
     data.add("height", libconfig::Setting::TypeFloat) = this->height_;
 }
 
+
+Math::Vector3D Cylinder::getPointColor(const Math::Vector3D &point) const {
+  double theta = std::atan2(point.x, point.z);
+  double raw_u = theta / (2 * M_PI);
+  double u = 1 - (raw_u + 0.5);
+
+  double origin = this->pos_.y + this->height_;
+  double v = (point.y - origin) / this->height_;
+
+  return this->texture_.getColor(u, v);
+}
 
 }  // namespace RayTracer
 

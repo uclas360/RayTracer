@@ -10,7 +10,7 @@
 namespace RayTracer {
 
 std::ostream &operator<<(std::ostream &out, const Ray &ray) {
-    out << "Ray(pos=" << ray.pos  << ", dir=" << ray.dir << ")" << std::endl;
+    out << "Ray(pos=" << ray.pos << ", dir=" << ray.dir << ")" << std::endl;
     return out;
 }
 
