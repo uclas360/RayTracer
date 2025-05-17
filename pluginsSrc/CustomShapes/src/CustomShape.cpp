@@ -23,8 +23,14 @@ namespace RayTracer {
 void CustomShape::parseVertex(const std::vector<std::string> &args) {
   if (args.size() != 3) throw ParsingException("v: NOT ENOUGH COORDS");
   try {
-    _vertices.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
-                                       std::stof(args[2])));
+    std::istringstream os(args[0]);
+    std::istringstream os1(args[1]);
+    std::istringstream os2(args[2]);
+    Math::Vector3D test;
+    os >> test.x;
+    os1 >> test.y;
+    os2 >> test.z;
+    _vertices.push_back(test);
   } catch (const std::invalid_argument &e) {
     throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
@@ -33,8 +39,13 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
 void CustomShape::parseTexture(const std::vector<std::string> &args) {
   if (args.size() < 2) throw ParsingException("vt: NOT ENOUGH COORDS");
   try {
+        std::istringstream os(args[0]);
+    std::istringstream os1(args[1]);
+    Math::Vector3D test;
+    os >> test.x;
+    os1 >> test.y;
     _textureVertices.push_back(
-        Math::Vector3D(std::stof(args[0]), std::stof(args[1]), 0));
+        Math::Vector3D(test));
   } catch (const std::invalid_argument &e) {
     throw ParsingException(
         "Error parsing custom shape texture vertex, wrong double");
@@ -44,8 +55,14 @@ void CustomShape::parseTexture(const std::vector<std::string> &args) {
 void CustomShape::parseNormals(const std::vector<std::string> &args) {
   if (args.size() != 3) throw ParsingException("vn: NOT ENOUGH COORDS");
   try {
-    _normals.push_back(Math::Vector3D(std::stof(args[0]), std::stof(args[1]),
-                                      std::stof(args[2])));
+    std::istringstream os(args[0]);
+    std::istringstream os1(args[1]);
+    std::istringstream os2(args[2]);
+    Math::Vector3D test;
+    os >> test.x;
+    os1 >> test.y;
+    os2 >> test.z;
+    _normals.push_back(test);
   } catch (const std::invalid_argument &e) {
     throw ParsingException(
         "Error parsing custom shape normal vector, wrong double");
@@ -66,8 +83,9 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
     while (std::getline(stream, tmp, '/')) {
       vectors.push_back(tmp);
     }
-    points.push_back((_vertices[std::stoi(vectors[0]) - 1]));
-    textures.push_back((this->_textureVertices[std::stoi(vectors[1]) - 1]));
+    points.push_back((_vertices[(std::stoi(vectors[0]) - 1)]));
+    textures.push_back((this->_textureVertices[(std::stoi(vectors[1]) - 1) %
+                                               _textureVertices.size()]));
     if (vectors.size() == 3)
       normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
   }
@@ -190,12 +208,12 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     if (settings.lookupValue("texture", texture)) {
       this->texture_ = texture;
     }
+    this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
   } catch (const ParsingException &e) {
     throw e;
   } catch (const libconfig::SettingNotFoundException &e) {
     throw ParsingException(e.what());
   }
-  this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
 }
 
 void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
