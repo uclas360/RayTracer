@@ -58,7 +58,7 @@ namespace RayTracer
         this->_tmax = {tmaxX, tmaxY, tmaxZ};
     }
 
-    HitRecord Box3D::hits(const Ray &ray) const
+    HitRecord Box3D::hits(const Ray &ray, Interval ray_t) const
     {
 
         double tmin = ((_tmin.x - ray.pos.x) / ray.dir.x);
@@ -136,7 +136,7 @@ namespace RayTracer
         else if (std::abs(hit_point.z - _tmax.z) < epsilon)
             normal = {0, 0, 1};
 
-        return HitRecord(t_hit, ray, *this, normal);
+        return HitRecord(t_hit, ray, *this, normal, this->material_);
     }
 
     void Box3D::move(const Math::Vector3D &pos)

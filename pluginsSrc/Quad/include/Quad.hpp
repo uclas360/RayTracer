@@ -18,7 +18,7 @@
 
 namespace RayTracer
 {
-    class Quad : public IShape
+    class Quad : public AShape
     {
     public:
         Math::Vector3D _origin;
@@ -26,8 +26,9 @@ namespace RayTracer
         Math::Vector3D _v;
         Math::Vector3D _normal;
         Box3D _box;
+        std::unique_ptr<Material> material_;
 
-        Quad(){};
+        Quad() {};
         ~Quad() = default;
         Quad(const libconfig::Setting &settings);
         Quad(Math::Vector3D q, Math::Vector3D u, Math::Vector3D v) : _origin(q), _u(u), _v(v)
@@ -48,11 +49,12 @@ namespace RayTracer
             _box = Box3D({min_x, min_y, min_z}, {max_x, max_y, max_z});
         }
 
-        void scale(size_t scale);
-        void move(const Math::Vector3D &offset);
-        void rotate(const Math::Vector3D &angles);
-        void setPosition(const Math::Vector3D &newPos);
-        HitRecord hits(const Ray &ray) const override;
+        void scale(size_t scale) override;
+        void move(const Math::Vector3D &offset) override;
+        void rotate(const Math::Vector3D &angles) override;
+        void setPosition(const Math::Vector3D &newPos) override;
+        HitRecord hits(const Ray &ray, Interval ray_t) const override;
+        Math::Vector3D getPointColor(const Math::Vector3D &point) const override;
     };
 }
 

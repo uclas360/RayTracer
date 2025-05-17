@@ -90,66 +90,7 @@ namespace RayTracer
         _box = Box3D({min_x, min_y, min_z}, {max_x, max_y, max_z});
     }
 
-    void Quad::scale(size_t scale)
-    {
-        Math::Vector3D center = _origin + (_u + _v) / 2.0;
-
-        _origin = center + (_origin - center) * (double)scale / 100;
-        _u = center + (_u - center) * (double)scale / 100;
-        _v = center + (_v - center) * (double)scale / 100;
-        *this = Quad(_origin, _u, _v);
-    }
-
-    void Quad::move(const Math::Vector3D &pos)
-    {
-        _origin += pos;
-
-        *this = Quad(_origin, _u, _v);
-    }
-
-    void Quad::rotate(const Math::Vector3D &angles)
-    {
-        Math::Vector3D center = _origin + (_u + _v) / 2.0;
-        Math::Vector3D p0 = _origin - center;
-        Math::Vector3D p1 = _origin + _u - center;
-        Math::Vector3D p2 = _origin + _v - center;
-
-        if (angles.x != 0)
-        {
-            p0.rotateX(angles.x);
-            p1.rotateX(angles.x);
-            p2.rotateX(angles.x);
-        }
-
-        if (angles.y != 0)
-        {
-            p0.rotateY(angles.y);
-            p1.rotateY(angles.y);
-            p2.rotateY(angles.y);
-        }
-
-        if (angles.z != 0)
-        {
-            p0.rotateZ(angles.z);
-            p1.rotateZ(angles.z);
-            p2.rotateZ(angles.z);
-        }
-
-        _origin = center + p0;
-        _u = p1 - p0;
-        _v = p2 - p0;
-
-        *this = Quad(_origin, _u, _v);
-    }
-
-    void Quad::setPosition(const Math::Vector3D &pos)
-    {
-        Math::Vector3D offset = pos - _origin;
-
-        move(offset);
-    }
-
-    HitRecord Quad::hits(const Ray &ray) const
+    HitRecord Quad::hits(const Ray &ray, Interval ray_t) const
     {
         double denom = _normal.dot(ray.dir);
 
@@ -169,7 +110,7 @@ namespace RayTracer
         if (u_coord < 0 || u_coord > 1 || v_coord < 0 || v_coord > 1)
             return HitRecord();
 
-        return HitRecord(t, ray, *this, _normal);
+        return HitRecord(t, ray, *this, _normal, this->material_);
     }
 }
 

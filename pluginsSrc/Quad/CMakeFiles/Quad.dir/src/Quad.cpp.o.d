@@ -153,7 +153,7 @@ pluginsSrc/Quad/CMakeFiles/Quad.dir/src/Quad.cpp.o: \
  /usr/include/c++/15/bits/ostream.tcc /usr/include/c++/15/istream \
  /usr/include/c++/15/bits/istream.tcc \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/math/Vector.hpp \
- /usr/include/c++/15/cmath /usr/include/math.h \
+ /usr/include/c++/15/array /usr/include/c++/15/cmath /usr/include/math.h \
  /usr/include/bits/math-vector.h /usr/include/bits/libm-simd-decl-stubs.h \
  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
  /usr/include/bits/fp-fast.h /usr/include/bits/mathcalls-macros.h \
@@ -171,41 +171,31 @@ pluginsSrc/Quad/CMakeFiles/Quad.dir/src/Quad.cpp.o: \
  /usr/include/c++/15/tr1/modified_bessel_func.tcc \
  /usr/include/c++/15/tr1/poly_hermite.tcc \
  /usr/include/c++/15/tr1/poly_laguerre.tcc \
- /usr/include/c++/15/tr1/riemann_zeta.tcc \
+ /usr/include/c++/15/tr1/riemann_zeta.tcc /usr/include/c++/15/functional \
+ /usr/include/c++/15/bits/std_function.h \
+ /usr/include/c++/15/unordered_map \
+ /usr/include/c++/15/bits/unordered_map.h \
+ /usr/include/c++/15/bits/hashtable.h \
+ /usr/include/c++/15/bits/hashtable_policy.h \
+ /usr/include/c++/15/ext/aligned_buffer.h \
+ /usr/include/c++/15/bits/enable_special_members.h \
+ /usr/include/c++/15/bits/node_handle.h \
+ /usr/include/c++/15/bits/erase_if.h /usr/include/c++/15/vector \
+ /usr/include/c++/15/bits/stl_uninitialized.h \
+ /usr/include/c++/15/bits/stl_vector.h \
+ /usr/include/c++/15/bits/stl_bvector.h \
+ /usr/include/c++/15/bits/vector.tcc \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Utils.hpp \
  /usr/include/c++/15/random /usr/include/c++/15/cstdint \
  /usr/lib/gcc/x86_64-redhat-linux/15/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/stdint-uintn.h \
  /usr/include/bits/stdint-least.h /usr/include/c++/15/bits/random.h \
- /usr/include/c++/15/vector /usr/include/c++/15/bits/stl_uninitialized.h \
- /usr/include/c++/15/bits/stl_vector.h \
- /usr/include/c++/15/bits/stl_bvector.h \
- /usr/include/c++/15/bits/vector.tcc \
  /usr/include/c++/15/x86_64-redhat-linux/bits/opt_random.h \
  /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
  /usr/include/c++/15/bits/stl_numeric.h \
  /usr/include/c++/15/pstl/glue_numeric_defs.h \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IShape.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IObject.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IPlugin.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Box3D.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Ray.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/math/Vector.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IShape.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/RaytracerCore.hpp \
- /usr/include/SFML/Window/Keyboard.hpp \
- /usr/include/SFML/Window/Export.hpp /usr/include/SFML/Config.hpp \
- /usr/include/c++/15/mutex /usr/include/c++/15/bits/chrono.h \
- /usr/include/c++/15/ratio /usr/include/c++/15/ctime \
- /usr/include/c++/15/bits/parse_numbers.h \
- /usr/include/c++/15/bits/std_mutex.h \
- /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/map \
- /usr/include/c++/15/bits/stl_tree.h \
- /usr/include/c++/15/ext/aligned_buffer.h \
- /usr/include/c++/15/bits/node_handle.h \
- /usr/include/c++/15/bits/stl_map.h \
- /usr/include/c++/15/bits/stl_multimap.h \
- /usr/include/c++/15/bits/erase_if.h /usr/include/c++/15/memory \
+ /usr/include/c++/15/memory \
  /usr/include/c++/15/bits/stl_raw_storage_iter.h \
  /usr/include/c++/15/bits/align.h /usr/include/c++/15/bits/unique_ptr.h \
  /usr/include/c++/15/bits/shared_ptr.h \
@@ -228,29 +218,51 @@ pluginsSrc/Quad/CMakeFiles/Quad.dir/src/Quad.cpp.o: \
  /usr/include/linux/close_range.h /usr/include/syscall.h \
  /usr/include/sys/syscall.h /usr/include/asm/unistd.h \
  /usr/include/asm/unistd_64.h /usr/include/bits/syscall.h \
+ /usr/include/c++/15/bits/std_mutex.h \
  /usr/include/c++/15/backward/auto_ptr.h \
  /usr/include/c++/15/bits/ranges_uninitialized.h \
- /usr/include/c++/15/pstl/glue_memory_defs.h /usr/include/c++/15/optional \
- /usr/include/c++/15/bits/enable_special_members.h \
+ /usr/include/c++/15/pstl/glue_memory_defs.h \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Interval.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Utils.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IObject.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IPlugin.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/Material.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Box3D.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Ray.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/math/Vector.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/IShape.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/AShape.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Texture.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/AABB.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/FixCrossInclude.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Interval.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/Material.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/RaytracerCore.hpp \
+ /usr/include/SFML/Window/Keyboard.hpp \
+ /usr/include/SFML/Window/Export.hpp /usr/include/SFML/Config.hpp \
+ /usr/include/c++/15/mutex /usr/include/c++/15/bits/chrono.h \
+ /usr/include/c++/15/ratio /usr/include/c++/15/ctime \
+ /usr/include/c++/15/bits/parse_numbers.h \
+ /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/map \
+ /usr/include/c++/15/bits/stl_tree.h /usr/include/c++/15/bits/stl_map.h \
+ /usr/include/c++/15/bits/stl_multimap.h /usr/include/c++/15/optional \
  /usr/include/c++/15/thread /usr/include/c++/15/stop_token \
  /usr/include/c++/15/atomic /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/semaphore /usr/include/c++/15/bits/semaphore_base.h \
  /usr/include/c++/15/bits/atomic_timed_wait.h \
  /usr/include/c++/15/bits/this_thread_sleep.h /usr/include/sys/time.h \
  /usr/include/semaphore.h /usr/include/bits/semaphore.h \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/ArgsManager.hpp \
- /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
- /usr/include/c++/15/unordered_map \
- /usr/include/c++/15/bits/unordered_map.h \
- /usr/include/c++/15/bits/hashtable.h \
- /usr/include/c++/15/bits/hashtable_policy.h /usr/include/c++/15/array \
- /usr/include/c++/15/sstream /usr/include/c++/15/bits/sstream.tcc \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/CustomException.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Camera.hpp \
- /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Rectangle.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Scene.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/BVHNode.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/AABB.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/CustomException.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/AShape.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/ILight.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/math/Color.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/ArgsManager.hpp \
+ /usr/include/c++/15/sstream /usr/include/c++/15/bits/sstream.tcc \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Camera.hpp \
+ /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/Raytracer/Rectangle.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/libLoaders/ILibLoader.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/CustomException.hpp \
  /home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include/plugins/ILight.hpp

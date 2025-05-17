@@ -6,5 +6,5 @@ CXX_DEFINES = -DQuad_EXPORTS
 
 CXX_INCLUDES = -I/home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/include -I/home/borischeng/B-OOP-400-PAR-4-1-raytracer-boris.cheng/pluginsSrc/Quad/include
 
-CXX_FLAGS =  -Wall -Wextra -fPIC -O3 -g -g3 -std=gnu++20 -fPIC
+CXX_FLAGS =  -Wall -Wextra -fPIC -O3 -Wall -Wextra -fPIC -O3 -g -g3 -std=gnu++20 -fPIC
 

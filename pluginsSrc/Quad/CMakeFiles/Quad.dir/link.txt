@@ -1,1 +1,1 @@
-/usr/bin/c++ -fPIC  -Wall -Wextra -fPIC -O3 -g -g3 -Wl,--dependency-file=CMakeFiles/Quad.dir/link.d -shared -Wl,-soname,Quad.so -o ../../plugin/Quad.so CMakeFiles/Quad.dir/src/Quad.cpp.o CMakeFiles/Quad.dir/__/__/src/Box3D/Box3D.cpp.o  ../../lib/RayMath/librayMath.a
+/usr/bin/c++ -fPIC  -Wall -Wextra -fPIC -O3 -Wall -Wextra -fPIC -O3 -g -g3 -Wl,--dependency-file=CMakeFiles/Quad.dir/link.d -shared -Wl,-soname,Quad.so -o ../../plugin/Quad.so CMakeFiles/Quad.dir/src/Quad.cpp.o CMakeFiles/Quad.dir/__/__/src/Box3D/Box3D.cpp.o  ../../lib/RayMath/librayMath.a
