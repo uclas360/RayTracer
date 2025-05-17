@@ -48,8 +48,11 @@ class RaytracerCore {
     RayTracer::Scene &getMainScene(void) {return mainScene_;};
     double getxRes(void) {return xResolution_;};
     double getyRes(void) {return yResolution_;};
+    Math::Vector3D getSize(void) {return {width_, height_, 0};};
     void setMoving(bool moving) {moving_ = moving;};
-
+    std::vector<std::uint8_t> getImageMean(void) {return imageMean_;};
+    std::mutex imageMutex_;
+    void writePPM(const std::string &filename);
 
    private:
     void computeGraphic(void);
@@ -92,7 +95,6 @@ class RaytracerCore {
     void computeMoving(size_t start, size_t end);
     void computePrecision(void);
 
-    std::mutex imageMutex_;
     size_t nbImage_ = 0;
     std::vector<int> image_;
     std::vector<std::uint8_t> imageMean_;

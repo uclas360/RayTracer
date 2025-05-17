@@ -110,7 +110,8 @@ void Shell::select(const std::vector<std::string> &args) {
       std::ref(core_.get().getCam());
   std::reference_wrapper<RayTracer::Scene> scene =
       std::ref(core_.get().getMainScene());
-  RayTracer::Ray ray = cam.get().ray(0.5, 0.5, core_.get().getxRes(), core_.get().getyRes());
+  RayTracer::Ray ray =
+      cam.get().ray(0.5, 0.5, core_.get().getxRes(), core_.get().getyRes());
   RayTracer::HitRecord record;
   double closest = INFINITY;
 
@@ -127,7 +128,8 @@ void Shell::select(const std::vector<std::string> &args) {
     }
   }
   for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
-    RayTracer::HitRecord temp = scene.get().shapes_[i]->hits(ray, Interval(0, INFINITY));
+    RayTracer::HitRecord temp =
+        scene.get().shapes_[i]->hits(ray, Interval(0, INFINITY));
     if (!temp.missed && temp.t > 0 && temp.t < closest) {
       closest = temp.t;
       record = temp;
@@ -237,10 +239,14 @@ void Shell::goTo(const std::vector<std::string> &args) {
   } catch (const std::invalid_argument &) {
   }
   cam.get().setPosition(vector);
-  output_ = "Moved cam to " +
-            std::format("{:.2f}", vector.x) + " " +
+  output_ = "Moved cam to " + std::format("{:.2f}", vector.x) + " " +
             std::format("{:.2f}", vector.y) + " " +
             std::format("{:.2f}", vector.z);
+}
+
+void Shell::ppm(const std::vector<std::string> &args) {
+  if (args.size() < 1)  return;
+  core_.get().writePPM(args[0]);
 }
 
 }  // namespace Graphics

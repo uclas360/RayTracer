@@ -37,6 +37,8 @@ class Shell {
   void rotate(const std::vector<std::string> &args);
   void save(const std::vector<std::string> &args);
   void goTo(const std::vector<std::string> &args);
+  void ppm(const std::vector<std::string> &args);
+
 
   void setState(bool state) { enabled_ = state; };
   bool getState(void) { return enabled_; };
@@ -77,6 +79,7 @@ class Shell {
            [this](const std::vector<std::string> &args) { save(args); }},
           {"goto",
            [this](const std::vector<std::string> &args) { goTo(args); }},
+          {"ppm", [this](const std::vector<std::string> &args) { ppm(args); }},
       };
 };
 }  // namespace Graphics
