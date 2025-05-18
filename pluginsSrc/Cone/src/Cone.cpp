@@ -70,11 +70,11 @@ namespace RayTracer
         this->bbox = AABB({-10000, -10000, -10000}, {10000, 10000, 10000});
     }
 
-    HitRecord Cone::hits(const Ray &ray, Interval) const
+    HitRecord Cone::hits(const Ray &ray, Interval ray_t) const
     {
-        Math::Vector3D oc = ray.pos - tipPosition_;
+        Math::Vector3D oc = ray.pos - tipPosition_; // calcule entre la pointe du cone et le debut du rayon, d'où vient le rayon par rapport au cône.
 
-        double k = (radius / h_) * (radius / h_);
+        double k = (radius / h_) * (radius / h_); // inclinaison du cone
 
         double a = (ray.dir.x * ray.dir.x) + (ray.dir.z * ray.dir.z) - k * (ray.dir.y * ray.dir.y);
         double b = 2 * (oc.x * ray.dir.x + oc.z * ray.dir.z - k * oc.y * ray.dir.y);
@@ -83,30 +83,58 @@ namespace RayTracer
         double discriminant = b * b - 4 * a * c;
 
         if (discriminant < EPSILON)
-            return HitRecord();
+            return hitsCapOnly(ray, ray_t);
 
         double sqrt_disc = std::sqrt(discriminant);
         double t1 = (-b - sqrt_disc) / (2 * a);
-        double t2 = (-b + sqrt_disc) / (2 * a);
+        double t2 = (-b + sqrt_disc) / (2 * a); // distance rayon croise le cone
 
         double t = t1;
-        if (t1 < EPSILON)
+        if (t1 < EPSILON) // on cherche celui qui est le plus avance
             t = t2;
         if (t < EPSILON)
-            return HitRecord();
+            return hitsCapOnly(ray, ray_t); // si les deux sont rayon sont derriere
 
-        Math::Vector3D p = ray.at(t);
-        double y = p.y - tipPosition_.y;
+        Math::Vector3D p = ray.at(t);    // point touche
+        double y = p.y - tipPosition_.y; // si y est entre le sommet et la base
 
         if (y < 0 || y > h_)
-            return HitRecord();
+            return hitsCapOnly(ray, ray_t);
 
-        Math::Vector3D d = p - tipPosition_;
-        double r = std::sqrt(d.x * d.x + d.z * d.z);
-        Math::Vector3D normal(d.x, r * (radius / h_), d.z);
+        Math::Vector3D tipImpact = p - tipPosition_; // vecteur point d'impact et pointe
+        double r = std::sqrt(tipImpact.x * tipImpact.x + tipImpact.z * tipImpact.z);
+        Math::Vector3D normal(tipImpact.x, r * (radius / h_), tipImpact.z); // calcule normal
         normal = normal.normalized();
 
         return HitRecord(t, ray, *this, normal, this->material_);
+    }
+    HitRecord Cone::hitsCapOnly(const Ray &ray, Interval) const
+    {
+        double t_min = INFINITY;
+        Math::Vector3D normal;
+
+        if (fabs(ray.dir.y) > EPSILON)
+        {
+            double t = (tipPosition_.y + h_ - ray.pos.y) / ray.dir.y;
+
+            if (t > EPSILON && t < t_min)
+            {
+                Math::Vector3D p = ray.pos + ray.dir * t;
+                double distance =
+                    (p - Math::Vector3D(tipPosition_.x, tipPosition_.y + h_, tipPosition_.z)).length();
+
+                if (distance <= radius)
+                {
+                    t_min = t;
+                    normal = Math::Vector3D(0, 1, 0);
+                }
+            }
+        }
+
+        if (t_min != INFINITY)
+            return HitRecord(t_min, ray, *this, normal, this->material_);
+
+        return HitRecord();
     }
     Math::Vector3D Cone::getPointColor(const Math::Vector3D &point) const
     {
