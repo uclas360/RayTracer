@@ -8,7 +8,6 @@
 #include "UI/Shell/Shell.hpp"
 
 #include <format>
-#include <fstream>
 #include <iostream>
 #include <optional>
 #include <string>

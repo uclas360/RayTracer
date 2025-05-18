@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
+#include <iostream>
+#include <ostream>
 #include <vector>
 
 #include "CustomException.hpp"
@@ -35,6 +37,16 @@ void RaytracerCore::writePPM(const std::string &filename) {
 }
 
 void RaytracerCore::computeOutput() {
+    int lastNbImage = -1;
+    while (!this->killThreads_) {
+        usleep(500000);
+        std::cout << "\33[2K\r" << "computing images :" << this->nbImage_ << "/200 [";
+        lastNbImage = this->nbImage_;
+        for (int i = 0; i < 200; i+= 2) {
+            std::cout << ((i < lastNbImage) ? "\033[32m|" : "\033[0m ") << std::flush;
+        }
+        std::cout << "\033[0m]" << std::flush;
+    }
     for (auto &it : this->threads_) {
         it.join();
     }
