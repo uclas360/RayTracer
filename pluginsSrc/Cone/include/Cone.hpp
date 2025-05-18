@@ -39,6 +39,7 @@ namespace RayTracer
         HitRecord hits(const Ray &ray, Interval) const override;
         HitRecord hitsCapOnly(const Ray &ray, Interval ray_t) const;
         Math::Vector3D getPointColor(const Math::Vector3D &) const override;
+        void save(libconfig::Setting &) const override;
     };
 }
 #endif
