@@ -53,6 +53,9 @@ class RaytracerCore {
     std::vector<std::uint8_t> getImageMean(void) {return imageMean_;};
     std::mutex imageMutex_;
     void writePPM(const std::string &filename);
+    void loadFiles(const std::vector<std::string> &);
+    void loadFile(std::string file, std::optional<RayTracer::Camera> &);
+    void setCamera(RayTracer::Camera &&);
 
    private:
     void computeGraphic(void);
@@ -107,6 +110,7 @@ class RaytracerCore {
     size_t compressedYResolution_;
     std::vector<std::uint8_t> compressedImage_;
 
+    bool computing_ = true;
     bool moving_ = false;
 
     void handleKeys(void);

@@ -10,6 +10,9 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
+#include "Raytracer/Camera.hpp"
 
 namespace Graphics {
 Shell::Shell(std::reference_wrapper<RaytracerCore> core, double width,
@@ -247,6 +250,21 @@ void Shell::goTo(const std::vector<std::string> &args) {
 void Shell::ppm(const std::vector<std::string> &args) {
   if (args.size() < 1)  return;
   core_.get().writePPM(args[0]);
+}
+
+void Shell::load(const std::vector<std::string> &args) {
+    if (args.size() == 0) {
+        return;
+    }
+    std::optional<RayTracer::Camera> hey;
+    this->core_.get().loadFile(args[0], hey);
+    std::vector<std::string> tmp = args;
+    tmp.erase(tmp.begin());
+    this->load(tmp);
+}
+
+void Shell::loads(const std::vector<std::string> &args) {
+    this->core_.get().loadFiles(args);
 }
 
 }  // namespace Graphics
