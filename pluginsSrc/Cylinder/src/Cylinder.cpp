@@ -120,7 +120,23 @@ void Cylinder::rotate(const Math::Vector3D &angles) { (void)(angles); }
 
 void Cylinder::scale(size_t scale) { this->radius_ *= (double)scale; }
 
-void Cylinder::save(libconfig::Setting &) const {};
+void Cylinder::save(libconfig::Setting &parent) const {
+    libconfig::Setting &coneSettings =
+        parent.add(libconfig::Setting::TypeGroup);
+    coneSettings.add("type", libconfig::Setting::TypeString) = "shape";
+    coneSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    libconfig::Setting &data =
+        coneSettings.add("data", libconfig::Setting::TypeGroup);
+    libconfig::Setting &posSettings =
+        data.add("pos", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(posSettings, this->pos_);
+    data.add("radius", libconfig::Setting::TypeFloat) = this->radius_;
+    data.add("height", libconfig::Setting::TypeFloat) = this->height_;
+    if (this->texture_.hasValue()) {
+        data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+    }
+    this->material_->save(coneSettings);
+}
 
 void Cylinder::setPosition(const Math::Vector3D &newPos) {
   this->pos_ = newPos;

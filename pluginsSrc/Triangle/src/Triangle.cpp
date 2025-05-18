@@ -66,10 +66,20 @@ void Triangle::rotate(const Math::Vector3D &angles) {
     // a += toOrigin;
     // b += toOrigin;
     // c += toOrigin;
+    if (angles.x) {
+        a.rotateX(angles.x);
+        b.rotateX(angles.x);
+        c.rotateX(angles.x);
+    }
     if (angles.y) {
         a.rotateY(angles.y);
         b.rotateY(angles.y);
         c.rotateY(angles.y);
+    }
+    if (angles.z) {
+        a.rotateZ(angles.x);
+        b.rotateZ(angles.x);
+        c.rotateZ(angles.x);
     }
     // a -= toOrigin;
     // b -= toOrigin;

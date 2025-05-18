@@ -32,7 +32,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
     os >> test.x;
     os1 >> test.y;
     os2 >> test.z;
-    _vertices.push_back(test * scale_);
+    _vertices.push_back(test.rotatedX(rotation_.x).rotatedY(rotation_.y).rotatedZ(rotation_.z) * scale_);
   } catch (const std::invalid_argument &e) {
     throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
@@ -225,11 +225,11 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     }
     this->path_ = path;
     getScale(settings);
+    getRotation(settings);
     while (getline(file, line)) {
       parseLine(line);
     }
     getPos(settings);
-    getRotation(settings);
     std::string texture;
     if (settings.lookupValue("texture", texture)) {
       this->texture_ = texture;
