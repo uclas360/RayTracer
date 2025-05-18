@@ -60,9 +60,12 @@ void RaytracerCore::computeGraphic() {
   Graphics::Shell shell(std::ref(*this), (double)this->width_ / 3,
                         (double)this->height_ / 2);
 
-  while (window.isOpen()) {
-    if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
-    clock.restart();
+    sf::View view = window.getDefaultView();
+    view.setSize(this->width_, -static_cast<double>(this->height_));
+    window.setView(view);
+    while (window.isOpen()) {
+        if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
+        clock.restart();
 
     sf::Event event;
     while (window.pollEvent(event)) {

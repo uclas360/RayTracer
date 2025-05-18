@@ -25,6 +25,8 @@ Dielectric::Dielectric(const libconfig::Setting &config) {
 bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec,
                          Math::Vector3D &attenuation, Ray &scattered) const {
     attenuation = Math::Vector3D(1.0, 1.0, 1.0);
+    // std::cout << rec << std::endl;
+    // std::cout << r_in << std::endl << std::endl;
     double ri = rec.frontFace ? (1.0 / refraction_index) : refraction_index;
 
     Math::Vector3D unit_direction = r_in.dir.normalized();
@@ -40,7 +42,7 @@ bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec,
         direction = refract(unit_direction, rec.normal, ri);
     }
 
-    scattered = Ray(rec.p, direction);
+    scattered = Ray(rec.p - rec.normal * 1.2E-4, direction);
     return true;
 }
 
