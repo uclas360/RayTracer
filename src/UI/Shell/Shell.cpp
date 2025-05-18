@@ -257,10 +257,9 @@ void Shell::load(const std::vector<std::string> &args) {
         return;
     }
     std::optional<RayTracer::Camera> hey;
-    this->core_.get().loadFile(args[0], hey);
-    std::vector<std::string> tmp = args;
-    tmp.erase(tmp.begin());
-    this->load(tmp);
+    for (const auto &it : args) {
+        this->core_.get().loadFile(it, hey);
+    }
 }
 
 void Shell::loads(const std::vector<std::string> &args) {

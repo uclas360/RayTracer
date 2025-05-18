@@ -21,7 +21,9 @@ namespace RayTracer {
 
 class Scene : public AShape {
    public:
-    Scene() = default;
+    Scene() {
+        this->shapes_.reserve(1000);
+    };
     Scene(std::unique_ptr<IShape> shape);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
