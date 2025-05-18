@@ -101,7 +101,6 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
         _triangleLoader
             ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
                 "value_entry_point", points[0], points[i], points[i + 1]));
-    this->bbox = AABB(this->bbox, _faces[_faces.size() - 1]->boundingBox());
   }
 }
 
@@ -159,7 +158,7 @@ void CustomShape::getPos(const libconfig::Setting &settings) {
   } catch (const libconfig::SettingNotFoundException &e) {
     throw ParsingException(e.what());
   }
-  setPosition(pos_);
+  move(pos_);
 }
 
 void CustomShape::getRotation(const libconfig::Setting &settings) {
@@ -231,6 +230,9 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     if (settings.lookupValue("texture", texture)) {
       this->texture_ = texture;
     }
+    // for (size_t i = 0; i < _faces.size(); ++i) {
+    //   this->bbox = AABB(this->bbox, _faces[i]->boundingBox());
+    // }
     this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
   } catch (const ParsingException &e) {
     throw e;

@@ -71,10 +71,9 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   normal = normal.normalized();
   HitRecord capRecord = hitsCapOnly(ray, ray_t);
 
-  if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
-    return capRecord;
-
-  return HitRecord(t, ray, *this, normal, this->material_);
+    if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
+        return capRecord;
+    return HitRecord(t, ray, *this, normal, this->material_);
 }
 
 HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {

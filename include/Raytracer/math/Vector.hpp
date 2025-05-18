@@ -61,6 +61,8 @@ class Vector3D {
     bool near_zero() const;
     void setRange(double range, double newRange);
     double getAxis(int axis) const;
+    void clamp(double min, double max);
+    Vector3D &clamped(double min, double max);
 
     static inline Vector3D random() {
         return Vector3D(random_double(), random_double(), random_double());
