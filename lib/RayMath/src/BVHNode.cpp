@@ -39,21 +39,13 @@ HitRecord BVHNode::hits(const RayTracer::Ray &r, Interval ray_t) const {
 }
 
 void BVHNode::update(void) {
-    printf("[DEBUG 14]\n");
-    std::cout << this->parentObject << std::endl;
     if (this->parentBvh == nullptr) {
-        printf("[DEBUG 1]\n");
         this->calculateAABB(*this->allObjects, 0, this->allObjects->size());
-        printf("[DEBUG 2]\n");
         if (this->parentObject != nullptr &&
             this->parentObject->getBVH() != nullptr) {
-            printf("[DEBUG 3]\n");
             this->parentObject->getBVH()->update();
-            printf("[DEBUG 4]\n");
         }
-        printf("[DEBUG 5]\n");
     } else {
-        printf("[DEBUG 6]\n");
         this->parentBvh->update();
     }
 }
@@ -95,9 +87,6 @@ void BVHNode::calculateAABB(std::vector<std::unique_ptr<IShape>> &objects,
         this->bRight->parentBvh = this;
         this->right = this->bRight.get();
     }
-    printf("[DEBUG construct]\n");
-    std::cout << this->parentObject << std::endl;
-    std::cout << this << std::endl;
     this->bbox =
         RayTracer::AABB(this->left->boundingBox(), this->right->boundingBox());
 }

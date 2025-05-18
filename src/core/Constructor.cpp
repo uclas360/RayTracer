@@ -16,6 +16,7 @@
 #include <thread>
 #include <utility>
 
+#include "../../include/BVHNode.hpp"
 #include "Raytracer/Camera.hpp"
 #include "Raytracer/Scene.hpp"
 #include "Raytracer/Texture.hpp"
@@ -23,7 +24,6 @@
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/IShape.hpp"
 #include "plugins/Material.hpp"
-#include "../../include/BVHNode.hpp"
 
 #if defined __linux__
 #include "libLoaders/LDLoader.hpp"
@@ -174,7 +174,8 @@ void RaytracerCore::initPlugins(const std::string &file,
             if (scene.shapes_.empty()) {
                 continue;
             }
-            scene.bvh = std::make_unique<RayTracer::BVHNode>(scene.shapes_, 0, scene.shapes_.size());
+            scene.bvh = std::make_unique<RayTracer::BVHNode>(
+                scene.shapes_, 0, scene.shapes_.size());
             scene.bvh->parentObject = &this->mainScene_;
             this->mainScene_.addShape(
                 std::make_unique<RayTracer::Scene>(std::move(scene)));
@@ -226,7 +227,8 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
             if (this->mainScene_.shapes_.empty()) {
                 throw ParsingException("empty scene");
             }
-            this->mainScene_.bvh = std::make_unique<RayTracer::BVHNode>(this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size());
+            this->mainScene_.bvh = std::make_unique<RayTracer::BVHNode>(
+                this->mainScene_.shapes_, 0, this->mainScene_.shapes_.size());
             this->mainScene_.bvh->parentObject = nullptr;
         } catch (const libconfig::FileIOException &exc) {
             std::cerr << "error parsing file \"" << file

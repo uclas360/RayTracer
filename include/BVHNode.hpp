@@ -45,12 +45,12 @@ class BVHNode : public IShape {
     void update(void);
     void calculateAABB(std::vector<std::unique_ptr<IShape>> &objects,
                        size_t start, size_t end);
-    
-    const AABB &boundingBox() const { return this->bbox; };
-    void setMaterial(std::unique_ptr<Material> &) {};
-    std::unique_ptr<Material> &getMaterial() {return this->material_; };
-    BVHNode *getBVH() const { return nullptr; };
-    void setBVH(BVHNode *) {};
+
+    const AABB &boundingBox() const override { return this->bbox; };
+    void setMaterial(std::unique_ptr<Material> &) override {};
+    std::unique_ptr<Material> &getMaterial() override {return this->material_; };
+    BVHNode *getBVH() const override { return nullptr; };
+    void setBVH(BVHNode *) override {};
 
     IShape *parentObject = nullptr;
     BVHNode *parentBvh = nullptr;
