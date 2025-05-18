@@ -228,7 +228,6 @@ void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
 
     this->imageMutex_.lock();
     this->moving_ = true;
-    this->computing_ = false;
     sleep(1);
     this->mainScene_.shapes_.clear();
 
@@ -242,7 +241,6 @@ void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
         throw ParsingException("missing camera");
     }
     this->moving_ = false;
-    this->computing_ = true;
     this->imageMutex_.unlock();
 }
 

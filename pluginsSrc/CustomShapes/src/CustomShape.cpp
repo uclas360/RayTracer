@@ -233,9 +233,9 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     if (settings.lookupValue("texture", texture)) {
       this->texture_ = texture;
     }
-    // for (size_t i = 0; i < _faces.size(); ++i) {
-    //   this->bbox = AABB(this->bbox, _faces[i]->boundingBox());
-    // }
+    for (size_t i = 0; i < _faces.size(); ++i) {
+      this->bbox = AABB(this->bbox, _faces[i]->boundingBox());
+    }
     this->bvh = std::make_unique<BVHNode>(this->_faces, 0, this->_faces.size());
   } catch (const ParsingException &e) {
     throw e;

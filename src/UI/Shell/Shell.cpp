@@ -8,7 +8,6 @@
 #include "UI/Shell/Shell.hpp"
 
 #include <format>
-#include <fstream>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -268,7 +267,7 @@ void Shell::setCam(const std::vector<std::string> &args) {
           core_.get().getCamList()[id]->pos_;
       core_.get().getCamList()[core_.get().getCam()]->rotationDestination_ =
           core_.get().getCamList()[id]->rotation_;
-      output_ = "Current cam = " + id;
+      output_ = "Current cam = " + std::to_string(id);
     } catch (const std::invalid_argument &) {
       output_ = "INVALID ID STOI";
       return;
@@ -284,10 +283,6 @@ void Shell::load(const std::vector<std::string> &args) {
   for (const auto &it : args) {
     this->core_.get().loadFile(it, hey);
   }
-}
-
-void Shell::loads(const std::vector<std::string> &args) {
-  this->core_.get().loadFiles(args);
 }
 
 }  // namespace Graphics
