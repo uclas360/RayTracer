@@ -17,7 +17,12 @@
 
 namespace RayTracer {
 
+Scene::Scene() {
+    this->shapes_.reserve(MAX_SHAPES_PER_SCENE);
+}
+
 Scene::Scene(std::unique_ptr<IShape> shape) {
+    this->shapes_.reserve(MAX_SHAPES_PER_SCENE);
     this->addShape(std::move(shape));
 }
 

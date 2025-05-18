@@ -8,7 +8,7 @@
 #include "RaytracerCore.hpp"
 
 void RaytracerCore::computeMoving(size_t start, size_t end) {
-    for (size_t i = start; i < end && this->computing_; i++) {
+    for (size_t i = start; i < end; i++) {
         this->computePixel(this->compressedImage_, i,
                            this->compressedXResolution_,
                            this->compressedYResolution_);
@@ -20,7 +20,7 @@ void RaytracerCore::computePrecision() {
                                     0);
 
     for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
-        !this->moving_ && !this->killThreads_ && this->computing_;
+        !this->moving_ && !this->killThreads_;
          i++) {
         this->computePixel(image, i, this->xResolution_, this->yResolution_);
     }
@@ -44,9 +44,6 @@ void RaytracerCore::computePrecision() {
 
 void RaytracerCore::computeImage(size_t start, size_t end) {
     do {
-        if (!computing_) {
-            continue;
-        }
         if (this->moving_) {
             this->computeMoving(start, end);
         } else {

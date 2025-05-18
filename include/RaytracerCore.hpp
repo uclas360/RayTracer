@@ -113,7 +113,6 @@ class RaytracerCore {
     size_t compressedYResolution_;
     std::vector<std::uint8_t> compressedImage_;
 
-    bool computing_ = true;
     bool moving_ = false;
 
     void handleKeys(void);

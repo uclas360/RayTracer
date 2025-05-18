@@ -19,11 +19,11 @@
 
 namespace RayTracer {
 
+#define MAX_SHAPES_PER_SCENE 2000
+
 class Scene : public AShape {
    public:
-    Scene() {
-        this->shapes_.reserve(1000);
-    };
+    Scene();
     Scene(std::unique_ptr<IShape> shape);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
