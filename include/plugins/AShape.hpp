@@ -23,12 +23,16 @@ class BVHNode;
 class AShape : public IShape {
    public:
     AShape() = default;
+
+
     virtual void setMaterial(std::unique_ptr<Material> &) override;
     const AABB &boundingBox() const override;
+    void setBoundingBox(const AABB &bbox) override;
     virtual std::unique_ptr<Material> &getMaterial() override;
     bool haveTexture() const;
     BVHNode *getBVH() const override;
     void setBVH(BVHNode *bvhNode) override;
+    virtual void save(libconfig::Setting &) const override {return;};
 
    protected:
     AShape(AABB);

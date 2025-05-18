@@ -8,6 +8,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include <libconfig.h++>
 #include <memory>
 #include <vector>
 
@@ -18,17 +19,19 @@
 namespace RayTracer {
 
 class BVHNode;
+#define MAX_SHAPES_PER_SCENE 2000
 
 class Scene : public AShape {
    public:
-    Scene() = default;
+    Scene();
     Scene(std::unique_ptr<IShape> shape);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
-    Math::Vector3D getPointColor(const Math::Vector3D &) const override { return {1, 1, 1}; };
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
+    void save(libconfig::Setting &) const override;
 
     void addShape(std::unique_ptr<IShape> shape);
     void addLight(std::unique_ptr<ILight> light);

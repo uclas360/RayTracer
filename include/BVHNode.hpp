@@ -10,6 +10,7 @@
 
 #include <array>
 #include <functional>
+#include <libconfig.h++>
 #include <vector>
 
 #include "CustomException.hpp"
@@ -31,6 +32,8 @@ bool box_compare(const std::unique_ptr<IShape> &a,
 
 class BVHNode : public IShape {
    public:
+    virtual void setBoundingBox(const AABB &) override {};
+
     BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
             size_t end);
     RayTracer::HitRecord hits(const RayTracer::Ray &r,
@@ -42,6 +45,7 @@ class BVHNode : public IShape {
     Math::Vector3D getPointColor(const Math::Vector3D &) const override {
         return {1, 1, 1};
     };
+    void save(libconfig::Setting &) const override {};
     void update(void);
     void calculateAABB(std::vector<std::unique_ptr<IShape>> &objects,
                        size_t start, size_t end);

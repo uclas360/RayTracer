@@ -19,33 +19,34 @@ void RaytracerCore::computeMoving(size_t start, size_t end) {
 }
 
 void RaytracerCore::computePrecision() {
-    std::vector<std::uint8_t> image(this->xResolution_ * this->yResolution_ * 4,
-                                    0);
+  std::vector<std::uint8_t> image(this->xResolution_ * this->yResolution_ * 4,
+                                  0);
 
-    for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
-                       !this->moving_ && !this->killThreads_;
+  for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
+                     !this->moving_ && !this->killThreads_;
+       i++) {
+    this->remaingWait = this->remaingWait == 0 ? 0 : 1;
+    this->waitingChange.lock();
+    this->waitingChange.unlock();
+    this->computePixel(image, i, this->xResolution_, this->yResolution_);
+    this->computePixel(image, i, this->xResolution_, this->yResolution_);
+  }
+  this->imageMutex_.lock();
+  if (this->nbImage_ == 0) {
+    for (size_t i = 0; i < this->image_.size(); i++) {
+      this->image_[i] = image[i];
+    }
+    this->imageMean_ = image;
+  } else {
+        for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
+        !this->moving_ && !this->killThreads_;
          i++) {
-        this->remaingWait = this->remaingWait == 0 ? 0 : 1;
-        this->waitingChange.lock();
-        this->waitingChange.unlock();
-        this->computePixel(image, i, this->xResolution_, this->yResolution_);
+      this->image_[i] += image[i];
+      this->imageMean_[i] = this->image_[i] / (this->nbImage_ + 1);
     }
-    this->imageMutex_.lock();
-    if (this->nbImage_ == 0) {
-        for (size_t i = 0; i < this->image_.size(); i++) {
-            this->image_[i] = image[i];
-        }
-        this->imageMean_ = image;
-    } else {
-        for (size_t i = 0; (i < this->imageMean_.size()) && !this->moving_ &&
-                           !this->killThreads_;
-             i++) {
-            this->image_[i] += image[i];
-            this->imageMean_[i] = this->image_[i] / (this->nbImage_ + 1);
-        }
-    }
-    this->nbImage_ += 1;
-    this->imageMutex_.unlock();
+  }
+  this->nbImage_ += 1;
+  this->imageMutex_.unlock();
 }
 
 void RaytracerCore::computeImage(size_t start, size_t end) {

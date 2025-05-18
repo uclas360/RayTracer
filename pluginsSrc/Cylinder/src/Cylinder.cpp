@@ -5,7 +5,7 @@
 ** Cylinder
 */
 
-#include "../include/Cylinder.hpp"
+#include "Cylinder.hpp"
 
 #include <cmath>
 #include <libconfig.h++>
@@ -34,9 +34,10 @@ Cylinder::Cylinder(const libconfig::Setting &settings) {
     if (settings.lookupValue("texture", texture)) {
       this->texture_ = texture;
     }
-    this->bbox = AABB({this->pos_.x - radius_, this->pos_.y, this->pos_.z + radius_},
-                      {this->pos_.x + this->radius_,
-                       this->pos_.y + this->height_, this->pos_.z - this->radius_});
+    this->bbox =
+        AABB({this->pos_.x - radius_, this->pos_.y, this->pos_.z + radius_},
+             {this->pos_.x + this->radius_, this->pos_.y + this->height_,
+              this->pos_.z - this->radius_});
   } catch (const ParsingException &e) {
     throw e;
   } catch (const libconfig::SettingNotFoundException &e) {
@@ -48,7 +49,7 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   Math::Vector3D oc = ray.pos - pos_;
   double a = ray.dir.x * ray.dir.x + ray.dir.z * ray.dir.z;
   double b = 2.0 * (oc.x * ray.dir.x + oc.z * ray.dir.z);
-  double c = oc.x * oc.x + oc.z * oc.z - radius_ * radius_;
+  double c = oc.x * oc.x + oc.z * oc.z - this->radius_ * this->radius_;
 
   if (fabs(a) < EPSILON) return hitsCapOnly(ray, ray_t);
   double discriminant = b * b - 4 * a * c;
@@ -77,7 +78,7 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   return HitRecord(t, ray, *this, normal, this->material_);
 }
 
-HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
+HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval) const {
   double t_min = INFINITY;
   Math::Vector3D normal;
 
@@ -107,7 +108,7 @@ HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
     }
   }
 
-  if (ray_t.contains(t_min))
+  if (t_min != INFINITY)
     return HitRecord(t_min, ray, *this, normal, this->material_);
 
   return HitRecord();
@@ -118,6 +119,8 @@ void Cylinder::move(const Math::Vector3D &offset) { this->pos_ += offset; }
 void Cylinder::rotate(const Math::Vector3D &angles) { (void)(angles); }
 
 void Cylinder::scale(size_t scale) { this->radius_ *= (double)scale; }
+
+void Cylinder::save(libconfig::Setting &) const {};
 
 void Cylinder::setPosition(const Math::Vector3D &newPos) {
   this->pos_ = newPos;

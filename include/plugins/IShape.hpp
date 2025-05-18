@@ -24,13 +24,16 @@ class BVHNode;
 
 class IShape : public IObject {
    public:
-   virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
-   virtual Math::Vector3D getPointColor(const Math::Vector3D &point) const = 0;
-   virtual const AABB &boundingBox() const = 0;
-   virtual void setMaterial(std::unique_ptr<Material> &) = 0;
+    virtual HitRecord hits(const Ray &ray, Interval ray_t) const = 0;
+    virtual Math::Vector3D getPointColor(const Math::Vector3D &point) const = 0;
+    virtual const AABB &boundingBox() const = 0;
+    virtual void setMaterial(std::unique_ptr<Material> &) = 0;
     virtual std::unique_ptr<Material> &getMaterial() = 0;
     virtual BVHNode *getBVH() const = 0;
     virtual void setBVH(BVHNode *bvhNode) = 0;
+    virtual void save(libconfig::Setting &parent) const= 0;
+    virtual void setBoundingBox(const AABB &bbox) = 0;
+
 };
 
 };  // namespace RayTracer
@@ -38,25 +41,24 @@ class IShape : public IObject {
 #include "AABB.hpp"
 #include "BVHNode.hpp"
 
-namespace RayTracer {
+    namespace RayTracer {
+    class HitRecord {
+       public:
+        bool missed = true;
+        double t = 0;
+        bool frontFace = false;
+        Math::Vector3D normal;
+        Math::Vector3D p;
+        const IShape *shapeHit;
+        const Material *mat;
 
-class HitRecord {
-   public:
-    bool missed = true;
-    double t = 0;
-    bool frontFace = false;
-    Math::Vector3D normal;
-    Math::Vector3D p;
-    const IShape *shapeHit;
-    const Material *mat;
+        HitRecord() = default;
+        HitRecord(const double t, const Ray &ray, const IShape &shape,
+                  const Math::Vector3D &normal,
+                  const std::unique_ptr<Material> &mat);
+    };
 
-    HitRecord() = default;
-    HitRecord(const double t, const Ray &ray, const IShape &shape,
-              const Math::Vector3D &normal,
-              const std::unique_ptr<Material> &mat);
-};
-
-std::ostream &operator<<(std::ostream &out, const HitRecord &vec);
+    std::ostream &operator<<(std::ostream &out, const HitRecord &vec);
 
 };  // namespace RayTracer
 
