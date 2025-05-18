@@ -20,9 +20,6 @@ namespace RayTracer {
 class Sphere : public AShape {
  public:
   Sphere();
-  ~Sphere() {
-    this->material_.reset();
-  }
   Sphere(Math::Vector3D pos, double radius);
   Sphere(const libconfig::Setting &);
   HitRecord hits(const Ray &ray, Interval interval) const override;
