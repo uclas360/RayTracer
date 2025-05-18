@@ -9,6 +9,9 @@
 
 void RaytracerCore::computeMoving(size_t start, size_t end) {
     for (size_t i = start; i < end; i++) {
+        this->remaingWait -= this->remaingWait == 0 ? 0 : 1;
+        this->waitingChange.lock();
+        this->waitingChange.unlock();
         this->computePixel(this->compressedImage_, i,
                            this->compressedXResolution_,
                            this->compressedYResolution_);
@@ -22,6 +25,10 @@ void RaytracerCore::computePrecision() {
   for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
                      !this->moving_ && !this->killThreads_;
        i++) {
+    this->remaingWait = this->remaingWait == 0 ? 0 : 1;
+    this->waitingChange.lock();
+    this->waitingChange.unlock();
+    this->computePixel(image, i, this->xResolution_, this->yResolution_);
     this->computePixel(image, i, this->xResolution_, this->yResolution_);
   }
   this->imageMutex_.lock();

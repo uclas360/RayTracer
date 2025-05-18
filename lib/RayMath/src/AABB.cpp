@@ -5,7 +5,7 @@
 ** AABB
 */
 
-#include "AABB.hpp"
+#include "BVHNode.hpp"
 
 #include <memory>
 
@@ -206,6 +206,15 @@ void AABB::setBoundingBox(const AABB &bbox) {
 void AABB::setMaterial(std::unique_ptr<Material> &newMaterial) {
     this->material_.swap(newMaterial);
 };
+
+void AABB::reset(void){
+    this->x.min = DOUBLE_INFINITY;
+    this->x.max = -DOUBLE_INFINITY;
+    this->y.min = DOUBLE_INFINITY;
+    this->y.max = -DOUBLE_INFINITY;
+    this->z.min = DOUBLE_INFINITY;
+    this->z.max = -DOUBLE_INFINITY;
+}
 
 const AABB &AABB::boundingBox() const {
     return *this;

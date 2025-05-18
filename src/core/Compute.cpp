@@ -5,6 +5,7 @@
 ** core compute
 */
 
+#include <unistd.h>
 #include <cstdint>
 #include <vector>
 
@@ -13,6 +14,21 @@
 #include "RaytracerCore.hpp"
 #include "Utils.hpp"
 #include "plugins/IShape.hpp"
+
+void RaytracerCore::updateBVH() {
+    this->waitingChange.lock();
+    this->remaingWait = this->threads_.size();
+    int i = 0;
+    while (this->remaingWait > 1) {
+        usleep(100);
+        i++;
+        if (i > 1000) {
+            break;
+        }
+    };
+    this->mainScene_.bvh->update();
+    this->waitingChange.unlock();
+}
 
 Math::Vector3D getSkyColor(const RayTracer::Ray &r) {
     Math::Vector3D unit_direction = r.dir.normalized();

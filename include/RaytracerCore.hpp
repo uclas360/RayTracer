@@ -11,6 +11,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <libconfig.h++>
 #include <mutex>
+#include <semaphore>
 
 #include "Raytracer/math/Vector.hpp"
 #include "plugins/Material.hpp"
@@ -61,8 +62,13 @@ class RaytracerCore {
   void setCamera(RayTracer::Camera &&);
 
  private:
+  RayTracer::Scene mainScene_;
   void computeGraphic(void);
   void computeOutput(void);
+
+    void updateBVH(void);
+    std::atomic<size_t> remaingWait = 0;
+    std::mutex waitingChange;
 
   void computeImage(size_t start, size_t end);
   void computePixel(std::vector<std::uint8_t> &image, size_t pixel,
@@ -77,9 +83,6 @@ class RaytracerCore {
       lightsPlugins_;
   std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>>
       materials_;
-
-  RayTracer::Scene secondScene_;
-  RayTracer::Scene mainScene_;
 
   void initPlugins(const std::string &file, const libconfig::Config &config);
   void initMaterials(std::unique_ptr<RayTracer::IShape> &shape,

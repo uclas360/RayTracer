@@ -17,6 +17,7 @@
 #include <thread>
 #include <utility>
 
+#include "../../include/BVHNode.hpp"
 #include "Raytracer/Camera.hpp"
 #include "Raytracer/Scene.hpp"
 #include "Raytracer/Texture.hpp"
@@ -24,7 +25,6 @@
 #include "libLoaders/ILibLoader.hpp"
 #include "plugins/IShape.hpp"
 #include "plugins/Material.hpp"
-#include "../../include/BVHNode.hpp"
 
 #if defined __linux__
 #include "libLoaders/LDLoader.hpp"
@@ -99,7 +99,6 @@ void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
                                "\": " + exc.what());
         return;
     }
-    // shape->setBoundingBox(RayTracer::AABB(Math::Vector3D(-100000, -100000, -100000), Math::Vector3D(100000, 100000, 100000)));
     scene.addShape(std::move(shape));
 }
 
@@ -176,7 +175,9 @@ void RaytracerCore::initPlugins(const std::string &file,
             if (scene.shapes_.empty()) {
                 continue;
             }
-            scene.bvh = std::make_unique<RayTracer::BVHNode>(scene.shapes_, 0, scene.shapes_.size());
+            scene.bvh = std::make_unique<RayTracer::BVHNode>(
+                scene.shapes_, 0, scene.shapes_.size());
+            scene.bvh->parentObject = &this->mainScene_;
             this->mainScene_.addShape(
                 std::make_unique<RayTracer::Scene>(std::move(scene)));
         }
@@ -225,10 +226,6 @@ void RaytracerCore::loadFile(std::string file, std::optional<RayTracer::Camera> 
 
 void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
     std::optional<RayTracer::Camera> camera = std::nullopt;
-
-    this->imageMutex_.lock();
-    this->moving_ = true;
-    sleep(1);
     this->mainScene_.shapes_.clear();
 
     this->nbImage_ = 0;
@@ -241,7 +238,6 @@ void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
         throw ParsingException("missing camera");
     }
     this->moving_ = false;
-    this->imageMutex_.unlock();
 }
 
 void RaytracerCore::setCamera(RayTracer::Camera &&cam) {

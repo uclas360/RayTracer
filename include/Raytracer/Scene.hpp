@@ -12,13 +12,13 @@
 #include <memory>
 #include <vector>
 
-#include "BVHNode.hpp"
 #include "plugins/AShape.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
 
+class BVHNode;
 #define MAX_SHAPES_PER_SCENE 2000
 
 class Scene : public AShape {
@@ -42,5 +42,7 @@ class Scene : public AShape {
 };
 
 };  // namespace RayTracer
+
+#include "BVHNode.hpp"
 
 #endif

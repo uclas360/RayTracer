@@ -60,8 +60,10 @@ class AABB : public IShape {
     Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
     void setMaterial(std::unique_ptr<Material> &newMaterial) override;
     std::unique_ptr<Material> &getMaterial() override {return this->material_;};
-    void save(libconfig::Setting &) const {return;};
-
+    void reset(void);
+    BVHNode *getBVH(void) const override { return nullptr; };
+    void setBVH(BVHNode *) override {};
+    void save(libconfig::Setting &) const override {return;};
 
    private:
     std::unique_ptr<Material> material_;
