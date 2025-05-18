@@ -31,7 +31,7 @@ void CustomShape::parseVertex(const std::vector<std::string> &args) {
     os >> test.x;
     os1 >> test.y;
     os2 >> test.z;
-    _vertices.push_back(test  * scale_);
+    _vertices.push_back(test * scale_);
   } catch (const std::invalid_argument &e) {
     throw ParsingException("Error parsing custom shape vertex, wrong double");
   }
@@ -81,21 +81,24 @@ void CustomShape::parseFace(const std::vector<std::string> &args) {
     stream = std::stringstream(vertex);
     vectors.clear();
     while (std::getline(stream, tmp, '/')) {
-      if (tmp != "")
-        vectors.push_back(tmp);
+      if (tmp != "") vectors.push_back(tmp);
     }
+    if (_textureVertices.size())
       textures.push_back((this->_textureVertices[(std::stoi(vectors[1]) - 1) %
-      _textureVertices.size()]));
+                                                 _textureVertices.size()]));
     points.push_back((_vertices[(std::stoi(vectors[0]) - 1)]));
     if (vectors.size() == 3)
       normals.push_back((_normals[std::stoi(vectors[2]) - 1]));
   }
-  this->textCoordinates_.push_back((textures[0] + textures[1] + textures[2]) /
-                                   3);
+  if (textures.size())
+    this->textCoordinates_.push_back((textures[0] + textures[1] + textures[2]) /
+                                     3);
   for (size_t i = 1; i < points.size() - 1; i++) {
-    Math::Vector3D avgTexture =
-        (textures[0] + textures[i] + textures[i + 1]) / 3;
-    this->textCoordinates_.push_back(avgTexture);
+    if (textures.size()) {
+      Math::Vector3D avgTexture =
+          (textures[0] + textures[i] + textures[i + 1]) / 3;
+      this->textCoordinates_.push_back(avgTexture);
+    }
     this->_faces.push_back(
         _triangleLoader
             ->getInstance<Math::Vector3D, Math::Vector3D, Math::Vector3D>(
@@ -122,7 +125,7 @@ static std::unique_ptr<DlLoader<IShape>> getLoader(void) {
 }
 
 void CustomShape::rotate(const Math::Vector3D &angles) {
-  //Math::Vector3D toOrigin = -pos_;
+  // Math::Vector3D toOrigin = -pos_;
 
   for (size_t i = 0; i < this->_faces.size(); ++i) {
     this->_faces[i]->rotate(angles);

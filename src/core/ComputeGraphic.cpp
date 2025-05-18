@@ -61,7 +61,7 @@ void RaytracerCore::computeGraphic() {
                         (double)this->height_ / 2);
 
     sf::View view = window.getDefaultView();
-    view.setSize(this->width_, -static_cast<double>(this->height_));
+    view.setSize(this->width_, this->height_);
     window.setView(view);
     while (window.isOpen()) {
         if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
@@ -80,7 +80,7 @@ void RaytracerCore::computeGraphic() {
       if (event.type == sf::Event::Closed) window.close();
       if (event.type == sf::Event::Resized) {
         sf::Vector2u size = window.getSize();
-        sf::View view({(float)size.x / 2, (float)size.y / 2},
+        sf::View view({(float)size.x / 2, size.y / 2},
                       {(float)size.x, (float)size.y});
         window.setView(view);
       }

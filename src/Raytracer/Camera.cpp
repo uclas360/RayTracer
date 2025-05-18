@@ -40,6 +40,7 @@ RayTracer::Camera::Camera(libconfig::Setting &settings)
 
 RayTracer::Ray RayTracer::Camera::ray(double u, double v, double xResolution,
                                       double yResolution) {
+    v = -v + 1;
     Math::Vector3D offset = sample_square();
     Math::Vector3D pixel_sample =
         this->screen_.pos +
