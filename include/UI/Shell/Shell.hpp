@@ -10,11 +10,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
-#include <memory>
-#include <optional>
 
 #include "RaytracerCore.hpp"
-#include "plugins/IShape.hpp"
 
 static const std::map<sf::Keyboard::Key, char> KEYS = {
     {sf::Keyboard::Apostrophe, '4'}, {sf::Keyboard::Dash, '6'},
@@ -38,6 +35,8 @@ class Shell {
   void save(const std::vector<std::string> &args);
   void goTo(const std::vector<std::string> &args);
   void ppm(const std::vector<std::string> &args);
+  void load(const std::vector<std::string> &args);
+  void loads(const std::vector<std::string> &args);
   void cam(const std::vector<std::string> &args);
   void setCam(const std::vector<std::string> &args);
 
@@ -81,9 +80,13 @@ class Shell {
           {"goto",
            [this](const std::vector<std::string> &args) { goTo(args); }},
           {"ppm", [this](const std::vector<std::string> &args) { ppm(args); }},
+          {"loads",
+           [this](const std::vector<std::string> &args) { loads(args); }},
+          {"load",
+           [this](const std::vector<std::string> &args) { load(args); }},
           {"cam", [this](const std::vector<std::string> &args) { cam(args); }},
-          {"setcam", [this](const std::vector<std::string> &args) { setCam(args); }},
-
+          {"setcam",
+           [this](const std::vector<std::string> &args) { setCam(args); }},
       };
 };
 }  // namespace Graphics

@@ -32,6 +32,16 @@ DiffuseLight::DiffuseLight(const libconfig::Setting &config) {
     this->albedo.setRange(255, 1);
 }
 
+void DiffuseLight::save(libconfig::Setting &parent) const {
+    libconfig::Setting &mat = parent.add("material", libconfig::Setting::TypeGroup);
+    mat.add("type", libconfig::Setting::TypeString) = "diffuseLight";
+    libconfig::Setting &data = mat.add("data", libconfig::Setting::TypeGroup);
+
+    data.add("red", libconfig::Setting::TypeFloat) = this->albedo.x * 255;
+    data.add("green", libconfig::Setting::TypeFloat) = this->albedo.y * 255;
+    data.add("blue", libconfig::Setting::TypeFloat) = this->albedo.z * 255;
+}
+
 bool DiffuseLight::scatter(const Ray &, const HitRecord &rec,
                          Math::Vector3D &attenuation, Ray &scattered) const {
     Math::Vector3D scatter_direction =

@@ -10,6 +10,10 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
+
+#include "Raytracer/Camera.hpp"
 
 namespace Graphics {
 Shell::Shell(std::reference_wrapper<RaytracerCore> core, double width,
@@ -220,8 +224,8 @@ void Shell::save(const std::vector<std::string> &args) {
       root.add("objects", libconfig::Setting::TypeList);
 
   core_.get().getCamList()[core_.get().getCam()]->save(camera);
-  for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
-    scene.get().shapes_[i].get()->save(objects);
+  for (const auto &it : scene.get().shapes_) {
+    it->save(objects);
   }
   config.writeFile(args[0].c_str());
   output_ = "Saved Scene to" + args[0];
@@ -252,22 +256,38 @@ void Shell::cam(const std::vector<std::string> &) {
 }
 
 void Shell::setCam(const std::vector<std::string> &args) {
-   if (args.size()) {
+  if (args.size()) {
     try {
       int id = std::stoi(args[0]);
-      if (id < 0 || (size_t) id >= core_.get().getCamList().size()) {
+      if (id < 0 || (size_t)id >= core_.get().getCamList().size()) {
         output_ = "INVALID ID";
         return;
       }
       core_.get().getCamList()[core_.get().getCam()]->moving_ = true;
-      core_.get().getCamList()[core_.get().getCam()]->destination_ = core_.get().getCamList()[id]->pos_;
-      core_.get().getCamList()[core_.get().getCam()]->rotationDestination_ = core_.get().getCamList()[id]->rotation_;
+      core_.get().getCamList()[core_.get().getCam()]->destination_ =
+          core_.get().getCamList()[id]->pos_;
+      core_.get().getCamList()[core_.get().getCam()]->rotationDestination_ =
+          core_.get().getCamList()[id]->rotation_;
       output_ = "Current cam = " + id;
     } catch (const std::invalid_argument &) {
       output_ = "INVALID ID STOI";
       return;
     }
-   }
+  }
+}
+
+void Shell::load(const std::vector<std::string> &args) {
+  if (args.size() == 0) {
+    return;
+  }
+  std::optional<RayTracer::Camera> hey;
+  for (const auto &it : args) {
+    this->core_.get().loadFile(it, hey);
+  }
+}
+
+void Shell::loads(const std::vector<std::string> &args) {
+  this->core_.get().loadFiles(args);
 }
 
 }  // namespace Graphics

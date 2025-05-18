@@ -123,17 +123,21 @@ void Cylinder::setPosition(const Math::Vector3D &newPos) {
 }
 
 void Cylinder::save(libconfig::Setting &parent) const {
-    libconfig::Setting &sphereSettings =
+    libconfig::Setting &coneSettings =
         parent.add(libconfig::Setting::TypeGroup);
-    sphereSettings.add("type", libconfig::Setting::TypeString) = "shape";
-    sphereSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    coneSettings.add("type", libconfig::Setting::TypeString) = "shape";
+    coneSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
     libconfig::Setting &data =
-        sphereSettings.add("data", libconfig::Setting::TypeGroup);
+        coneSettings.add("data", libconfig::Setting::TypeGroup);
     libconfig::Setting &posSettings =
         data.add("pos", libconfig::Setting::TypeGroup);
     Math::writeUpVector(posSettings, this->pos_);
     data.add("radius", libconfig::Setting::TypeFloat) = this->radius_;
     data.add("height", libconfig::Setting::TypeFloat) = this->height_;
+    if (this->texture_.hasValue()) {
+        data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+    }
+    this->material_->save(coneSettings);
 }
 
 

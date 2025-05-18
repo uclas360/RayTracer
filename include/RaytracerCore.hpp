@@ -50,11 +50,14 @@ class RaytracerCore {
     RayTracer::Scene &getMainScene(void) {return mainScene_;};
     double getxRes(void) {return xResolution_;};
     double getyRes(void) {return yResolution_;};
-    Math::Vector3D getSize(void) {return {(double)width_, (double)height_, 0.};};
+    Math::Vector3D getSize(void) {return {(double)width_, (double)height_, 0};};
     void setMoving(bool moving) {moving_ = moving;};
     std::vector<std::uint8_t> getImageMean(void) {return imageMean_;};
     std::mutex imageMutex_;
     void writePPM(const std::string &filename);
+    void loadFiles(const std::vector<std::string> &);
+    void loadFile(std::string file, std::optional<RayTracer::Camera> &);
+    void setCamera(RayTracer::Camera &&);
 
    private:
     void computeGraphic(void);
@@ -110,6 +113,7 @@ class RaytracerCore {
     size_t compressedYResolution_;
     std::vector<std::uint8_t> compressedImage_;
 
+    bool computing_ = true;
     bool moving_ = false;
 
     void handleKeys(void);

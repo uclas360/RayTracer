@@ -113,6 +113,10 @@ void Sphere::save(libconfig::Setting &parent) const {
       data.add("pos", libconfig::Setting::TypeGroup);
   Math::writeUpVector(posSettings, this->pos);
   data.add("radius", libconfig::Setting::TypeFloat) = radius;
+  if (this->texture_.hasValue()) {
+      data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+  }
+  this->material_->save(sphereSettings);
 }
 
 }  // namespace RayTracer

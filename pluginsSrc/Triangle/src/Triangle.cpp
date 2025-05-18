@@ -95,6 +95,10 @@ void Triangle::save(libconfig::Setting &parent) const {
     Math::writeUpVector(aSettings, this->a);
     Math::writeUpVector(bSettings, this->b);
     Math::writeUpVector(cSettings, this->c);
+    if (this->texture_.hasValue()) {
+        data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+    }
+    this->material_->save(sphereSettings);
 }
 
 HitRecord Triangle::hits(const Ray &ray, Interval ray_t) const {

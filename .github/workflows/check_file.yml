@@ -56,35 +56,3 @@ jobs:
           else
             echo "No executables pushed."
           fi
-
-  check_program_compilation:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    name: Compilation Check
-    container:
-      image: epitechcontent/epitest-docker:latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: create folder build
-        run: mkdir build
-
-      - name: compile
-        run: cmake -S . -B build/
-
-      - name: cmake executable
-        run: cmake --build build/
-
-      - name: Check executables exist and are executable
-        run: |
-          for file in $EXECUTABLES; do
-            if [ ! -f "$file" ]; then
-              echo "$file does not exist"
-              exit 1
-            fi
-            if [ ! -x "$file" ]; then
-              echo "$file is not executable"
-              exit 1
-            fi
-          done

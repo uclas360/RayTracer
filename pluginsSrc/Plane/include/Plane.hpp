@@ -35,6 +35,8 @@ class Plane : public AShape {
   Math::Vector3D orientation_;
 };
 
+std::ostream &operator<<(std::ostream &os, const Plane &);
+
 
 }  // namespace RayTracer
 
