@@ -247,7 +247,7 @@ void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
 }
 
 void RaytracerCore::setCamera(RayTracer::Camera &&cam) {
-    this->camera_ = cam;
+    this->cameras_.push_back(std::make_unique<RayTracer::Camera>((cam)));
 }
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)

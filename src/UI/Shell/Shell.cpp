@@ -12,6 +12,7 @@
 #include <iostream>
 #include <optional>
 #include <string>
+
 #include "Raytracer/Camera.hpp"
 
 namespace Graphics {
@@ -67,14 +68,13 @@ std::vector<std::string> parseArgs(std::string str) {
 
 void Shell::update(const sf::Event &events) {
   updateStr(events);
-  core_.get().setMoving(false);
+  core_.get().setMoving(true);
   std::vector<std::string> args;
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && str_ != "") {
     history_.push_back(str_);
     args = parseArgs(str_);
     for (auto [key, value] : functions_) {
       if (key == args[0]) {
-        core_.get().setMoving(true);
         args.erase(args.begin());
         value(args);
       }
@@ -87,7 +87,6 @@ void Shell::update(const sf::Event &events) {
   }
   for (size_t i = 0; i < history_.size(); ++i) {
     text_.setString(history_[i]);
-    sf::Vector2f textsize = text_.getGlobalBounds().getSize();
     text_.setPosition(0, i * size_.y / 20);
     texture_.draw(text_);
   }
@@ -109,12 +108,13 @@ void Shell::update(const sf::Event &events) {
 }
 
 void Shell::select(const std::vector<std::string> &args) {
-  std::reference_wrapper<RayTracer::Camera> cam =
-      std::ref(core_.get().getCam());
+  RayTracer::Rectangle screen =
+      core_.get().getCamList()[core_.get().getCam()]->screen_;
   std::reference_wrapper<RayTracer::Scene> scene =
       std::ref(core_.get().getMainScene());
-  RayTracer::Ray ray =
-      cam.get().ray(0.5, 0.5, core_.get().getxRes(), core_.get().getyRes());
+  RayTracer::Ray ray = core_.get().getCamList()[core_.get().getCam()]->ray(
+      screen.leftSide.y / 2, screen.bottomSide.x / 2, core_.get().getxRes(),
+      core_.get().getyRes());
   RayTracer::HitRecord record;
   double closest = INFINITY;
 
@@ -123,17 +123,18 @@ void Shell::select(const std::vector<std::string> &args) {
       selectedId_ = std::stoi(args[0]);
       if (selectedId_ >= (int)scene.get().shapes_.size()) {
         selectedId_ = 0;
-        output_ = "Selected Shape n°" + std::to_string(selectedId_);
       }
+      output_ = "Selected Shape n°" + std::to_string(selectedId_);
       return;
     } catch (const std::invalid_argument &) {
       return;
     }
   }
+  std::cout << "ici" << std::endl;
   for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
     RayTracer::HitRecord temp =
-        scene.get().shapes_[i]->hits(ray, Interval(0, INFINITY));
-    if (!temp.missed && temp.t > 0 && temp.t < closest) {
+        scene.get().shapes_[i]->boundingBox().hits(ray, Interval(0, INFINITY));
+    if (!temp.missed && temp.t > 0 && temp.t <= closest) {
       closest = temp.t;
       record = temp;
       selectedId_ = i;
@@ -213,8 +214,7 @@ void Shell::save(const std::vector<std::string> &args) {
   if (args.size() < 1) return;
   std::reference_wrapper<RayTracer::Scene> scene =
       std::ref(core_.get().getMainScene());
-  std::reference_wrapper<RayTracer::Camera> cam =
-      std::ref(core_.get().getCam());
+
   libconfig::Config config;
   config.setOptions(libconfig::Config::Option::OptionAutoConvert);
   libconfig::Setting &root = config.getRoot();
@@ -223,9 +223,9 @@ void Shell::save(const std::vector<std::string> &args) {
   libconfig::Setting &objects =
       root.add("objects", libconfig::Setting::TypeList);
 
-  cam.get().save(camera);
+  core_.get().getCamList()[core_.get().getCam()]->save(camera);
   for (const auto &it : scene.get().shapes_) {
-      it->save(objects);
+    it->save(objects);
   }
   config.writeFile(args[0].c_str());
   output_ = "Saved Scene to" + args[0];
@@ -233,37 +233,61 @@ void Shell::save(const std::vector<std::string> &args) {
 
 void Shell::goTo(const std::vector<std::string> &args) {
   Math::Vector3D vector;
-  std::reference_wrapper<RayTracer::Camera> cam =
-      std::ref(core_.get().getCam());
 
   if (args.size() < 3) return;
   try {
     vector = {std::stod(args[0]), std::stod(args[1]), std::stod(args[2])};
   } catch (const std::invalid_argument &) {
   }
-  cam.get().setPosition(vector);
+  core_.get().getCamList()[core_.get().getCam()]->setPosition(vector);
   output_ = "Moved cam to " + std::format("{:.2f}", vector.x) + " " +
             std::format("{:.2f}", vector.y) + " " +
             std::format("{:.2f}", vector.z);
 }
 
 void Shell::ppm(const std::vector<std::string> &args) {
-  if (args.size() < 1)  return;
+  if (args.size() < 1) return;
   core_.get().writePPM(args[0]);
 }
 
-void Shell::load(const std::vector<std::string> &args) {
-    if (args.size() == 0) {
+void Shell::cam(const std::vector<std::string> &) {
+  core_.get().getCamList().push_back(std::make_unique<RayTracer::Camera>(
+      *core_.get().getCamList()[core_.get().getCam()].get()));
+}
+
+void Shell::setCam(const std::vector<std::string> &args) {
+  if (args.size()) {
+    try {
+      int id = std::stoi(args[0]);
+      if (id < 0 || (size_t)id >= core_.get().getCamList().size()) {
+        output_ = "INVALID ID";
         return;
+      }
+      core_.get().getCamList()[core_.get().getCam()]->moving_ = true;
+      core_.get().getCamList()[core_.get().getCam()]->destination_ =
+          core_.get().getCamList()[id]->pos_;
+      core_.get().getCamList()[core_.get().getCam()]->rotationDestination_ =
+          core_.get().getCamList()[id]->rotation_;
+      output_ = "Current cam = " + id;
+    } catch (const std::invalid_argument &) {
+      output_ = "INVALID ID STOI";
+      return;
     }
-    std::optional<RayTracer::Camera> hey;
-    for (const auto &it : args) {
-        this->core_.get().loadFile(it, hey);
-    }
+  }
+}
+
+void Shell::load(const std::vector<std::string> &args) {
+  if (args.size() == 0) {
+    return;
+  }
+  std::optional<RayTracer::Camera> hey;
+  for (const auto &it : args) {
+    this->core_.get().loadFile(it, hey);
+  }
 }
 
 void Shell::loads(const std::vector<std::string> &args) {
-    this->core_.get().loadFiles(args);
+  this->core_.get().loadFiles(args);
 }
 
 }  // namespace Graphics
