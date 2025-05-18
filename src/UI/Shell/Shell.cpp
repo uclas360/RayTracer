@@ -221,7 +221,6 @@ void Shell::save(const std::vector<std::string> &args) {
       root.add("camera", libconfig::Setting::TypeGroup);
   libconfig::Setting &objects =
       root.add("objects", libconfig::Setting::TypeList);
-
   core_.get().getCamList()[core_.get().getCam()]->save(camera);
   for (const auto &it : scene.get().shapes_) {
     it->save(objects);

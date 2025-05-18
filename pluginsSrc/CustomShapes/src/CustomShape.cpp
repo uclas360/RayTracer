@@ -223,6 +223,7 @@ CustomShape::CustomShape(const libconfig::Setting &settings) {
     if (!file.is_open()) {
       throw ParsingException("error parsing custom shape, file not openned");
     }
+    this->path_ = path;
     getScale(settings);
     while (getline(file, line)) {
       parseLine(line);
@@ -255,6 +256,7 @@ void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
           this->texture_.getColor(textCoord.x, textCoord.y));
     }
   }
+  this->material_ = std::move(material);
 }
 
 HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
@@ -272,14 +274,17 @@ void CustomShape::save(libconfig::Setting &parent) const {
   shapeSettings.add("name", libconfig::Setting::TypeString) = "customShape";
   libconfig::Setting &data =
       shapeSettings.add("data", libconfig::Setting::TypeGroup);
-  data.add("file", libconfig::Setting::TypeString) = this->path_;
+      data.add("file", libconfig::Setting::TypeString) = this->path_;
+    data.add("scale", libconfig::Setting::TypeFloat) = this->scale_;
+
   libconfig::Setting &pos = data.add("pos", libconfig::Setting::TypeGroup);
   Math::writeUpVector(pos, this->pos_);
   libconfig::Setting &rotation =
       data.add("rotation", libconfig::Setting::TypeGroup);
   Math::writeUpVector(rotation, this->rotation_);
   if (this->texture_.hasValue()) {
-      data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+    data.add("texture", libconfig::Setting::TypeString) =
+        this->texture_.getName();
   }
   this->material_->save(shapeSettings);
 }
