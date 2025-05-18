@@ -258,7 +258,6 @@ void CustomShape::setMaterial(std::unique_ptr<Material> &material) {
 
 HitRecord CustomShape::hits(const Ray &ray, Interval ray_t) const {
   HitRecord record;
-  double closest_t = INFINITY;
 
   if (this->bvh == nullptr) {
     throw BVHException("custom shape null bvh");

@@ -32,20 +32,22 @@ class Camera : public IObject {
   void lookAt(const Math::Vector3D &target);
   void save(libconfig::Setting &parent) const;
 
+  void updatePos(void);
   Ray ray(double u, double v, double xResolution, double yResolution);
   Rectangle screen_;
+  Math::Vector3D speed_;
+  Math::Vector3D rotationSpeed_;
+  Math::Vector3D pos_;
+  Math::Vector3D rotation_;
+  Math::Vector3D destination_;
+  Math::Vector3D rotationDestination_;
+  bool moving_ = false;
 
  private:
   void rotateX(double angle);
   void rotateY(double angle);
   void rotateZ(double angle);
 
-  double rotationX = 0;
-  double rotationY = 0;
-  double rotationZ = 0;
-
-  Math::Vector3D pos_;
-  Math::Vector3D rotation_;
 };
 
 }  // namespace RayTracer

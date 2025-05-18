@@ -236,7 +236,7 @@ RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)
         }
     }
     if (camera.has_value()) {
-        this->camera_ = std::move(camera.value());
+        this->cameras_.push_back(std::make_unique<RayTracer::Camera>((camera.value())));
     }
     this->startThreads(args.nb_thread);
 }

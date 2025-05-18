@@ -51,7 +51,7 @@ void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel,
     size_t x = pixel % xResolution;
     double u = (double)x / xResolution;
     double v = (double)y / yResolution;
-    RayTracer::Ray r = this->camera_.ray(u, v, xResolution, yResolution);
+    RayTracer::Ray r = this->cameras_[currentCameraId_]->ray(u, v, xResolution, yResolution);
     RayTracer::HitRecord hitRecord;
     Math::Vector3D vec;
 

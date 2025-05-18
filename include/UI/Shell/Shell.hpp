@@ -38,7 +38,8 @@ class Shell {
   void save(const std::vector<std::string> &args);
   void goTo(const std::vector<std::string> &args);
   void ppm(const std::vector<std::string> &args);
-
+  void cam(const std::vector<std::string> &args);
+  void setCam(const std::vector<std::string> &args);
 
   void setState(bool state) { enabled_ = state; };
   bool getState(void) { return enabled_; };
@@ -80,6 +81,9 @@ class Shell {
           {"goto",
            [this](const std::vector<std::string> &args) { goTo(args); }},
           {"ppm", [this](const std::vector<std::string> &args) { ppm(args); }},
+          {"cam", [this](const std::vector<std::string> &args) { cam(args); }},
+          {"setcam", [this](const std::vector<std::string> &args) { setCam(args); }},
+
       };
 };
 }  // namespace Graphics

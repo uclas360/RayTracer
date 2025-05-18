@@ -44,11 +44,13 @@ class RaytracerCore {
     RaytracerCore(const ArgManager::ArgumentStruct &);
     void compute(void);
 
-    RayTracer::Camera &getCam(void) {return camera_;};
+    size_t getCam(void) {return currentCameraId_;};
+    void setCam(size_t id) {currentCameraId_ = id;};
+    std::vector<std::unique_ptr<RayTracer::Camera>> &getCamList(void) {return cameras_;};
     RayTracer::Scene &getMainScene(void) {return mainScene_;};
     double getxRes(void) {return xResolution_;};
     double getyRes(void) {return yResolution_;};
-    Math::Vector3D getSize(void) {return {width_, height_, 0};};
+    Math::Vector3D getSize(void) {return {(double)width_, (double)height_, 0.};};
     void setMoving(bool moving) {moving_ = moving;};
     std::vector<std::uint8_t> getImageMean(void) {return imageMean_;};
     std::mutex imageMutex_;
@@ -62,7 +64,8 @@ class RaytracerCore {
     void computePixel(std::vector<std::uint8_t> &image, size_t pixel,
                       size_t xResolution, size_t yResolution);
 
-    RayTracer::Camera camera_;
+    std::vector<std::unique_ptr<RayTracer::Camera>> cameras_;
+    size_t currentCameraId_ = 0;
 
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::IShape>>>
         shapesPlugins_;
@@ -115,27 +118,27 @@ class RaytracerCore {
         keyboardEvent = {
             {sf::Keyboard::Q,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({-CAM_SPEED, 0, 0});
+                 this_.cameras_.at(this_.currentCameraId_)->move({-CAM_SPEED, 0, 0});
              }},
             {sf::Keyboard::D,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({CAM_SPEED, 0, 0});
+                 this_.cameras_.at(this_.currentCameraId_)->move({CAM_SPEED, 0, 0});
              }},
             {sf::Keyboard::Z,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, CAM_SPEED, 0});
+                 this_.cameras_.at(this_.currentCameraId_)->move({0, CAM_SPEED, 0});
              }},
             {sf::Keyboard::S,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, -CAM_SPEED, 0});
+                 this_.cameras_.at(this_.currentCameraId_)->move({0, -CAM_SPEED, 0});
              }},
             {sf::Keyboard::E,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, 0, -CAM_SPEED});
+                 this_.cameras_.at(this_.currentCameraId_)->move({0, 0, -CAM_SPEED});
              }},
             {sf::Keyboard::A,
              [](RaytracerCore &this_, Math::Vector3D &) {
-                 this_.camera_.move({0, 0, CAM_SPEED});
+                 this_.cameras_.at(this_.currentCameraId_)->move({0, 0, CAM_SPEED});
              }},
             {sf::Keyboard::Left,
              [](RaytracerCore &, Math::Vector3D &camRotation) {

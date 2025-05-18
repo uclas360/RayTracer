@@ -65,7 +65,6 @@ void Plane::scale(size_t) { return; }
 
 void Plane::setPosition(const Math::Vector3D &newPos) { this->pos_ = newPos; }
 
-std::ostream &operator<<(std::ostream &, const Plane &) {}
 
 void Plane::save(libconfig::Setting &parent) const {
     libconfig::Setting &sphereSettings =
