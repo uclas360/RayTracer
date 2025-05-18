@@ -8,6 +8,7 @@
 #include "../include/CustomShape.hpp"
 
 #include <fstream>
+#include <libconfig.h++>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -273,6 +274,10 @@ void CustomShape::save(libconfig::Setting &parent) const {
   libconfig::Setting &rotation =
       data.add("rotation", libconfig::Setting::TypeGroup);
   Math::writeUpVector(rotation, this->rotation_);
+  if (this->texture_.hasValue()) {
+      data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+  }
+  this->material_->save(shapeSettings);
 }
 
 CustomShape::~CustomShape() {}

@@ -28,7 +28,7 @@ class AShape : public IShape {
     void setBoundingBox(const AABB &bbox) override;
     virtual std::unique_ptr<Material> &getMaterial() override;
     bool haveTexture() const;
-    void save(libconfig::Setting &) const {return;};
+    virtual void save(libconfig::Setting &) const override {return;};
 
    protected:
     AShape(AABB);

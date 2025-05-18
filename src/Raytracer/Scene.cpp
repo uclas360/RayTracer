@@ -8,6 +8,7 @@
 #include "Raytracer/Scene.hpp"
 
 #include <cstdio>
+#include <libconfig.h++>
 #include <memory>
 
 #include "BVHNode.hpp"
@@ -18,6 +19,13 @@ namespace RayTracer {
 
 Scene::Scene(std::unique_ptr<IShape> shape) {
     this->addShape(std::move(shape));
+}
+
+void Scene::save(libconfig::Setting &parent) const {
+    libconfig::Setting &list = parent.add(libconfig::Setting::TypeList);
+    for (const auto &it : this->shapes_) {
+        it->save(list);
+    }
 }
 
 HitRecord RayTracer::Scene::hits(const Ray &ray, Interval ray_t) const {

@@ -7,7 +7,6 @@
 
 #include "../include/Cone.hpp"
 
-#include <algorithm>
 #include <libconfig.h++>
 
 #include "Interval.hpp"
@@ -104,6 +103,28 @@ Math::Vector3D Cone::getPointColor(const Math::Vector3D &point) const {
     double v = (point.y - origin) / this->h_;
 
     return this->texture_.getColor(u, v);
+}
+
+void Cone::save(libconfig::Setting &parent) const {
+  libconfig::Setting &coneSettings =
+      parent.add(libconfig::Setting::TypeGroup);
+  coneSettings.add("type", libconfig::Setting::TypeString) = "shape";
+  coneSettings.add("name", libconfig::Setting::TypeString) = "cone";
+  libconfig::Setting &data =
+      coneSettings.add("data", libconfig::Setting::TypeGroup);
+  libconfig::Setting &posSettings =
+      data.add("tipPosition", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(posSettings, this->tipPosition_);
+  libconfig::Setting &uSettings =
+      data.add("axis", libconfig::Setting::TypeGroup);
+  Math::writeUpVector(uSettings, this->axis_);
+  data.add("angle", libconfig::Setting::TypeFloat) = this->angle;
+  data.add("height", libconfig::Setting::TypeFloat) = this->h_;
+  data.add("radius", libconfig::Setting::TypeFloat) = this->radius;
+  if (this->texture_.hasValue()) {
+      data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+  }
+  this->material_->save(coneSettings);
 }
 
 }  // namespace RayTracer

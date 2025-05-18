@@ -48,7 +48,7 @@ class RaytracerCore {
     RayTracer::Scene &getMainScene(void) {return mainScene_;};
     double getxRes(void) {return xResolution_;};
     double getyRes(void) {return yResolution_;};
-    Math::Vector3D getSize(void) {return {width_, height_, 0};};
+    Math::Vector3D getSize(void) {return {(double)width_, (double)height_, 0};};
     void setMoving(bool moving) {moving_ = moving;};
     std::vector<std::uint8_t> getImageMean(void) {return imageMean_;};
     std::mutex imageMutex_;

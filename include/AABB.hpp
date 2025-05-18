@@ -26,6 +26,9 @@ class LambertianDebug : public Material {
                  Math::Vector3D &attenuation, Ray &scattered) const override;
     virtual std::unique_ptr<Material> duplicate(void) override;
     void setColor(const Math::Vector3D &) override {};
+    void save(libconfig::Setting &) const override {};
+
+
 
    private:
     Math::Vector3D albedo;
@@ -40,7 +43,7 @@ class AABB : public IShape {
     AABB(const Interval &x, const Interval &y, const Interval &z);
     AABB(const Math::Vector3D &a, const Math::Vector3D &b);
     AABB(const AABB &box0, const AABB &box1);
-    
+
     AABB &operator=(const RayTracer::AABB &bbox);
     const Interval &axisInterval(int n) const;
     bool trueHit(const Ray &r, Interval ray_t) const;

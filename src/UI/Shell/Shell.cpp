@@ -221,8 +221,8 @@ void Shell::save(const std::vector<std::string> &args) {
       root.add("objects", libconfig::Setting::TypeList);
 
   cam.get().save(camera);
-  for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
-    scene.get().shapes_[i].get()->save(objects);
+  for (const auto &it : scene.get().shapes_) {
+      it->save(objects);
   }
   config.writeFile(args[0].c_str());
   output_ = "Saved Scene to" + args[0];
