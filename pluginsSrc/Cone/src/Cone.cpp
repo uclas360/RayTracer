@@ -119,7 +119,7 @@ namespace RayTracer
 
         return this->texture_.getColor(u, v);
     }
-} // namespace RayTracer
+}
 
 extern "C"
 {
