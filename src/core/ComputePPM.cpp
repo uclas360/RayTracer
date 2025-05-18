@@ -38,7 +38,7 @@ void RaytracerCore::writePPM(const std::string &filename) {
 
 void RaytracerCore::computeOutput() {
     int lastNbImage = -1;
-    while (!this->killThreads_) {
+    while (this->nbImage_ < 200) {
         usleep(500000);
         std::cout << "\33[2K\r" << "computing images :" << this->nbImage_ << "/200 [";
         lastNbImage = this->nbImage_;
