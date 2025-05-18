@@ -41,6 +41,7 @@ Plane::Plane(const libconfig::Setting &settings) {
     } catch (const libconfig::SettingNotFoundException &e) {
         throw ParsingException(e.what());
     }
+    this->bbox = AABB({10000,10000,10000}, {-10000,-10000,-10000});
 }
 
 HitRecord Plane::hits(const Ray &ray, Interval ray_t) const {
@@ -71,7 +72,7 @@ void Plane::save(libconfig::Setting &parent) const {
     libconfig::Setting &planeSettings =
         parent.add(libconfig::Setting::TypeGroup);
     planeSettings.add("type", libconfig::Setting::TypeString) = "shape";
-    planeSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    planeSettings.add("name", libconfig::Setting::TypeString) = "plane";
     libconfig::Setting &data =
         planeSettings.add("data", libconfig::Setting::TypeGroup);
     libconfig::Setting &posSettings =
@@ -84,6 +85,10 @@ void Plane::save(libconfig::Setting &parent) const {
         data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
     }
     this->material_->save(planeSettings);
+}
+
+Math::Vector3D Plane::getPointColor(const Math::Vector3D &point) const {
+    return this->texture_.getColor(point.x, point.z);
 }
 
 }  // namespace RayTracer

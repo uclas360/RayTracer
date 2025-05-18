@@ -41,12 +41,14 @@ DirectionalLight::DirectionalLight(const libconfig::Setting &config) {
 void DirectionalLight::save(libconfig::Setting &parent) const {
     libconfig::Setting &mat =
         parent.add("material", libconfig::Setting::TypeGroup);
-    mat.add("type", libconfig::Setting::TypeString) = "DirectionalLight";
+    mat.add("type", libconfig::Setting::TypeString) = "directionalLight";
     libconfig::Setting &data = mat.add("data", libconfig::Setting::TypeGroup);
 
     data.add("red", libconfig::Setting::TypeFloat) = this->albedo.x * 255;
     data.add("green", libconfig::Setting::TypeFloat) = this->albedo.y * 255;
     data.add("blue", libconfig::Setting::TypeFloat) = this->albedo.z * 255;
+    libconfig::Setting &dir = data.add("dir", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(dir, this->dir);
 }
 
 bool DirectionalLight::scatter(const Ray &, const HitRecord &rec,
