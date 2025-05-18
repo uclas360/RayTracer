@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -Wall -Wextra -fPIC -O3 -Wall -Wextra -fPIC -O3 -g -g3 -Wl,--dependency-file=CMakeFiles/cone.dir/link.d -shared -Wl,-soname,cone.so -o ../../plugin/cone.so CMakeFiles/cone.dir/src/Cone.cpp.o  ../../lib/RayMath/librayMath.a
