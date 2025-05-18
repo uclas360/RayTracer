@@ -58,7 +58,7 @@ void DiffuseLight::setColor(const Math::Vector3D &newColor) {
     this->albedo.setRange(255, 1);
 }
 
-Math::Vector3D DiffuseLight::emitted() const {
+Math::Vector3D DiffuseLight::emitted(const Ray &, const HitRecord &) const {
     return this->albedo;
 }
 

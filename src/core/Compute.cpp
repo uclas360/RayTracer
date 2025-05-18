@@ -50,7 +50,7 @@ Math::Vector3D trace_ray(const RayTracer::Ray &r, int depth,
     RayTracer::Ray scattered;
     Math::Vector3D attenuation;
     if (rec.mat->scatter(r, rec, attenuation, scattered)) {
-        return (rec.mat->emitted() + (attenuation * rec.shapeHit->getPointColor(rec.p)) * trace_ray(scattered, depth - 1, scene)).clamped(0, 1);
+        return (rec.mat->emitted(r, rec) + (attenuation * rec.shapeHit->getPointColor(rec.p)) * trace_ray(scattered, depth - 1, scene)).clamped(0, 1);
     }
     return Math::Vector3D(0, 0, 0);
 }

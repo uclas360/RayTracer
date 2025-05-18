@@ -27,7 +27,7 @@ class Material : public IPlugin {
     virtual std::unique_ptr<Material> duplicate(void) = 0;
     virtual void setColor(const Math::Vector3D &newColor) = 0;
     virtual void save(libconfig::Setting &parent) const = 0;
-    virtual Math::Vector3D emitted() const {
+    virtual Math::Vector3D emitted(const Ray &, const HitRecord &) const {
         return Math::Vector3D(0, 0, 0);
     }
 };

@@ -11,9 +11,9 @@
 
 namespace RayTracer {
 
-class DiffuseLight : public Material {
+class DirectionalLight : public Material {
    public:
-    DiffuseLight(const libconfig::Setting &);
+    DirectionalLight(const libconfig::Setting &);
 
     bool scatter(const Ray &r_in, const HitRecord &rec,
                  Math::Vector3D &attenuation, Ray &scattered) const override;
@@ -24,6 +24,7 @@ class DiffuseLight : public Material {
 
    private:
     Math::Vector3D albedo;
+    Math::Vector3D dir;
 };
 
 };  // namespace RayTracer
