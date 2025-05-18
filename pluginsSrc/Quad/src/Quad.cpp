@@ -5,119 +5,117 @@
 ** Quad
 */
 
+#include "../include/Quad.hpp"
+
+#include <algorithm>
 #include <libconfig.h++>
 
-#include "Quad.hpp"
+#include "AABB.hpp"
+#include "Raytracer/math/Vector.hpp"
 #include "RaytracerCore.hpp"
-#include <algorithm>
 
-namespace RayTracer
-{
-    Quad::Quad(const libconfig::Setting &settings)
-    {
-        double originX;
-        double originY;
-        double originZ;
-        double uX;
-        double uY;
-        double uZ;
-        double vX;
-        double vY;
-        double vZ;
-
-        if (!settings.lookupValue("originX", originX))
-        {
+namespace RayTracer {
+Quad::Quad(const libconfig::Setting &settings) {
+    try {
+        libconfig::Setting &tip = settings.lookup("origin");
+        if (!Math::lookUpVector(tip, this->_origin)) {
             throw ParsingException(
-                "error parsing quad object, missing \"originX\" field");
+                "error parsing quad object, missing \"origin\" field");
         }
-        if (!settings.lookupValue("originY", originY))
-        {
+    } catch (const libconfig::SettingNotFoundException &) {
+        throw ParsingException(
+            "error parsing quad object, missing \"origin\" field");
+    }
+    try {
+        libconfig::Setting &tip = settings.lookup("u");
+        if (!Math::lookUpVector(tip, this->_u)) {
             throw ParsingException(
-                "error parsing quad object, missing \"originY\" field");
+                "error parsing quad object, missing \"u\" field");
         }
-        if (!settings.lookupValue("originZ", originZ))
-        {
+    } catch (const libconfig::SettingNotFoundException &) {
+        throw ParsingException(
+            "error parsing quad object, missing \"u\" field");
+    }
+    try {
+        libconfig::Setting &tip = settings.lookup("v");
+        if (!Math::lookUpVector(tip, this->_v)) {
             throw ParsingException(
-                "error parsing quad object, missing \"originZ\" field");
+                "error parsing quad object, missing \"v\" field");
         }
-        if (!settings.lookupValue("uX", uX))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"uX\" field");
-        }
-        if (!settings.lookupValue("uY", uY))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"uY\" field");
-        }
-        if (!settings.lookupValue("uZ", uZ))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"uZ\" field");
-        }
-        if (!settings.lookupValue("vX", vX))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"vX\" field");
-        }
-        if (!settings.lookupValue("vY", vY))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"vY\" field");
-        }
-        if (!settings.lookupValue("vZ", vZ))
-        {
-            throw ParsingException(
-                "error parsing quad object, missing \"vZ\" field");
-        }
-        this->_origin = {originX, originY, originZ};
-        this->_u = {uX, uY, uZ};
-        this->_v = {vX, vY, vZ};
-
-        _normal = _u.cross(_v).normalized();
-
-        Math::Vector3D origin = _origin;
-        Math::Vector3D p1 = _origin + _u;
-        Math::Vector3D p2 = _origin + _v;
-        Math::Vector3D p3 = _origin + _u + _v;
-
-        double min_x = std::min({origin.x, p1.x, p2.x, p3.x});
-        double min_y = std::min({origin.y, p1.y, p2.y, p3.y});
-        double min_z = std::min({origin.z, p1.z, p2.z, p3.z});
-        double max_x = std::max({origin.x, p1.x, p2.x, p3.x});
-        double max_y = std::max({origin.y, p1.y, p2.y, p3.y});
-        double max_z = std::max({origin.z, p1.z, p2.z, p3.z});
-        _box = Box3D({min_x, min_y, min_z}, {max_x, max_y, max_z});
+    } catch (const libconfig::SettingNotFoundException &) {
+        throw ParsingException(
+            "error parsing quad object, missing \"v\" field");
     }
 
-    HitRecord Quad::hits(const Ray &ray, Interval ray_t) const
-    {
-        double denom = _normal.dot(ray.dir);
+    _normal = _u.cross(_v).normalized();
 
-        if (std::abs(denom) < 1e-6)
-            return HitRecord();
+    Math::Vector3D origin = _origin;
+    Math::Vector3D p1 = _origin + _u;
+    Math::Vector3D p2 = _origin + _v;
+    Math::Vector3D p3 = _origin + _u + _v;
 
-        double t = (_origin - ray.pos).dot(_normal) / denom;
+    Math::Vector3D min = {std::min({origin.x, p1.x, p2.x, p3.x}),
+                          std::min({origin.y, p1.y, p2.y, p3.y}),
+                          std::min({origin.z, p1.z, p2.z, p3.z})};
+    Math::Vector3D max = {std::max({origin.x, p1.x, p2.x, p3.x}),
+                          std::max({origin.y, p1.y, p2.y, p3.y}),
+                          std::max({origin.z, p1.z, p2.z, p3.z})};
 
-        if (t < 0.001)
-            return HitRecord();
-
-        Math::Vector3D p = ray.at(t);
-
-        double u_coord = (p - _origin).dot(_u) / _u.dot(_u);
-        double v_coord = (p - _origin).dot(_v) / _v.dot(_v);
-
-        if (u_coord < 0 || u_coord > 1 || v_coord < 0 || v_coord > 1)
-            return HitRecord();
-
-        return HitRecord(t, ray, *this, _normal, this->material_);
-    }
+    _box = Box3D(min, max);
+    this->bbox = AABB(min * 100, max * 100);
 }
 
-extern "C"
-{
-    void *entry_point(const libconfig::Setting &config)
-    {
-        return new RayTracer::Quad(config);
-    }
+Quad::Quad(Math::Vector3D q, Math::Vector3D u, Math::Vector3D v)
+    : _origin(q), _u(u), _v(v) {
+    _normal = u.cross(v).normalized();
+
+    Math::Vector3D origin = _origin;
+    Math::Vector3D p1 = _origin + _u;
+    Math::Vector3D p2 = _origin + _v;
+    Math::Vector3D p3 = _origin + _u + _v;
+
+    double min_x = std::min({origin.x, p1.x, p2.x, p3.x});
+    double min_y = std::min({origin.y, p1.y, p2.y, p3.y});
+    double min_z = std::min({origin.z, p1.z, p2.z, p3.z});
+    double max_x = std::max({origin.x, p1.x, p2.x, p3.x});
+    double max_y = std::max({origin.y, p1.y, p2.y, p3.y});
+    double max_z = std::max({origin.z, p1.z, p2.z, p3.z});
+    _box = Box3D({min_x, min_y, min_z}, {max_x, max_y, max_z});
+}
+
+HitRecord Quad::hits(const Ray &ray, Interval) const {
+    double denom = _normal.dot(ray.dir);
+
+    if (std::abs(denom) < 1e-6) return HitRecord();
+
+    double t = (_origin - ray.pos).dot(_normal) / denom;
+
+    if (t < 0.001) return HitRecord();
+
+    Math::Vector3D p = ray.at(t);
+
+    double u_coord = (p - _origin).dot(_u) / _u.dot(_u);
+    double v_coord = (p - _origin).dot(_v) / _v.dot(_v);
+
+    if (u_coord < 0 || u_coord > 1 || v_coord < 0 || v_coord > 1)
+        return HitRecord();
+    return HitRecord(t, ray, *this, _normal, this->material_);
+}
+
+void Quad::move(const Math::Vector3D &) {};
+void Quad::rotate(const Math::Vector3D &) {};
+void Quad::scale(size_t) {};
+void Quad::setPosition(const Math::Vector3D &) {};
+
+void Quad::setMaterial(std::unique_ptr<Material> &m) {
+    this->material_ = m->duplicate();
+    this->_box.setMaterial(m);
+}
+
+}  // namespace RayTracer
+
+extern "C" {
+void *entry_point(const libconfig::Setting &config) {
+    return new RayTracer::Quad(config);
+}
 }

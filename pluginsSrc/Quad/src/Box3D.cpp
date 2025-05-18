@@ -126,10 +126,4 @@ void Box3D::setPosition(const Math::Vector3D &newPos) {
 
     move(offset);
 }
-
-extern "C" {
-void *entry_point(const libconfig::Setting &config) {
-    return new Box3D(config);
 }
-}
-}  // namespace RayTracer
