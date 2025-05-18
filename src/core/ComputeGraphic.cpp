@@ -60,12 +60,15 @@ void RaytracerCore::computeGraphic() {
   Graphics::Shell shell(std::ref(*this), (double)this->width_ / 3,
                         (double)this->height_ / 2);
 
-    sf::View view = window.getDefaultView();
-    view.setSize(this->width_, this->height_);
-    window.setView(view);
-    while (window.isOpen()) {
-        if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
-        clock.restart();
+  sf::View view({(float)width_ / 2, height_ / 2},
+                {(float)width_, (height_ * (static_cast<double>(height_) /
+                                            static_cast<double>(width_)))});
+  view.setSize(this->width_, this->height_);
+  window.setView(view);
+  camera_.screen_.bottomSide.x = width_ / height_;
+  while (window.isOpen()) {
+    if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
+    clock.restart();
 
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -80,9 +83,15 @@ void RaytracerCore::computeGraphic() {
       if (event.type == sf::Event::Closed) window.close();
       if (event.type == sf::Event::Resized) {
         sf::Vector2u size = window.getSize();
-        sf::View view({(float)size.x / 2, size.y / 2},
-                      {(float)size.x, (float)size.y});
-        window.setView(view);
+        if ((double)size.x / (double)size.y != width_ / (double)height_) {
+          window.setSize({width_, height_});
+        } else {
+          sf::View view(
+              {(float)size.x / 2, size.y / 2},
+              {(float)size.x, (size.y * (static_cast<double>(size.y) /
+                                         static_cast<double>(size.x)))});
+          window.setView(view);
+        }
       }
     }
     if (!shell.getState()) this->handleKeys();

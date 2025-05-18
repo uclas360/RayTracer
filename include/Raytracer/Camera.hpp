@@ -33,6 +33,7 @@ class Camera : public IObject {
   void save(libconfig::Setting &parent) const;
 
   Ray ray(double u, double v, double xResolution, double yResolution);
+  Rectangle screen_;
 
  private:
   void rotateX(double angle);
@@ -43,7 +44,6 @@ class Camera : public IObject {
   double rotationY = 0;
   double rotationZ = 0;
 
-  Rectangle screen_;
   Math::Vector3D pos_;
   Math::Vector3D rotation_;
 };
