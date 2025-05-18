@@ -85,6 +85,7 @@ void Shell::update(const sf::Event &events) {
   while ((history_.size() + 2) * size_.y / 20 >= size_.y) {
     history_.erase(history_.begin());
   }
+  text_.setFillColor(sf::Color::White);
   for (size_t i = 0; i < history_.size(); ++i) {
     text_.setString(history_[i]);
     text_.setPosition(0, i * size_.y / 20);
@@ -130,7 +131,6 @@ void Shell::select(const std::vector<std::string> &args) {
       return;
     }
   }
-  std::cout << "ici" << std::endl;
   for (size_t i = 0; i < scene.get().shapes_.size(); ++i) {
     RayTracer::HitRecord temp =
         scene.get().shapes_[i]->boundingBox().hits(ray, Interval(0, INFINITY));

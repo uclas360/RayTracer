@@ -99,7 +99,7 @@ void RaytracerCore::initShape(const std::string &name, RayTracer::Scene &scene,
                                "\": " + exc.what());
         return;
     }
-    shape->setBoundingBox(RayTracer::AABB(Math::Vector3D(-100000, -100000, -100000), Math::Vector3D(100000, 100000, 100000)));
+    // shape->setBoundingBox(RayTracer::AABB(Math::Vector3D(-100000, -100000, -100000), Math::Vector3D(100000, 100000, 100000)));
     scene.addShape(std::move(shape));
 }
 
@@ -248,6 +248,11 @@ void RaytracerCore::loadFiles(const std::vector<std::string> &files) {
 
 void RaytracerCore::setCamera(RayTracer::Camera &&cam) {
     this->cameras_.push_back(std::make_unique<RayTracer::Camera>((cam)));
+
+    std::unique_ptr<RayTracer::Camera> &cam1 = cameras_[currentCameraId_];
+    cameras_[currentCameraId_]->screen_.bottomSide.x =
+     cameras_[currentCameraId_]->screen_.leftSide.y * (double) xResolution_ / yResolution_;
+    cam1->screen_.pos = {cam1->pos_.x - cam1->screen_.bottomSide.x / 2, cam1->pos_.y - cam1->screen_.leftSide.y / 2, cam1->pos_.z - 1.5};
 }
 
 RaytracerCore::RaytracerCore(const ArgManager::ArgumentStruct &args)

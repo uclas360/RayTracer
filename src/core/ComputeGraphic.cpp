@@ -60,7 +60,6 @@ void RaytracerCore::computeGraphic() {
   Graphics::Shell shell(std::ref(*this), (double)this->width_ / 3,
                         (double)this->height_ / 2);
 
-  cameras_[currentCameraId_]->screen_.bottomSide.x = width_ / height_;
   while (window.isOpen()) {
     if (clock.getElapsedTime().asSeconds() < 1.0 / 60.0) continue;
     clock.restart();
@@ -77,7 +76,7 @@ void RaytracerCore::computeGraphic() {
         }
       }
       if (event.type == sf::Event::Closed) window.close();
-    }
+     }
     if (!shell.getState()) this->handleKeys();
     window.clear();
     if (!this->moving_ && this->nbImage_ != 0) {
