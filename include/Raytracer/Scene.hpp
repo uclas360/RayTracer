@@ -11,12 +11,13 @@
 #include <memory>
 #include <vector>
 
-#include "BVHNode.hpp"
 #include "plugins/AShape.hpp"
 #include "plugins/ILight.hpp"
 #include "plugins/IShape.hpp"
 
 namespace RayTracer {
+
+class BVHNode;
 
 class Scene : public AShape {
    public:
@@ -27,7 +28,7 @@ class Scene : public AShape {
     void rotate(const Math::Vector3D &angles) override;
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
-    Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
+    Math::Vector3D getPointColor(const Math::Vector3D &) const override { return {1, 1, 1}; };
 
     void addShape(std::unique_ptr<IShape> shape);
     void addLight(std::unique_ptr<ILight> light);
@@ -38,5 +39,7 @@ class Scene : public AShape {
 };
 
 };  // namespace RayTracer
+
+#include "BVHNode.hpp"
 
 #endif

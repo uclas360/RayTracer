@@ -31,4 +31,12 @@ bool AShape::haveTexture() const {
     return this->texture_.hasValue();
 }
 
+BVHNode *AShape::getBVH() const {
+    return this->bvhNode;
+}
+
+void AShape::setBVH(BVHNode *bvhNode) {
+    this->bvhNode = bvhNode;
+}
+
 }  // namespace RayTracer

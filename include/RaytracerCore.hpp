@@ -61,7 +61,6 @@ class RaytracerCore {
     std::map<std::string, std::unique_ptr<LibLoader<RayTracer::Material>>>
         materials_;
 
-    RayTracer::Scene secondScene_;
     RayTracer::Scene mainScene_;
 
     void initPlugins(const std::string &file, const libconfig::Config &config);
