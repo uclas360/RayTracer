@@ -8,6 +8,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include <libconfig.h++>
 #include <memory>
 #include <vector>
 
@@ -20,7 +21,9 @@ namespace RayTracer {
 
 class Scene : public AShape {
    public:
-    Scene() = default;
+    Scene() {
+        this->shapes_.reserve(1000);
+    };
     Scene(std::unique_ptr<IShape> shape);
     HitRecord hits(const Ray &ray, Interval ray_t) const override;
     void move(const Math::Vector3D &offset) override;
@@ -28,6 +31,7 @@ class Scene : public AShape {
     void scale(size_t scale) override;
     void setPosition(const Math::Vector3D &newPos) override;
     Math::Vector3D getPointColor(const Math::Vector3D &) const override {return {1, 1, 1};};
+    void save(libconfig::Setting &) const override;
 
     void addShape(std::unique_ptr<IShape> shape);
     void addLight(std::unique_ptr<ILight> light);

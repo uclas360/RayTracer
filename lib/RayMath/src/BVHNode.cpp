@@ -56,7 +56,7 @@ BVHNode::BVHNode(std::vector<std::unique_ptr<IShape>> &objects, size_t start,
 
 HitRecord BVHNode::hits(const RayTracer::Ray &r, Interval ray_t) const {
     if (bbox.hits(r, ray_t).missed) return RayTracer::HitRecord();
-
+    
     RayTracer::HitRecord hit_left = this->left->hits(r, ray_t);
     RayTracer::HitRecord hit_right = this->right->hits(
         r, Interval(ray_t.min, hit_left.missed ? ray_t.max : hit_left.t));

@@ -5,7 +5,7 @@
 ** Cylinder
 */
 
-#include "../include/Cylinder.hpp"
+#include "Cylinder.hpp"
 
 #include <cmath>
 #include <libconfig.h++>
@@ -48,7 +48,7 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   Math::Vector3D oc = ray.pos - pos_;
   double a = ray.dir.x * ray.dir.x + ray.dir.z * ray.dir.z;
   double b = 2.0 * (oc.x * ray.dir.x + oc.z * ray.dir.z);
-  double c = oc.x * oc.x + oc.z * oc.z - radius_ * radius_;
+  double c = oc.x * oc.x + oc.z * oc.z - this->radius_ * this->radius_;
 
   if (fabs(a) < EPSILON) return hitsCapOnly(ray, ray_t);
   double discriminant = b * b - 4 * a * c;
@@ -60,7 +60,7 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   double t = t1;
   double y1 = oc.y + t1 * ray.dir.y;
 
-  if (t1 < EPSILON || y1 < 0 || y1 > height_) {
+  if (t1 < EPSILON || y1 < 0 || y1 > this->height_) {
     t = t2;
     double y2 = oc.y + t2 * ray.dir.y;
 
@@ -71,10 +71,9 @@ HitRecord Cylinder::hits(const Ray &ray, Interval ray_t) const {
   normal = normal.normalized();
   HitRecord capRecord = hitsCapOnly(ray, ray_t);
 
-  if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
-    return capRecord;
-
-  return HitRecord(t, ray, *this, normal, this->material_);
+    if (capRecord.t > EPSILON && (capRecord.t < t || t < EPSILON))
+        return capRecord;
+    return HitRecord(t, ray, *this, normal, this->material_);
 }
 
 HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
@@ -82,25 +81,25 @@ HitRecord Cylinder::hitsCapOnly(const Ray &ray, Interval ray_t) const {
   Math::Vector3D normal;
 
   if (fabs(ray.dir.y) > EPSILON) {
-    double t = (pos_.y - ray.pos.y) / ray.dir.y;
+    double t = (this->pos_.y - ray.pos.y) / ray.dir.y;
     if (t > EPSILON) {
       Math::Vector3D p = ray.pos + ray.dir * t;
-      double distance = (p - Math::Vector3D(pos_.x, pos_.y, pos_.z)).length();
-      if (distance <= radius_) {
+      double distance = (p - Math::Vector3D(this->pos_.x, this->pos_.y, this->pos_.z)).length();
+      if (distance <= this->radius_) {
         t_min = t;
         normal = Math::Vector3D(0, -1, 0);
       }
     }
   }
   if (fabs(ray.dir.y) > EPSILON) {
-    double t = (pos_.y + height_ - ray.pos.y) / ray.dir.y;
+    double t = (this->pos_.y + this->height_ - ray.pos.y) / ray.dir.y;
 
     if (t > EPSILON && t < t_min) {
       Math::Vector3D p = ray.pos + ray.dir * t;
       double distance =
-          (p - Math::Vector3D(pos_.x, pos_.y + height_, pos_.z)).length();
+          (p - Math::Vector3D(this->pos_.x, this->pos_.y + this->height_, this->pos_.z)).length();
 
-      if (distance <= radius_) {
+      if (distance <= this->radius_) {
         t_min = t;
         normal = Math::Vector3D(0, 1, 0);
       }
@@ -122,6 +121,25 @@ void Cylinder::scale(size_t scale) { this->radius_ *= (double)scale; }
 void Cylinder::setPosition(const Math::Vector3D &newPos) {
   this->pos_ = newPos;
 }
+
+void Cylinder::save(libconfig::Setting &parent) const {
+    libconfig::Setting &coneSettings =
+        parent.add(libconfig::Setting::TypeGroup);
+    coneSettings.add("type", libconfig::Setting::TypeString) = "shape";
+    coneSettings.add("name", libconfig::Setting::TypeString) = "cylinder";
+    libconfig::Setting &data =
+        coneSettings.add("data", libconfig::Setting::TypeGroup);
+    libconfig::Setting &posSettings =
+        data.add("pos", libconfig::Setting::TypeGroup);
+    Math::writeUpVector(posSettings, this->pos_);
+    data.add("radius", libconfig::Setting::TypeFloat) = this->radius_;
+    data.add("height", libconfig::Setting::TypeFloat) = this->height_;
+    if (this->texture_.hasValue()) {
+        data.add("texture", libconfig::Setting::TypeString) = this->texture_.getName();
+    }
+    this->material_->save(coneSettings);
+}
+
 
 Math::Vector3D Cylinder::getPointColor(const Math::Vector3D &point) const {
   double theta = std::atan2(point.x, point.z);
