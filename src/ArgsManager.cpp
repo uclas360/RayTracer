@@ -8,6 +8,7 @@
 #include "ArgsManager.hpp"
 
 #include <stdexcept>
+#include <iostream>
 #include <thread>
 
 ArgManager::ArgManager(char **argv) {
@@ -34,6 +35,9 @@ ArgManager::ArgManager(char **argv) {
     if (this->arguments_.yResolution == -1 ||
         this->arguments_.yResolution > this->arguments_.height) {
         this->arguments_.yResolution = this->arguments_.height;
+    }
+    if (this->arguments_.finalNbImages == -1) {
+        this->arguments_.finalNbImages = 20;
     }
     if (this->arguments_.configFile.empty()) {
         throw ArgumentException("at least one config file is mendatory");
