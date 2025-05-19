@@ -123,6 +123,7 @@ class RaytracerCore {
     void computeMoving(size_t start, size_t end);
     void computePrecision(void);
 
+    size_t finalNbImages_ = 0;
     size_t nbImage_ = 0;
     std::vector<int> image_;
     std::vector<std::uint8_t> imageMean_;

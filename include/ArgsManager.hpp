@@ -33,6 +33,7 @@ class ArgManager {
         ssize_t height = -1;
         ssize_t xResolution = -1;
         ssize_t yResolution = -1;
+        ssize_t finalNbImages = -1;
     };
 
     ArgManager(char **argv);
@@ -149,7 +150,27 @@ class ArgManager {
              }
              _this.arguments_.yResolution = yRes;
              return true;
-         }}};
+         }},
+        {"-images", [](ArgManager &_this, char *number) {
+             if (number == nullptr) {
+                 throw ArgumentException(
+                     "-images flag must take a positive integer");
+             }
+             if (_this.arguments_.yResolution != -1) {
+                 throw ArgumentException("multiple use of -images flag");
+             }
+             std::stringstream ss(number);
+             size_t nbimages;
+
+             ss >> nbimages;
+             if (ss.fail() || !ss.eof()) {
+                 throw ArgumentException(
+                     "-yr flag must take a positive integer");
+             }
+             _this.arguments_.finalNbImages = nbimages;
+             return true;
+         }}
+        };
 };
 
 #endif
