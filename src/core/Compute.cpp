@@ -82,6 +82,7 @@ void RaytracerCore::computePixel(std::vector<uint8_t> &image, size_t pixel,
 }
 
 void RaytracerCore::compute(void) {
+    this->cameras_[0]->rotate(this->cameras_[0]->rotationDestination_);
     if (this->graphic_) {
         this->computeGraphic();
     } else {
