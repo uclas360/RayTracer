@@ -29,7 +29,6 @@ void RaytracerCore::computePrecision() {
     this->waitingChange.lock();
     this->waitingChange.unlock();
     this->computePixel(image, i, this->xResolution_, this->yResolution_);
-    this->computePixel(image, i, this->xResolution_, this->yResolution_);
   }
   this->imageMutex_.lock();
   if (this->nbImage_ == 0) {
@@ -38,7 +37,7 @@ void RaytracerCore::computePrecision() {
     }
     this->imageMean_ = image;
   } else {
-        for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) &&
+        for (size_t i = 0; i < (this->xResolution_ * this->yResolution_) * 4 &&
         !this->moving_ && !this->killThreads_;
          i++) {
       this->image_[i] += image[i];
@@ -56,5 +55,5 @@ void RaytracerCore::computeImage(size_t start, size_t end) {
         } else {
             computePrecision();
         }
-    } while (!this->killThreads_ && (this->graphic_ || this->nbImage_ < 200));
+    } while (!this->killThreads_ && (this->graphic_ || this->nbImage_ < 20));
 }
