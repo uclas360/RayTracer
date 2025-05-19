@@ -77,8 +77,8 @@ bool AABB::trueHit(const Ray &r, Interval ray_t) const {
         const Interval &ax = axisInterval(axis);
         const double adinv = 1.0 / r.dir.arr[axis];
 
-        const double t0 = (ax.min - r.pos.arr[axis]) * adinv;
-        const double t1 = (ax.max - r.pos.arr[axis]) * adinv;
+        const double t0 = (ax.min - r.pos.getAxis(axis)) * adinv;
+        const double t1 = (ax.max - r.pos.getAxis(axis)) * adinv;
 
         if (t0 < t1) {
             if (t0 > ray_t.min) ray_t.min = t0;
