@@ -29,7 +29,6 @@ void RaytracerCore::computePrecision() {
     this->waitingChange.lock();
     this->waitingChange.unlock();
     this->computePixel(image, i, this->xResolution_, this->yResolution_);
-    this->computePixel(image, i, this->xResolution_, this->yResolution_);
   }
   this->imageMutex_.lock();
   if (this->nbImage_ == 0) {
