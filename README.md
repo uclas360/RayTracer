@@ -36,7 +36,7 @@ git clone git@github.com:PouletHalal/RayTracer.git
 cd RayTracer
 ```
 
-### Install dependencies
+### Build the program
 ```bash
 mkdir build && cd build && cmake .. && cd ..
 cmake --build build/ -j
