@@ -53,7 +53,7 @@ cmake --build build/ -j
 ./raytracer scene.cfg -W 400 -H 400 -images 200
 ```
 
-Read our [documentation](github.com/PouletHalal/RayTracer/wiki) for more details on how to use the program, including how to create your own scenes and models.
+Read our [documentation](https://github.com/PouletHalal/RayTracer/wiki) for more details on how to use the program, including how to create your own scenes and models.
 
 ## License
 
